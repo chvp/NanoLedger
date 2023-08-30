@@ -18,6 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:exported="false"
+            android:name=".PreferencesActivity" />
     </application>
 
 </manifest>
