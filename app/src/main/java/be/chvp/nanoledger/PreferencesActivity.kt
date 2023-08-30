@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,16 +25,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-class PreferencesActivity : ComponentActivity() {
+@AndroidEntryPoint
+class PreferencesActivity() : ComponentActivity() {
+    private val preferencesViewModel: PreferencesViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val getContent = registerForActivityResult(OpenDocument()) { uri: Uri? ->
+        val openFile = registerForActivityResult(OpenDocument()) { uri: Uri? ->
             if (uri != null) {
                 getContentResolver().takePersistableUriPermission(
                     uri,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
+                preferencesViewModel.storeFileUri(uri)
             }
         }
         setContent {
@@ -41,7 +47,7 @@ class PreferencesActivity : ComponentActivity() {
                 Scaffold(topBar = { Bar() }) { contentPadding ->
                     Box(modifier = Modifier.padding(contentPadding)) {
                         Button(onClick = {
-                            getContent.launch(arrayOf("*/*"))
+                            openFile.launch(arrayOf("*/*"))
                         }) {
                             Text(text = "Open file")
                         }
@@ -50,25 +56,25 @@ class PreferencesActivity : ComponentActivity() {
             }
         }
     }
+}
 
-    @Composable
-    fun Bar() {
-        val context = LocalContext.current
-        TopAppBar(
-            title = { Text(stringResource(R.string.settings)) },
-            navigationIcon = {
-                IconButton(onClick = { (context as Activity).finish() }) {
-                    Icon(
-                        Icons.Default.ArrowBack,
-                        contentDescription = stringResource(R.string.back)
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-            )
+@Composable
+fun Bar() {
+    val context = LocalContext.current
+    TopAppBar(
+        title = { Text(stringResource(R.string.settings)) },
+        navigationIcon = {
+            IconButton(onClick = { (context as Activity).finish() }) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back)
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
         )
-    }
+    )
 }
