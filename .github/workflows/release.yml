@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/cache@v3.3.1
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    - name: Setup Android SDK Tools
+      uses: android-actions/setup-android@v2.0.10
+    - name: Build release APK
+      run: |
+        ./gradlew assembleRelease
+        $ANDROID_SDK_ROOT/build-tools/30.0.2/zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+        echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
+        echo "${{ secrets.KEYSTORE_PASSWORD }}" | $ANDROID_SDK_ROOT/build-tools/30.0.2/apksigner sign --ks keystore.jks --out app-release.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+        $ANDROID_SDK_ROOT/build-tools/30.0.2/apksigner verify app-release.apk
+    - name: Parse tag
+      id: parse_tag
+      run: "echo ${{ github.ref }} | sed 's#^refs/tags/#::set-output name=version::#'"
+    - name: Create release
+      id: create_release
+      uses: release-drafter/release-drafter@v5
+      with:
+        name: ${{ steps.parse_tag.outputs.version }}
+        tag: ${{ steps.parse_tag.outputs.version }}
+        version: ${{ steps.parse_tag.outputs.version }}
+        publish: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./app-release.apk
+        asset_name: nanoledger-${{ steps.create_release.outputs.tag_name }}.apk
+        asset_content_type: application/vnd.android.package-archive
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

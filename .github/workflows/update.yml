@@ -1,0 +1,27 @@
+name: Update
+
+on:
+  schedule:
+    - cron: '30 */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v22
+        with:
+          github_access_token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Cachix
+        uses: cachix/cachix-action@v12
+        with:
+          name: nanoledger
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          skipPush: true
+      - run: nix flake update
+      - run: nix build -L --no-link .#devShells.$(nix eval --impure --expr "builtins.currentSystem").nanoledger
+      - run: nix eval --json ".#devShells.$(nix eval --impure --expr 'builtins.currentSystem').nanoledger.outPath" | sed 's/"\(.*\)"/\1/' | cachix push nanoledger
+      - uses: stefanzweifel/git-auto-commit-action@v4.16.0
+        with:
+          commit_message: "Update flake dependencies"
