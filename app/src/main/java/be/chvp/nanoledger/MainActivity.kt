@@ -50,7 +50,9 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = { Bar() },
                     floatingActionButton = {
-                        FloatingActionButton(onClick = { }) {
+                        FloatingActionButton(onClick = {
+                            // TODO(chvp): Add AddActivity and open it here
+                        }) {
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = stringResource(R.string.add)
