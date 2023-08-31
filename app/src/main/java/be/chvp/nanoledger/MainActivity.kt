@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,9 +16,11 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,6 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -69,7 +76,21 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(fileContents?.size ?: 0) {
-                                Text(fileContents!![fileContents!!.size - it - 1])
+                                Card(modifier = Modifier.fillMaxWidth().padding(
+                                         8.dp,
+                                         if (it == 0) 8.dp else 4.dp,
+                                         8.dp,
+                                         if (it == fileContents!!.size - 1) 8.dp else 4.dp
+                                     )
+                                ) {
+                                    Text(
+                                        fileContents!![fileContents!!.size - it - 1],
+                                        modifier = Modifier.padding(8.dp),
+                                        softWrap = false,
+                                        lineHeight = MaterialTheme.typography.bodySmall.fontSize,
+                                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace)
+                                    )
+                                }
                             }
                         }
                         PullRefreshIndicator(
