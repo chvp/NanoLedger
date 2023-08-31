@@ -56,6 +56,10 @@ android {
     }
 }
 
+tasks.lint {
+    dependsOn(tasks.ktlintCheck)
+}
+
 configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
     android.set(true)
 }
