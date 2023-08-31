@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +48,15 @@ class MainActivity : ComponentActivity() {
             }
             NanoLedgerTheme {
                 Scaffold(
-                    topBar = { Bar() }
+                    topBar = { Bar() },
+                    floatingActionButton = {
+                        FloatingActionButton(onClick = { }) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = stringResource(R.string.add)
+                            )
+                        }
+                    }
                 ) { contentPadding ->
                     val fileContents by mainViewModel.fileContents.observeAsState()
                     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
