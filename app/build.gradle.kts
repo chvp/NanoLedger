@@ -45,7 +45,9 @@ android {
     }
     lint {
         quiet = true
-        disable.addAll(arrayOf("OldTargetApi", "NewerVersionAvailable", "IntentWithNullAction"))
+        disable.addAll(
+            arrayOf("OldTargetApi", "NewerVersionAvailable", "IntentWithNullActionLaunch")
+        )
         checkAllWarnings = true
         ignoreWarnings = false
         warningsAsErrors = true
