@@ -10,18 +10,18 @@
         android:theme="@style/Theme.NanoLedger"
         >
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.NanoLedger">
+            android:theme="@style/Theme.NanoLedger"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:exported="false"
-            android:name=".PreferencesActivity" />
+            android:name=".ui.preferences.PreferencesActivity" />
     </application>
 
 </manifest>

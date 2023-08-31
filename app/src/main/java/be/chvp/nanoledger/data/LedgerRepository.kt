@@ -1,4 +1,4 @@
-package be.chvp.nanoledger
+package be.chvp.nanoledger.data
 
 import android.app.Application
 import android.net.Uri

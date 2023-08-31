@@ -1,4 +1,4 @@
-package be.chvp.nanoledger
+package be.chvp.nanoledger.data
 
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData

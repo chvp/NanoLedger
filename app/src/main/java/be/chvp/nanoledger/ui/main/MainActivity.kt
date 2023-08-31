@@ -1,4 +1,4 @@
-package be.chvp.nanoledger
+package be.chvp.nanoledger.ui.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -36,6 +36,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import be.chvp.nanoledger.R
+import be.chvp.nanoledger.ui.preferences.PreferencesActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,7 +54,7 @@ class MainActivity : ComponentActivity() {
             }
             NanoLedgerTheme {
                 Scaffold(
-                    topBar = { Bar() },
+                    topBar = { MainBar() },
                     floatingActionButton = {
                         FloatingActionButton(onClick = {
                             // TODO(chvp): Add AddActivity and open it here
@@ -102,29 +104,27 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
 
-    @Composable
-    fun Bar() {
-        val context = LocalContext.current
-        TopAppBar(
-            title = { Text(stringResource(R.string.app_name)) },
-            actions = {
-                IconButton(onClick = {
-                    context.startActivity(
-                        Intent(context, PreferencesActivity::class.java)
-                    )
-                }) {
-                    Icon(
-                        Icons.Default.Settings,
-                        contentDescription = stringResource(R.string.settings)
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-            )
+@Composable
+fun MainBar() {
+    val context = LocalContext.current
+    TopAppBar(
+        title = { Text(stringResource(R.string.app_name)) },
+        actions = {
+            IconButton(onClick = {
+                context.startActivity(Intent(context, PreferencesActivity::class.java))
+            }) {
+                Icon(
+                    Icons.Default.Settings,
+                    contentDescription = stringResource(R.string.settings)
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         )
-    }
+    )
 }

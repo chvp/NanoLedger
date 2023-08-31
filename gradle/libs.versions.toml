@@ -1,7 +1,7 @@
 [versions]
 agp = "8.2.0-beta01"
 kotlin = "1.9.10"
-hilt = "2.47"
+hilt = "2.48"
 core-ktx = "1.10.1"
 junit = "4.13.2"
 ktlint = "11.5.1"

@@ -43,8 +43,18 @@ android {
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
         )
     }
+    lint {
+        quiet = true
+        disable.addAll(arrayOf("OldTargetApi", "NewerVersionAvailable", "IntentWithNullAction"))
+        checkAllWarnings = true
+        ignoreWarnings = false
+        warningsAsErrors = true
+        textReport = true
+        explainIssues = !project.hasProperty("isCI")
+    }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
@@ -65,7 +75,6 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 }
 
 dependencies {
-
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)

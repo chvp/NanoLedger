@@ -1,10 +1,12 @@
-package be.chvp.nanoledger
+package be.chvp.nanoledger.ui.main
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import be.chvp.nanoledger.data.LedgerRepository
+import be.chvp.nanoledger.data.PreferencesDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers.IO
