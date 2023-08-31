@@ -4,4 +4,5 @@
     <string name="back">Back</string>
     <string name="file">File</string>
     <string name="select_file">Select file...</string>
+    <string name="add">Add</string>
 </resources>
