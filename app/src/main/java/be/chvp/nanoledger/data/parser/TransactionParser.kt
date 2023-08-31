@@ -18,7 +18,7 @@ import com.copperleaf.kudzu.parser.text.OptionalWhitespaceParser
 import com.copperleaf.kudzu.parser.text.RequiredWhitespaceParser
 import com.copperleaf.kudzu.parser.text.ScanParser
 
-inline fun PostingParser(): Parser<ValueNode<Posting>> = MappedParser(
+fun PostingParser(): Parser<ValueNode<Posting>> = MappedParser(
     SequenceParser(
         RequiredWhitespaceParser(),
         ScanParser(AtLeastParser(LiteralTokenParser(" "), 2)),
@@ -30,7 +30,7 @@ inline fun PostingParser(): Parser<ValueNode<Posting>> = MappedParser(
     Posting(account.text, amount.text)
 }
 
-inline fun DateParser(): Parser<ValueNode<String>> = MappedParser(
+fun DateParser(): Parser<ValueNode<String>> = MappedParser(
     SequenceParser(
         TimesParser(DigitParser(), 4),
         LiteralTokenParser("-"),
@@ -40,7 +40,7 @@ inline fun DateParser(): Parser<ValueNode<String>> = MappedParser(
     )
 ) { (_, y, _, m, _, d) -> "${y.text}-${m.text}-${d.text}" }
 
-inline fun NoteParser(): Parser<ValueNode<String>> = MappedParser(
+fun NoteParser(): Parser<ValueNode<String>> = MappedParser(
     SequenceParser(
         LiteralTokenParser("|"),
         OptionalWhitespaceParser(),
@@ -48,7 +48,7 @@ inline fun NoteParser(): Parser<ValueNode<String>> = MappedParser(
     )
 ) { (_, _, _, n) -> n.text }
 
-inline fun TransactionParser(): Parser<ValueNode<Transaction>> = MappedParser(
+fun TransactionParser(): Parser<ValueNode<Transaction>> = MappedParser(
     SequenceParser(
         DateParser(),
         RequiredWhitespaceParser(),
