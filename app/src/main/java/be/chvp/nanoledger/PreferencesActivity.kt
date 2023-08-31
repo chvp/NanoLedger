@@ -8,22 +8,29 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,17 +50,45 @@ class PreferencesActivity() : ComponentActivity() {
             }
         }
         setContent {
+            val fileUri by preferencesViewModel.fileUri.observeAsState()
             NanoLedgerTheme {
                 Scaffold(topBar = { Bar() }) { contentPadding ->
-                    Box(modifier = Modifier.padding(contentPadding)) {
-                        Button(onClick = {
+                    Column(modifier = Modifier.padding(contentPadding)) {
+                        Setting(
+                            stringResource(R.string.file),
+                            fileUri?.toString() ?: stringResource(R.string.select_file)
+                        ) {
                             openFile.launch(arrayOf("*/*"))
-                        }) {
-                            Text(text = "Open file")
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun Setting(text: String, subtext: String? = null, onClick: (() -> Unit)? = null) {
+    var modifier = Modifier.fillMaxWidth()
+    if (onClick != null) {
+        modifier = modifier.clickable(onClick = onClick)
+    }
+    Column(modifier = modifier) {
+        Text(
+            text,
+            modifier = Modifier.padding(
+                top = 8.dp,
+                start = 8.dp,
+                bottom = if (subtext != null) 0.dp else 8.dp
+            )
+        )
+        if (subtext != null) {
+            Text(
+                subtext,
+                modifier = Modifier.padding(bottom = 8.dp, start = 8.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
+            )
         }
     }
 }
