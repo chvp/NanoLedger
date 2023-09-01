@@ -1,62 +1,42 @@
 package be.chvp.nanoledger.data.parser
 
+import android.util.Log
 import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.Transaction
-import cc.ekblad.konbini.Parser
-import cc.ekblad.konbini.chain1
-import cc.ekblad.konbini.char
-import cc.ekblad.konbini.many1
-import cc.ekblad.konbini.parser
-import cc.ekblad.konbini.regex
-import cc.ekblad.konbini.tryParse
-import cc.ekblad.konbini.whitespace
 
-val dateParser: Parser<String> = regex("\\d{4}-\\d{1,2}-\\d{1,2}")
-val statusParser: Parser<String> = regex("\\*|!")
-val postingParser: Parser<Posting> = parser {
-    regex("[ \\t]")
-    whitespace()
-    val line = regex("[^\n]*")
-    val components = line.trim().split(Regex("[ \\t]{2,}"), limit = 2)
-    Posting(components[0], if (components.size == 2) components[1] else null)
-}
+val headerRegex = Regex("^((\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2})[ \t]*(\\*|!)([^|]*)(\\|(.*))?$")
+val postingRegex = Regex("^[ \t]+\\S.*$")
+val postingSplitRegex = Regex("[ \\t]{2,}")
+val commentRegex = Regex(";.*$")
 
-val transactionParser: Parser<Transaction> = parser {
-    val date = dateParser()
-    whitespace()
-    val status = tryParse(statusParser)
-    whitespace()
-    val description = regex("[^\n]*")
-    val descComponents = description.split(Regex("[ \\t]*\\|[ \\t]*"), limit = 2)
-    char('\n')
-    val postings = chain1(postingParser, parser { char('\n') })
-    Transaction(
-        date,
-        status,
-        descComponents[0],
-        if (descComponents.size == 2) descComponents[1] else null,
-        postings.terms
-    )
-}
+fun extractTransactions(lines: List<String>): List<Transaction> {
+    val result = ArrayList<Transaction>()
+    var i = 0
+    while (i < lines.size) {
+        val match = headerRegex.find(lines[i])
+        i += 1
+        if (match != null) {
+            val groups = match.groups
+            val date = groups[1]!!.value
+            val status = groups[3]?.value
+            val payee = groups[4]!!.value.trim()
+            val note = groups[6]?.value?.trim()
 
-val journalParser: Parser<List<Transaction>> = parser {
-    chain1(
-        transactionParser,
-        parser {
-            many1(
-                parser {
-                    char('\n')
+            val postings = ArrayList<Posting>()
+            while(i < lines.size && postingRegex.find(lines[i]) != null) {
+                val stripped = lines[i].trim().replace(commentRegex, "")
+                i += 1
+                if (stripped.length > 0) {
+                    val components = stripped.split(postingSplitRegex, limit = 2)
+                    if (components.size > 1) {
+                        postings.add(Posting(components[0], components[1]))
+                    } else {
+                        postings.add(Posting(components[0], null))
+                    }
                 }
-            )
+            }
+            result.add(Transaction(date, status, payee, note, postings))
         }
-    ).terms
+    }
+    return result
 }
-
-// fun JournalParser(): Parser<ValueNode<List<Transaction>>> = MappedParser(
-//     SeparatedByParser(
-//         TransactionParser(),
-//         SequenceParser(OptionalWhitespaceParser(), NewlineCharParser())
-//     )
-// ) { l ->
-//     l.nodeList.map { node -> node.value }
-// }

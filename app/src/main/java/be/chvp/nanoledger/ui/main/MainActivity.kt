@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { contentPadding ->
-                    val fileContents by mainViewModel.fileContents.observeAsState()
+                    val transactions by mainViewModel.transactions.observeAsState()
                     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
                     val state = rememberPullRefreshState(
                         isRefreshing ?: false,
@@ -74,17 +74,17 @@ class MainActivity : ComponentActivity() {
                     )
                     Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            items(fileContents?.size ?: 0) {
+                            items(transactions?.size ?: 0) {
                                 Card(
                                     modifier = Modifier.fillMaxWidth().padding(
                                         8.dp,
                                         if (it == 0) 8.dp else 4.dp,
                                         8.dp,
-                                        if (it == fileContents!!.size - 1) 8.dp else 4.dp
+                                        if (it == transactions!!.size - 1) 8.dp else 4.dp
                                     )
                                 ) {
-                                    Text(
-                                        fileContents!![fileContents!!.size - it - 1],
+                                    val tr = transactions!![transactions!!.size - it - 1]
+                                    Text("${tr.date} ${tr.status} ${tr.payee} | ${tr.note}",
                                         modifier = Modifier.padding(8.dp),
                                         softWrap = false,
                                         style = MaterialTheme.typography.bodySmall.copy(

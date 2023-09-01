@@ -15,7 +15,7 @@ android {
         minSdk = 33
         targetSdk = 33
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -87,7 +87,6 @@ dependencies {
     implementation(libs.compose.ui.graphics)
     implementation(libs.core.ktx)
     implementation(libs.hilt)
-    implementation(libs.konbini)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.viewmodel.compose)

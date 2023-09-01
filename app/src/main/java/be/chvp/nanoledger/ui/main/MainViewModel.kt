@@ -22,7 +22,7 @@ class MainViewModel @Inject constructor(
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
     val fileUri = preferencesDataSource.fileUri
-    val fileContents = ledgerRepository.fileContents
+    val transactions = ledgerRepository.transactions
 
     fun refresh() {
         _isRefreshing.value = true
