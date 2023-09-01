@@ -1,6 +1,5 @@
 package be.chvp.nanoledger.data.parser
 
-import android.util.Log
 import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.Transaction
 
@@ -38,6 +37,5 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
             result.add(Transaction(date, status, payee, note, postings))
         }
     }
-    Log.d("be.chvp.nanoledger.data.parser", "Extracted ${result.size} transactions")
     return result
 }
