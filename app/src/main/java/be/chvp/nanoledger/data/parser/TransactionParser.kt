@@ -2,69 +2,61 @@ package be.chvp.nanoledger.data.parser
 
 import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.Transaction
-import com.copperleaf.kudzu.node.mapped.ValueNode
-import com.copperleaf.kudzu.parser.Parser
-import com.copperleaf.kudzu.parser.chars.CharInParser
-import com.copperleaf.kudzu.parser.chars.DigitParser
-import com.copperleaf.kudzu.parser.chars.NewlineCharParser
-import com.copperleaf.kudzu.parser.many.AtLeastParser
-import com.copperleaf.kudzu.parser.many.BetweenTimesParser
-import com.copperleaf.kudzu.parser.many.TimesParser
-import com.copperleaf.kudzu.parser.mapped.MappedParser
-import com.copperleaf.kudzu.parser.maybe.MaybeParser
-import com.copperleaf.kudzu.parser.sequence.SequenceParser
-import com.copperleaf.kudzu.parser.text.LiteralTokenParser
-import com.copperleaf.kudzu.parser.text.OptionalWhitespaceParser
-import com.copperleaf.kudzu.parser.text.RequiredWhitespaceParser
-import com.copperleaf.kudzu.parser.text.ScanParser
+import cc.ekblad.konbini.Parser
+import cc.ekblad.konbini.chain1
+import cc.ekblad.konbini.char
+import cc.ekblad.konbini.many1
+import cc.ekblad.konbini.parser
+import cc.ekblad.konbini.regex
+import cc.ekblad.konbini.tryParse
+import cc.ekblad.konbini.whitespace
 
-fun PostingParser(): Parser<ValueNode<Posting>> = MappedParser(
-    SequenceParser(
-        RequiredWhitespaceParser(),
-        ScanParser(AtLeastParser(LiteralTokenParser(" "), 2)),
-        AtLeastParser(LiteralTokenParser(" "), 2),
-        ScanParser(NewlineCharParser()),
-        NewlineCharParser()
-    )
-) { (_, _, account, _, amount, _) ->
-    Posting(account.text, amount.text)
+val dateParser: Parser<String> = regex("\\d{4}-\\d{1,2}-\\d{1,2}")
+val statusParser: Parser<String> = regex("\\*|!")
+val postingParser: Parser<Posting> = parser {
+    regex("[ \\t]")
+    whitespace()
+    val line = regex("[^\n]*")
+    val components = line.trim().split(Regex("[ \\t]{2,}"), limit = 2)
+    Posting(components[0], if (components.size == 2) components[1] else null)
 }
 
-fun DateParser(): Parser<ValueNode<String>> = MappedParser(
-    SequenceParser(
-        TimesParser(DigitParser(), 4),
-        LiteralTokenParser("-"),
-        BetweenTimesParser(DigitParser(), 1, 2),
-        LiteralTokenParser("-"),
-        BetweenTimesParser(DigitParser(), 1, 2)
-    )
-) { (_, y, _, m, _, d) -> "${y.text}-${m.text}-${d.text}" }
-
-fun NoteParser(): Parser<ValueNode<String>> = MappedParser(
-    SequenceParser(
-        LiteralTokenParser("|"),
-        OptionalWhitespaceParser(),
-        ScanParser(NewlineCharParser())
-    )
-) { (_, _, _, n) -> n.text }
-
-fun TransactionParser(): Parser<ValueNode<Transaction>> = MappedParser(
-    SequenceParser(
-        DateParser(),
-        RequiredWhitespaceParser(),
-        MaybeParser(CharInParser(listOf('*', '!'))),
-        OptionalWhitespaceParser(),
-        ScanParser(CharInParser(listOf('|', '\n'))),
-        MaybeParser(NoteParser()),
-        NewlineCharParser(),
-        AtLeastParser(PostingParser(), 1)
-    )
-) { (_, d, _, s, _, p, n, _, ps) ->
+val transactionParser: Parser<Transaction> = parser {
+    val date = dateParser()
+    whitespace()
+    val status = tryParse(statusParser)
+    whitespace()
+    val description = regex("[^\n]*")
+    val descComponents = description.split(Regex("[ \\t]*\\|[ \\t]*"), limit = 2)
+    char('\n')
+    val postings = chain1(postingParser, parser { char('\n') })
     Transaction(
-        d.value,
-        s.node?.text,
-        p.text.trim(),
-        n.node?.value,
-        ps.nodeList.map { node -> node.value }
+        date,
+        status,
+        descComponents[0],
+        if (descComponents.size == 2) descComponents[1] else null,
+        postings.terms
     )
 }
+
+val journalParser: Parser<List<Transaction>> = parser {
+    chain1(
+        transactionParser,
+        parser {
+            many1(
+                parser {
+                    char('\n')
+                }
+            )
+        }
+    ).terms
+}
+
+// fun JournalParser(): Parser<ValueNode<List<Transaction>>> = MappedParser(
+//     SeparatedByParser(
+//         TransactionParser(),
+//         SequenceParser(OptionalWhitespaceParser(), NewlineCharParser())
+//     )
+// ) { l ->
+//     l.nodeList.map { node -> node.value }
+// }
