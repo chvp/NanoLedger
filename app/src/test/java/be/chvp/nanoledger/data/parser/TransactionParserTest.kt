@@ -1,10 +1,8 @@
 package be.chvp.nanoledger.data.parser
 
-import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.Transaction
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 class TransactionParserTest {
 

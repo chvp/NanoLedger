@@ -23,7 +23,7 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
             val note = groups[6]?.value?.trim()
 
             val postings = ArrayList<Posting>()
-            while(i < lines.size && postingRegex.find(lines[i]) != null) {
+            while (i < lines.size && postingRegex.find(lines[i]) != null) {
                 val stripped = lines[i].trim().replace(commentRegex, "")
                 i += 1
                 if (stripped.length > 0) {
@@ -38,5 +38,6 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
             result.add(Transaction(date, status, payee, note, postings))
         }
     }
+    Log.d("be.chvp.nanoledger.data.parser", "Extracted ${result.size} transactions")
     return result
 }

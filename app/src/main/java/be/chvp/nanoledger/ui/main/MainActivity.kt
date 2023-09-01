@@ -5,7 +5,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -84,13 +87,36 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ) {
                                     val tr = transactions!![transactions!!.size - it - 1]
-                                    Text("${tr.date} ${tr.status} ${tr.payee} | ${tr.note}",
-                                        modifier = Modifier.padding(8.dp),
-                                        softWrap = false,
-                                        style = MaterialTheme.typography.bodySmall.copy(
-                                            fontFamily = FontFamily.Monospace
+                                    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                                        Text(
+                                            "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}",
+                                            softWrap = false,
+                                            style = MaterialTheme.typography.bodySmall.copy(
+                                                fontFamily = FontFamily.Monospace
+                                            )
                                         )
-                                    )
+                                        for (p in tr.postings) {
+                                            Row(
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Text(
+                                                    "  ${p.account}",
+                                                    softWrap = false,
+                                                    style = MaterialTheme.typography.bodySmall.copy(
+                                                        fontFamily = FontFamily.Monospace
+                                                    )
+                                                )
+                                                Text(
+                                                    p.amount ?: "",
+                                                    softWrap = false,
+                                                    style = MaterialTheme.typography.bodySmall.copy(
+                                                        fontFamily = FontFamily.Monospace
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

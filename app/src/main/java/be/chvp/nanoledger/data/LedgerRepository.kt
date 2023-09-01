@@ -1,15 +1,10 @@
 package be.chvp.nanoledger.data
 
-import android.util.Log
 import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.map
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import be.chvp.nanoledger.data.Transaction
 import be.chvp.nanoledger.data.parser.extractTransactions
-import cc.ekblad.konbini.ParserResult
-import cc.ekblad.konbini.parseToEnd
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.inject.Inject
