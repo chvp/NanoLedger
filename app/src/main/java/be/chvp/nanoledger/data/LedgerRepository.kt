@@ -20,12 +20,12 @@ class LedgerRepository @Inject constructor(
 
     // TODO(chvp): Create function to append a transaction to the file
 
-    suspend fun readFrom(fileUri: Uri, onFinish: suspend () -> Unit) {
-        val inputStream = context.contentResolver.openInputStream(fileUri)
-        val reader = inputStream?.let { BufferedReader(InputStreamReader(it)) }
+    suspend fun readFrom(fileUri: Uri?, onFinish: suspend () -> Unit) {
         val result = ArrayList<String>()
-        reader?.lines()?.forEach { result.add(it) }
-        inputStream?.close()
+        fileUri
+            ?.let { context.contentResolver.openInputStream(it) }
+            ?.let { BufferedReader(InputStreamReader(it)) }
+            ?.use { it.lines().forEach { result.add(it) } }
         val extracted = extractTransactions(result)
         _fileContents.postValue(result)
         _transactions.postValue(extracted)

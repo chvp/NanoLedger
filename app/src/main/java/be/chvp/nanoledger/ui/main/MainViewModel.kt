@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor(
     fun refresh() {
         _isRefreshing.value = true
         viewModelScope.launch(IO) {
-            fileUri.value?.let { ledgerRepository.readFrom(it) { _isRefreshing.postValue(false) } }
+            ledgerRepository.readFrom(fileUri.value) { _isRefreshing.postValue(false) }
         }
     }
 }
