@@ -19,6 +19,7 @@ activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-material = { group = "androidx.compose.material", name = "material" }
+compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-runtime = { group = "androidx.compose.runtime", name = "runtime-livedata" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }

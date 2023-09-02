@@ -26,11 +26,22 @@ class LedgerRepository @Inject constructor(
         it.forEach { result.addAll(it.postings.map { it.account }) }
         result
     }
+    val payees: LiveData<Set<String>> = transactions.map { HashSet(it.map { it.payee }) }
+    val notes: LiveData<Set<String>> = transactions.map {
+        HashSet(
+            it.map { it.note }.filter { it != null }.map { it!! }
+        )
+    }
 
     suspend fun appendTo(fileUri: Uri, text: String, onFinish: suspend () -> Unit) {
         context.contentResolver.openOutputStream(fileUri, "wa")
             ?.let { OutputStreamWriter(it) }
-            ?.use { it.write(text) }
+            ?.use {
+                if (fileContents.value!!.last() != "") {
+                    it.write("\n")
+                }
+                it.write(text)
+            }
         readFrom(fileUri, onFinish)
     }
 
