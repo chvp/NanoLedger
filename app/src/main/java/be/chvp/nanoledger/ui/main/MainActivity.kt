@@ -87,8 +87,10 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ) {
                                     val tr = transactions!![transactions!!.size - it - 1]
+                                    // TODO(chvp): Syntax highlighting
                                     Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                                         Text(
+                                            // TODO(chvp): Handle no-note case better
                                             "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}",
                                             softWrap = false,
                                             style = MaterialTheme.typography.bodySmall.copy(
