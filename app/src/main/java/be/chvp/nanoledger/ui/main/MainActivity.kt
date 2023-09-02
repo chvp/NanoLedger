@@ -95,8 +95,11 @@ class MainActivity : ComponentActivity() {
                                     // TODO(chvp): Syntax highlighting
                                     Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                                         Text(
-                                            // TODO(chvp): Handle no-note case better
-                                            "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}",
+                                            if (tr.note != null) {
+                                                "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}"
+                                            } else {
+                                                "${tr.date} ${tr.status} ${tr.payee}"
+                                            },
                                             softWrap = false,
                                             style = MaterialTheme.typography.bodySmall.copy(
                                                 fontFamily = FontFamily.Monospace
