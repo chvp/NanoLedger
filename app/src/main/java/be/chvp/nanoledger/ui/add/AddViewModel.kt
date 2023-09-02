@@ -50,7 +50,7 @@ class AddViewModel @Inject constructor(
     }
 
     private val _postings = MutableLiveData<List<Triple<String, String, String>>>(
-        listOf(Triple("", "", ""))
+        listOf(emptyPosting())
     )
     val postings: LiveData<List<Triple<String, String, String>>> = _postings
     val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
@@ -96,7 +96,7 @@ class AddViewModel @Inject constructor(
         val result = ArrayList(postings.value!!)
         result[index] = Triple(newAccount, result[index].second, result[index].third)
         if (result.last().first != "") {
-            result.add(Triple("", "", ""))
+            result.add(emptyPosting())
         }
         _postings.value = result
     }
@@ -111,8 +111,10 @@ class AddViewModel @Inject constructor(
         val result = ArrayList(postings.value!!)
         result[index] = Triple(result[index].first, result[index].second, newAmount)
         if (result.last().third != "") {
-            result.add(Triple("", "", ""))
+            result.add(emptyPosting())
         }
         _postings.value = result
     }
+
+    fun emptyPosting(): Triple<String, String, String> = Triple("", "€", "")
 }
