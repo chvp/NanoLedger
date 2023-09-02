@@ -149,7 +149,7 @@ fun Bar() {
 }
 
 @Composable
-fun DateSelector(addViewModel: AddViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun DateSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
     val date by addViewModel.date.observeAsState()
     var dateDialogOpen by rememberSaveable { mutableStateOf(false) }
@@ -194,7 +194,7 @@ fun DateSelector(addViewModel: AddViewModel = viewModel(), modifier: Modifier = 
 }
 
 @Composable
-fun StatusSelector(addViewModel: AddViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
     val status by addViewModel.status.observeAsState()
     val options = listOf(" ", "*", "!")
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -231,7 +231,7 @@ fun StatusSelector(addViewModel: AddViewModel = viewModel(), modifier: Modifier 
 }
 
 @Composable
-fun PayeeSelector(addViewModel: AddViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun PayeeSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
     val payee by addViewModel.payee.observeAsState()
     val options by addViewModel.possiblePayees.observeAsState()
@@ -274,7 +274,7 @@ fun PayeeSelector(addViewModel: AddViewModel = viewModel(), modifier: Modifier =
 }
 
 @Composable
-fun NoteSelector(addViewModel: AddViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun NoteSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
     val note by addViewModel.note.observeAsState()
     val options by addViewModel.possibleNotes.observeAsState()
@@ -348,8 +348,8 @@ fun PostingRow(
 fun AccountSelector(
     index: Int,
     value: String,
-    addViewModel: AddViewModel = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    addViewModel: AddViewModel = viewModel()
 ) {
     val focusManager = LocalFocusManager.current
     val options by addViewModel.accounts.observeAsState()
