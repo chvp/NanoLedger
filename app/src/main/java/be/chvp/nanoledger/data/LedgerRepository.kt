@@ -4,11 +4,15 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import be.chvp.nanoledger.data.parser.extractTransactions
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class LedgerRepository @Inject constructor(
     private val context: Application,
     private val preferencesDataSource: PreferencesDataSource
@@ -17,8 +21,18 @@ class LedgerRepository @Inject constructor(
     val fileContents: LiveData<List<String>> = _fileContents
     private val _transactions = MutableLiveData<List<Transaction>>(emptyList())
     val transactions: LiveData<List<Transaction>> = _transactions
+    val accounts: LiveData<Set<String>> = transactions.map {
+        val result = HashSet<String>()
+        it.forEach { result.addAll(it.postings.map { it.account }) }
+        result
+    }
 
-    // TODO(chvp): Create function to append a transaction to the file
+    suspend fun appendTo(fileUri: Uri, text: String, onFinish: suspend () -> Unit) {
+        context.contentResolver.openOutputStream(fileUri, "wa")
+            ?.let { OutputStreamWriter(it) }
+            ?.use { it.write(text) }
+        readFrom(fileUri, onFinish)
+    }
 
     suspend fun readFrom(fileUri: Uri?, onFinish: suspend () -> Unit) {
         val result = ArrayList<String>()

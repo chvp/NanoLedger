@@ -22,6 +22,9 @@
         <activity
             android:exported="false"
             android:name=".ui.preferences.PreferencesActivity" />
+        <activity
+            android:exported="false"
+            android:name=".ui.add.AddActivity" />
     </application>
 
 </manifest>

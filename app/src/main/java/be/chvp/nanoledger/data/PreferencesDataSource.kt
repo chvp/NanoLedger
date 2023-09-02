@@ -19,6 +19,8 @@ class PreferencesDataSource @Inject constructor(@ApplicationContext private val 
 
     val fileUri: LiveData<Uri?> = fileUriData.map { it?.let { Uri.parse(it) } }
 
+    fun getFileUri(): Uri? = sharedPreferences.getString(FILE_URI_KEY, null)?.let { Uri.parse(it) }
+
     fun setFileUri(fileUri: Uri?) = sharedPreferences.edit().putString(
         FILE_URI_KEY,
         fileUri?.toString()

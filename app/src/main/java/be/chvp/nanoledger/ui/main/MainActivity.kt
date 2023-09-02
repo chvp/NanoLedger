@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import be.chvp.nanoledger.R
+import be.chvp.nanoledger.ui.add.AddActivity
 import be.chvp.nanoledger.ui.preferences.PreferencesActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,13 +60,17 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = { MainBar() },
                     floatingActionButton = {
-                        FloatingActionButton(onClick = {
-                            // TODO(chvp): Add AddActivity and open it here
-                        }) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = stringResource(R.string.add)
-                            )
+                        if (fileUri != null) {
+                            FloatingActionButton(onClick = {
+                                startActivity(
+                                    Intent(this, AddActivity::class.java)
+                                )
+                            }) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = stringResource(R.string.add)
+                                )
+                            }
                         }
                     }
                 ) { contentPadding ->
