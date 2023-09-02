@@ -92,7 +92,6 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ) {
                                     val tr = transactions!![transactions!!.size - it - 1]
-                                    // TODO(chvp): Syntax highlighting
                                     Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                                         Text(
                                             if (tr.note != null) {
