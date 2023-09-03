@@ -42,6 +42,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
@@ -88,7 +89,8 @@ class AddActivity() : ComponentActivity() {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 4.dp, bottom = 2.dp)
+                                    .padding(top = 4.dp, bottom = 2.dp),
+                                verticalAlignment = Alignment.Bottom
                             ) {
                                 DateSelector(
                                     modifier = Modifier
@@ -98,13 +100,13 @@ class AddActivity() : ComponentActivity() {
                                 )
                                 StatusSelector(
                                     modifier = Modifier
-                                        .weight(0.15f)
+                                        .weight(0.12f)
                                         .padding(horizontal = 2.dp)
                                         .fillMaxWidth()
                                 )
                                 PayeeSelector(
                                     modifier = Modifier
-                                        .weight(0.55f)
+                                        .weight(0.58f)
                                         .padding(start = 2.dp, end = 4.dp)
                                         .fillMaxWidth()
                                 )
@@ -221,7 +223,6 @@ fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = v
             value = (status ?: ""),
             onValueChange = {},
             readOnly = true,
-            label = { Text(stringResource(R.string.status)) },
             modifier = Modifier.menuAnchor(),
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
