@@ -120,9 +120,14 @@ class AddActivity() : ComponentActivity() {
                             val postings by addViewModel.postings.observeAsState()
                             var encounteredEmptyAmount = false
                             postings?.forEachIndexed { i, posting ->
-                                val firstEmpty = encounteredEmptyAmount == false && posting.third == ""
+                                val firstEmpty =
+                                    encounteredEmptyAmount == false && posting.third == ""
                                 encounteredEmptyAmount = encounteredEmptyAmount || firstEmpty
-                                PostingRow(index = i, posting = posting, firstEmptyAmount = firstEmpty)
+                                PostingRow(
+                                    index = i,
+                                    posting = posting,
+                                    firstEmptyAmount = firstEmpty
+                                )
                             }
                         }
                     }
@@ -347,7 +352,11 @@ fun PostingRow(
             value = posting.third,
             onValueChange = { addViewModel.setAmount(index, it) },
             singleLine = true,
-            placeholder = { if (firstEmptyAmount && unbalancedAmount != null) { Text(unbalancedAmount!!) } },
+            placeholder = {
+                if (firstEmptyAmount && unbalancedAmount != null) {
+                    Text(unbalancedAmount!!)
+                }
+            },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.weight(0.25f).padding(start = 2.dp, end = 4.dp),
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
