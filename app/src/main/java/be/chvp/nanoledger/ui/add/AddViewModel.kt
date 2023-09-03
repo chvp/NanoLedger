@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.PreferencesDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -60,14 +61,14 @@ class AddViewModel @Inject constructor(
             .filter { it != "" }
             .map {
                 try {
-                    it.toFloat()
+                    BigDecimal(it)
                 } catch (e: NumberFormatException) {
-                    0f
+                    BigDecimal.ZERO
                 }
             }
-            .sum()
-            .let { it * -1f }
-            .let { if (it == 0.0f) "" else it.toString() }
+            .fold(BigDecimal.ZERO) { l, r -> l + r }
+            .let { it * BigDecimal(-1) }
+            .let { if (it == BigDecimal.ZERO) "" else it.toString() }
     }
 
     fun append(onFinish: suspend () -> Unit) {
