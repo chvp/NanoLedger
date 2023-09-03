@@ -118,8 +118,16 @@ class AddActivity() : ComponentActivity() {
                                 )
                             }
                             val postings by addViewModel.postings.observeAsState()
+                            var encounteredEmptyAmount = false
                             postings?.forEachIndexed { i, posting ->
-                                PostingRow(index = i, posting = posting)
+                                val firstEmpty =
+                                    encounteredEmptyAmount == false && posting.third == ""
+                                encounteredEmptyAmount = encounteredEmptyAmount || firstEmpty
+                                PostingRow(
+                                    index = i,
+                                    posting = posting,
+                                    firstEmptyAmount = firstEmpty
+                                )
                             }
                         }
                     }
@@ -323,8 +331,10 @@ fun NoteSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
 fun PostingRow(
     index: Int,
     posting: Triple<String, String, String>,
+    firstEmptyAmount: Boolean,
     addViewModel: AddViewModel = viewModel()
 ) {
+    val unbalancedAmount by addViewModel.unbalancedAmount.observeAsState()
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         AccountSelector(
             index = index,
@@ -342,6 +352,11 @@ fun PostingRow(
             value = posting.third,
             onValueChange = { addViewModel.setAmount(index, it) },
             singleLine = true,
+            placeholder = {
+                if (firstEmptyAmount && unbalancedAmount != null) {
+                    Text(unbalancedAmount!!)
+                }
+            },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.weight(0.25f).padding(start = 2.dp, end = 4.dp),
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)

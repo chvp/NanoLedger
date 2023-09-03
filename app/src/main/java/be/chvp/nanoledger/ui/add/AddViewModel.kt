@@ -54,6 +54,21 @@ class AddViewModel @Inject constructor(
     )
     val postings: LiveData<List<Triple<String, String, String>>> = _postings
     val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
+    val unbalancedAmount: LiveData<String> = postings.map {
+        it
+            .map { it.third }
+            .filter { it != "" }
+            .map {
+                try {
+                    it.toFloat()
+                } catch (e: NumberFormatException) {
+                    0f
+                }
+            }
+            .sum()
+            .let { it * -1f }
+            .toString()
+    }
 
     fun append(onFinish: suspend () -> Unit) {
         val uri = preferencesDataSource.getFileUri()
