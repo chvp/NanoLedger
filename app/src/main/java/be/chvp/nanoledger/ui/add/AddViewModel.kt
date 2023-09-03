@@ -131,5 +131,7 @@ class AddViewModel @Inject constructor(
         _postings.value = result
     }
 
-    fun emptyPosting(): Triple<String, String, String> = Triple("", "€", "")
+    fun emptyPosting(): Triple<String, String, String> {
+        return Triple("", preferencesDataSource.getDefaultCurrency(), "")
+    }
 }

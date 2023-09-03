@@ -124,7 +124,7 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
     val state = rememberPullRefreshState(isRefreshing ?: false, { mainViewModel.refresh() })
     Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
-        if (transactions?.size ?: 0 > 0 || isRefreshing) {
+        if ((transactions?.size ?: 0) > 0 || (isRefreshing ?: true)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
                     Card(

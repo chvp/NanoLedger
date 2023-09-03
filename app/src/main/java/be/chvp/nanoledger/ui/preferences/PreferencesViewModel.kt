@@ -14,8 +14,8 @@ class PreferencesViewModel @Inject constructor(
     private val preferencesDataSource: PreferencesDataSource
 ) : AndroidViewModel(application) {
     val fileUri: LiveData<Uri?> = preferencesDataSource.fileUri
+    val defaultCurrency: LiveData<String> = preferencesDataSource.defaultCurrency
 
-    fun storeFileUri(uri: Uri) {
-        preferencesDataSource.setFileUri(uri)
-    }
+    fun storeFileUri(uri: Uri) = preferencesDataSource.setFileUri(uri)
+    fun storeDefaultCurrency(currency: String) = preferencesDataSource.setDefaultCurrency(currency)
 }

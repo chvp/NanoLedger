@@ -5,7 +5,10 @@
     <string name="add_transaction">Add transaction</string>
     <string name="back">Back</string>
     <string name="calendar">Calendar</string>
+    <string name="cancel">Cancel</string>
     <string name="date">Date</string>
+    <string name="change_default_currency">Change default currency</string>
+    <string name="default_currency">Default currency</string>
     <string name="file">File</string>
     <string name="note">Note</string>
     <string name="payee">Payee</string>

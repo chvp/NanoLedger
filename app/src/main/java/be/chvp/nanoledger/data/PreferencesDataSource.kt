@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 const val FILE_URI_KEY = "file_uri"
+const val DEFAULT_CURRENCY_KEY = "default_currency"
 
 class PreferencesDataSource @Inject constructor(@ApplicationContext private val context: Context) {
     private val sharedPreferences = context.getSharedPreferences(
@@ -25,4 +26,10 @@ class PreferencesDataSource @Inject constructor(@ApplicationContext private val 
         FILE_URI_KEY,
         fileUri?.toString()
     ).apply()
+
+    val defaultCurrency: LiveData<String> = sharedPreferences.stringLiveData(DEFAULT_CURRENCY_KEY, "€").map { it!! }
+
+    fun getDefaultCurrency(): String = sharedPreferences.getString(DEFAULT_CURRENCY_KEY, "€")!!
+
+    fun setDefaultCurrency(currency: String) = sharedPreferences.edit().putString(DEFAULT_CURRENCY_KEY, currency).apply()
 }
