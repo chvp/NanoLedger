@@ -25,6 +25,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -47,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
@@ -209,7 +211,8 @@ fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = v
             readOnly = true,
             label = { Text(stringResource(R.string.status)) },
             modifier = Modifier.menuAnchor(),
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
+            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
         )
         DropdownMenu(
             expanded = expanded,
@@ -332,14 +335,16 @@ fun PostingRow(
             value = posting.second,
             onValueChange = { addViewModel.setCurrency(index, it) },
             singleLine = true,
-            modifier = Modifier.weight(0.1f).padding(horizontal = 2.dp)
+            modifier = Modifier.weight(0.1f).padding(horizontal = 2.dp),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
         )
         TextField(
             value = posting.third,
             onValueChange = { addViewModel.setAmount(index, it) },
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier.weight(0.25f).padding(start = 2.dp, end = 4.dp)
+            modifier = Modifier.weight(0.25f).padding(start = 2.dp, end = 4.dp),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
         )
     }
 }
