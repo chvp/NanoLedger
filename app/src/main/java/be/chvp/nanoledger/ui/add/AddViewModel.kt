@@ -67,8 +67,8 @@ class AddViewModel @Inject constructor(
                 }
             }
             .fold(BigDecimal.ZERO) { l, r -> l + r }
-            .let { it * BigDecimal(-1) }
-            .let { if (it == BigDecimal.ZERO) "" else it.toString() }
+            .let { it.negate() }
+            .let { if (it == BigDecimal.ZERO.setScale(it.scale())) "" else it.toString() }
     }
 
     fun append(onFinish: suspend () -> Unit) {
