@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.ui.add.AddActivity
 import be.chvp.nanoledger.ui.preferences.PreferencesActivity
@@ -74,70 +76,76 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { contentPadding ->
-                    val transactions by mainViewModel.transactions.observeAsState()
-                    val isRefreshing by mainViewModel.isRefreshing.observeAsState()
-                    val state = rememberPullRefreshState(
-                        isRefreshing ?: false,
-                        { mainViewModel.refresh() }
-                    )
-                    Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            items(transactions?.size ?: 0) {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth().padding(
-                                        8.dp,
-                                        if (it == 0) 8.dp else 4.dp,
-                                        8.dp,
-                                        if (it == transactions!!.size - 1) 8.dp else 4.dp
-                                    )
-                                ) {
-                                    val tr = transactions!![transactions!!.size - it - 1]
-                                    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                                        Text(
-                                            if (tr.note != null) {
-                                                "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}"
-                                            } else {
-                                                "${tr.date} ${tr.status} ${tr.payee}"
-                                            },
-                                            softWrap = false,
-                                            style = MaterialTheme.typography.bodySmall.copy(
-                                                fontFamily = FontFamily.Monospace
-                                            )
-                                        )
-                                        for (p in tr.postings) {
-                                            Row(
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                modifier = Modifier.fillMaxWidth()
-                                            ) {
-                                                Text(
-                                                    "  ${p.account}",
-                                                    softWrap = false,
-                                                    style = MaterialTheme.typography.bodySmall.copy(
-                                                        fontFamily = FontFamily.Monospace
-                                                    )
-                                                )
-                                                Text(
-                                                    p.amount ?: "",
-                                                    softWrap = false,
-                                                    style = MaterialTheme.typography.bodySmall.copy(
-                                                        fontFamily = FontFamily.Monospace
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        PullRefreshIndicator(
-                            isRefreshing ?: false,
-                            state,
-                            Modifier.align(Alignment.TopCenter)
-                        )
+                    if (fileUri != null) {
+                        MainContent(contentPadding)
+                    } else {
+                        // TODO(chvp): No file empty state
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = viewModel()) {
+    val transactions by mainViewModel.transactions.observeAsState()
+    val isRefreshing by mainViewModel.isRefreshing.observeAsState()
+    val state = rememberPullRefreshState(isRefreshing ?: false, { mainViewModel.refresh() })
+    Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            if (transactions?.size ?: 0 > 0) {
+                items(transactions!!.size) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(
+                            8.dp,
+                            if (it == 0) 8.dp else 4.dp,
+                            8.dp,
+                            if (it == transactions!!.size - 1) 8.dp else 4.dp
+                        )
+                    ) {
+                        val tr = transactions!![transactions!!.size - it - 1]
+                        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                            Text(
+                                if (tr.note != null) {
+                                    "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}"
+                                } else {
+                                    "${tr.date} ${tr.status} ${tr.payee}"
+                                },
+                                softWrap = false,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            )
+                            for (p in tr.postings) {
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        "  ${p.account}",
+                                        softWrap = false,
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            fontFamily = FontFamily.Monospace
+                                        )
+                                    )
+                                    Text(
+                                        p.amount ?: "",
+                                        softWrap = false,
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            fontFamily = FontFamily.Monospace
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // TODO(chvp): No transactions empty state
+            }
+        }
+        PullRefreshIndicator(isRefreshing ?: false, state, Modifier.align(Alignment.TopCenter))
     }
 }
 
