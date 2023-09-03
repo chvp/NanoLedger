@@ -67,7 +67,7 @@ class AddViewModel @Inject constructor(
             }
             .sum()
             .let { it * -1f }
-            .toString()
+            .let { if (it == 0.0f) "" else it.toString() }
     }
 
     fun append(onFinish: suspend () -> Unit) {
