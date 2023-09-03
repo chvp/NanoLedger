@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
@@ -79,7 +81,32 @@ class MainActivity : ComponentActivity() {
                     if (fileUri != null) {
                         MainContent(contentPadding)
                     } else {
-                        // TODO(chvp): No file empty state
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(contentPadding),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.no_file_yet),
+                                style = MaterialTheme.typography.headlineLarge,
+                                modifier = Modifier.align(Alignment.CenterHorizontally).padding(
+                                    horizontal = 16.dp
+                                )
+                            )
+                            Text(
+                                stringResource(R.string.go_to_settings),
+                                style = MaterialTheme.typography.headlineLarge.copy(
+                                    textDecoration = TextDecoration.Underline,
+                                    color = MaterialTheme.colorScheme.primary
+                                ),
+                                modifier = Modifier.align(Alignment.CenterHorizontally).padding(
+                                    horizontal = 16.dp
+                                ).clickable {
+                                    startActivity(
+                                        Intent(this@MainActivity, PreferencesActivity::class.java)
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
