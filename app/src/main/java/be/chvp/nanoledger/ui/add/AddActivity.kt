@@ -111,7 +111,7 @@ class AddActivity() : ComponentActivity() {
                                 NoteSelector(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .padding(start = 2.dp, end = 4.dp)
+                                        .padding(horizontal = 4.dp)
                                         .fillMaxWidth()
                                 )
                             }
