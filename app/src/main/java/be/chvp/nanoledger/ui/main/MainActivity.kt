@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
@@ -88,6 +89,7 @@ class MainActivity : ComponentActivity() {
                             Text(
                                 stringResource(R.string.no_file_yet),
                                 style = MaterialTheme.typography.headlineLarge,
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(
                                     horizontal = 16.dp
                                 )
@@ -98,6 +100,7 @@ class MainActivity : ComponentActivity() {
                                     textDecoration = TextDecoration.Underline,
                                     color = MaterialTheme.colorScheme.primary
                                 ),
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(
                                     horizontal = 16.dp
                                 ).clickable {
@@ -180,6 +183,7 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
                     Text(
                         stringResource(R.string.no_transactions_yet),
                         style = MaterialTheme.typography.headlineLarge,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                     Text(
@@ -188,6 +192,7 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
                             textDecoration = TextDecoration.Underline,
                             color = MaterialTheme.colorScheme.primary
                         ),
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 16.dp).clickable {
                             context.startActivity(
                                 Intent(context, AddActivity::class.java)
