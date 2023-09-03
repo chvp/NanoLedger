@@ -15,6 +15,9 @@
     <string name="status">Status</string>
     <string name="ok">OK</string>
 
-    <string name="no_file_yet">You don\'t have a file configured yet.</string>
+    <string name="no_file_yet">You don&#8217;t have a file configured yet.</string>
     <string name="go_to_settings">Go to the settings to configure one.</string>
+
+    <string name="no_transactions_yet">Couldn&#8217;t find any transactions in your configured file.</string>
+    <string name="create_transaction">Add a transaction.</string>
 </resources>

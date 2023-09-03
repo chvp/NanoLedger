@@ -116,12 +116,13 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = viewModel()) {
+    val context = LocalContext.current
     val transactions by mainViewModel.transactions.observeAsState()
     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
     val state = rememberPullRefreshState(isRefreshing ?: false, { mainViewModel.refresh() })
     Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            if (transactions?.size ?: 0 > 0) {
+        if (transactions?.size ?: 0 > 0) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions!!.size) {
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(
@@ -168,8 +169,32 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
                         }
                     }
                 }
-            } else {
-                // TODO(chvp): No transactions empty state
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    Text(
+                        stringResource(R.string.no_transactions_yet),
+                        style = MaterialTheme.typography.headlineLarge,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Text(
+                        stringResource(R.string.create_transaction),
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            textDecoration = TextDecoration.Underline,
+                            color = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.padding(horizontal = 16.dp).clickable {
+                            context.startActivity(
+                                Intent(context, AddActivity::class.java)
+                            )
+                        }
+                    )
+                }
             }
         }
         PullRefreshIndicator(isRefreshing ?: false, state, Modifier.align(Alignment.TopCenter))
