@@ -175,6 +175,10 @@ fun DateSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
                 contentDescription = stringResource(R.string.calendar)
             )
         },
+        colors = ExposedDropdownMenuDefaults.textFieldColors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface
+        ),
         modifier = modifier.onFocusChanged {
             if (it.isFocused) { dateDialogOpen = true }
         }
@@ -219,7 +223,10 @@ fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = v
             readOnly = true,
             label = { Text(stringResource(R.string.status)) },
             modifier = Modifier.menuAnchor(),
-            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            ),
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
         )
         DropdownMenu(
@@ -260,7 +267,10 @@ fun PayeeSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vi
             },
             label = { Text(stringResource(R.string.payee)) },
             modifier = Modifier.menuAnchor().fillMaxWidth(),
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
         if (options?.isNotEmpty() ?: false) {
             ExposedDropdownMenu(
@@ -303,7 +313,10 @@ fun NoteSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
             },
             label = { Text(stringResource(R.string.note)) },
             modifier = Modifier.menuAnchor().fillMaxWidth(),
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
         if (options?.isNotEmpty() ?: false) {
             ExposedDropdownMenu(
@@ -346,12 +359,20 @@ fun PostingRow(
             onValueChange = { addViewModel.setCurrency(index, it) },
             singleLine = true,
             modifier = Modifier.weight(0.1f).padding(horizontal = 2.dp),
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            ),
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
         )
         TextField(
             value = posting.third,
             onValueChange = { addViewModel.setAmount(index, it) },
             singleLine = true,
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            ),
             placeholder = {
                 if (firstEmptyAmount && unbalancedAmount != null) {
                     Text(unbalancedAmount!!)
@@ -388,7 +409,10 @@ fun AccountSelector(
             },
             singleLine = true,
             modifier = Modifier.menuAnchor().fillMaxWidth(),
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
         )
         if (filteredOptions.isNotEmpty()) {
             ExposedDropdownMenu(
