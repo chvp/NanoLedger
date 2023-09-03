@@ -27,9 +27,15 @@ class PreferencesDataSource @Inject constructor(@ApplicationContext private val 
         fileUri?.toString()
     ).apply()
 
-    val defaultCurrency: LiveData<String> = sharedPreferences.stringLiveData(DEFAULT_CURRENCY_KEY, "€").map { it!! }
+    val defaultCurrency: LiveData<String> = sharedPreferences.stringLiveData(
+        DEFAULT_CURRENCY_KEY,
+        "€"
+    ).map { it!! }
 
     fun getDefaultCurrency(): String = sharedPreferences.getString(DEFAULT_CURRENCY_KEY, "€")!!
 
-    fun setDefaultCurrency(currency: String) = sharedPreferences.edit().putString(DEFAULT_CURRENCY_KEY, currency).apply()
+    fun setDefaultCurrency(currency: String) = sharedPreferences.edit().putString(
+        DEFAULT_CURRENCY_KEY,
+        currency
+    ).apply()
 }

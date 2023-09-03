@@ -156,7 +156,9 @@ fun SettingDialog(
                 TextButton(onClick = dismiss) { Text(stringResource(R.string.cancel)) }
             },
             confirmButton = {
-                TextButton(onClick = { save(); dismiss() }, enabled = canSave) { Text(stringResource(R.string.save)) }
+                TextButton(onClick = { save(); dismiss() }, enabled = canSave) {
+                    Text(stringResource(R.string.save))
+                }
             }
         )
     }
