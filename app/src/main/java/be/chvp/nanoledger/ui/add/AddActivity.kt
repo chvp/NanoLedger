@@ -376,7 +376,11 @@ fun PostingRow(
             ),
             placeholder = {
                 if (firstEmptyAmount && unbalancedAmount != null) {
-                    Text(unbalancedAmount!!)
+                    Text(
+                        unbalancedAmount!!,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
