@@ -196,7 +196,7 @@ fun DateSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
 @Composable
 fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
     val status by addViewModel.status.observeAsState()
-    val options = listOf(" ", "*", "!")
+    val options = listOf(" ", "!", "*")
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
