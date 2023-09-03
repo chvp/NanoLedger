@@ -5,9 +5,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +40,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.ui.add.AddActivity
 import be.chvp.nanoledger.ui.preferences.PreferencesActivity
@@ -74,70 +79,130 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { contentPadding ->
-                    val transactions by mainViewModel.transactions.observeAsState()
-                    val isRefreshing by mainViewModel.isRefreshing.observeAsState()
-                    val state = rememberPullRefreshState(
-                        isRefreshing ?: false,
-                        { mainViewModel.refresh() }
-                    )
-                    Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            items(transactions?.size ?: 0) {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth().padding(
-                                        8.dp,
-                                        if (it == 0) 8.dp else 4.dp,
-                                        8.dp,
-                                        if (it == transactions!!.size - 1) 8.dp else 4.dp
+                    if (fileUri != null) {
+                        MainContent(contentPadding)
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxSize().padding(contentPadding),
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.no_file_yet),
+                                style = MaterialTheme.typography.headlineLarge,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally).padding(
+                                    horizontal = 16.dp
+                                )
+                            )
+                            Text(
+                                stringResource(R.string.go_to_settings),
+                                style = MaterialTheme.typography.headlineLarge.copy(
+                                    textDecoration = TextDecoration.Underline,
+                                    color = MaterialTheme.colorScheme.primary
+                                ),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.align(Alignment.CenterHorizontally).padding(
+                                    horizontal = 16.dp
+                                ).clickable {
+                                    startActivity(
+                                        Intent(this@MainActivity, PreferencesActivity::class.java)
                                     )
-                                ) {
-                                    val tr = transactions!![transactions!!.size - it - 1]
-                                    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                                        Text(
-                                            if (tr.note != null) {
-                                                "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}"
-                                            } else {
-                                                "${tr.date} ${tr.status} ${tr.payee}"
-                                            },
-                                            softWrap = false,
-                                            style = MaterialTheme.typography.bodySmall.copy(
-                                                fontFamily = FontFamily.Monospace
-                                            )
-                                        )
-                                        for (p in tr.postings) {
-                                            Row(
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                modifier = Modifier.fillMaxWidth()
-                                            ) {
-                                                Text(
-                                                    "  ${p.account}",
-                                                    softWrap = false,
-                                                    style = MaterialTheme.typography.bodySmall.copy(
-                                                        fontFamily = FontFamily.Monospace
-                                                    )
-                                                )
-                                                Text(
-                                                    p.amount ?: "",
-                                                    softWrap = false,
-                                                    style = MaterialTheme.typography.bodySmall.copy(
-                                                        fontFamily = FontFamily.Monospace
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
                                 }
-                            }
+                            )
                         }
-                        PullRefreshIndicator(
-                            isRefreshing ?: false,
-                            state,
-                            Modifier.align(Alignment.TopCenter)
-                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = viewModel()) {
+    val context = LocalContext.current
+    val transactions by mainViewModel.transactions.observeAsState()
+    val isRefreshing by mainViewModel.isRefreshing.observeAsState()
+    val state = rememberPullRefreshState(isRefreshing ?: false, { mainViewModel.refresh() })
+    Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
+        if (transactions?.size ?: 0 > 0) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(transactions!!.size) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(
+                            8.dp,
+                            if (it == 0) 8.dp else 4.dp,
+                            8.dp,
+                            if (it == transactions!!.size - 1) 8.dp else 4.dp
+                        )
+                    ) {
+                        val tr = transactions!![transactions!!.size - it - 1]
+                        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                            Text(
+                                if (tr.note != null) {
+                                    "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}"
+                                } else {
+                                    "${tr.date} ${tr.status} ${tr.payee}"
+                                },
+                                softWrap = false,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            )
+                            for (p in tr.postings) {
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        "  ${p.account}",
+                                        softWrap = false,
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            fontFamily = FontFamily.Monospace
+                                        )
+                                    )
+                                    Text(
+                                        p.amount ?: "",
+                                        softWrap = false,
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            fontFamily = FontFamily.Monospace
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    Text(
+                        stringResource(R.string.no_transactions_yet),
+                        style = MaterialTheme.typography.headlineLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Text(
+                        stringResource(R.string.create_transaction),
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            textDecoration = TextDecoration.Underline,
+                            color = MaterialTheme.colorScheme.primary
+                        ),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp).clickable {
+                            context.startActivity(
+                                Intent(context, AddActivity::class.java)
+                            )
+                        }
+                    )
+                }
+            }
+        }
+        PullRefreshIndicator(isRefreshing ?: false, state, Modifier.align(Alignment.TopCenter))
     }
 }
 
