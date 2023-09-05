@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
+import be.chvp.nanoledger.data.Transaction
 import be.chvp.nanoledger.ui.add.AddActivity
 import be.chvp.nanoledger.ui.preferences.PreferencesActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
@@ -117,6 +118,14 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun transactionHeader(t: Transaction): String {
+    var res = t.date
+    if (t.status != null) res += " ${t.status}"
+    res += " ${t.payee}"
+    if (t.note != null) res += " | ${t.note}"
+    return res
+}
+
 @Composable
 fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
@@ -138,11 +147,7 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
                         val tr = transactions!![transactions!!.size - it - 1]
                         Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                             Text(
-                                if (tr.note != null) {
-                                    "${tr.date} ${tr.status} ${tr.payee} | ${tr.note}"
-                                } else {
-                                    "${tr.date} ${tr.status} ${tr.payee}"
-                                },
+                                transactionHeader(tr),
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontFamily = FontFamily.Monospace
