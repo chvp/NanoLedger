@@ -3,7 +3,7 @@ package be.chvp.nanoledger.data.parser
 import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.Transaction
 
-val headerRegex = Regex("^((\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2})[ \t]*(\\*|!)([^|]*)(\\|(.*))?$")
+val headerRegex = Regex("^((\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2})[ \t]*(\\*|!)?([^|]*)(\\|(.*))?$")
 val postingRegex = Regex("^[ \t]+\\S.*$")
 val postingSplitRegex = Regex("[ \\t]{2,}")
 val commentRegex = Regex(";.*$")

@@ -105,4 +105,18 @@ class TransactionParserTest {
 
         assertEquals(1, transactions.size)
     }
+
+    @Test
+    fun canParseUnmarkedTransaction() {
+        val transactions = extractTransactions(
+            """
+            |2023-09-05 Shop | Groceries
+            |    assets:checking                                         -2.19 EUR
+            |    expenses:groceries                                       2.19 EUR
+            """.trimMargin().lines()
+        )
+
+        assertEquals(1, transactions.size)
+        assertEquals(null, transactions[0].status)
+    }
 }
