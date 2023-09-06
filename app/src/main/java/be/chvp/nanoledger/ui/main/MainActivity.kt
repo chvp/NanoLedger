@@ -42,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
@@ -151,7 +152,8 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontFamily = FontFamily.Monospace
-                                )
+                                ),
+                                overflow = TextOverflow.Ellipsis
                             )
                             for (p in tr.postings) {
                                 Row(
@@ -163,14 +165,17 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
                                         softWrap = false,
                                         style = MaterialTheme.typography.bodySmall.copy(
                                             fontFamily = FontFamily.Monospace
-                                        )
+                                        ),
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
                                     )
                                     Text(
                                         p.amount ?: "",
                                         softWrap = false,
                                         style = MaterialTheme.typography.bodySmall.copy(
                                             fontFamily = FontFamily.Monospace
-                                        )
+                                        ),
+                                        modifier = Modifier.padding(start = 2.dp)
                                     )
                                 }
                             }
