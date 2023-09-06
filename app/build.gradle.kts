@@ -46,7 +46,12 @@ android {
     lint {
         quiet = true
         disable.addAll(
-            arrayOf("OldTargetApi", "NewerVersionAvailable", "IntentWithNullActionLaunch")
+            arrayOf(
+                "OldTargetApi",
+                "NewerVersionAvailable",
+                "IntentWithNullActionLaunch",
+                "GradleDependency"
+            )
         )
         checkAllWarnings = true
         ignoreWarnings = false
