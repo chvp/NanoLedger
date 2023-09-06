@@ -50,7 +50,8 @@ android {
                 "OldTargetApi",
                 "NewerVersionAvailable",
                 "IntentWithNullActionLaunch",
-                "GradleDependency"
+                "GradleDependency",
+                "ComposableLambdaParameterNaming"
             )
         )
         checkAllWarnings = true

@@ -258,7 +258,7 @@ fun PayeeSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vi
         payee ?: "",
         { addViewModel.setPayee(it) },
         modifier
-    )
+    ) { Text(stringResource(R.string.payee)) }
 }
 
 @Composable
@@ -270,7 +270,7 @@ fun NoteSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
         note ?: "",
         { addViewModel.setNote(it) },
         modifier
-    )
+    ) { Text(stringResource(R.string.note)) }
 }
 
 @Composable
@@ -339,7 +339,8 @@ fun OutlinedLooseDropdown(
     options: List<String>,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    label: (@Composable () -> Unit)? = null
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -352,6 +353,7 @@ fun OutlinedLooseDropdown(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
+            label = label,
             modifier = Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
                 if (!it.hasFocus) { expanded = false }
             },
@@ -387,7 +389,8 @@ fun LooseDropdown(
     options: List<String>,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    label: (@Composable () -> Unit)? = null
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -403,6 +406,7 @@ fun LooseDropdown(
             modifier = Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
                 if (!it.hasFocus) { expanded = false }
             },
+            label = label,
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface
