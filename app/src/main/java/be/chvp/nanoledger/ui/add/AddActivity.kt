@@ -251,94 +251,26 @@ fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = v
 
 @Composable
 fun PayeeSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
-    val focusManager = LocalFocusManager.current
     val payee by addViewModel.payee.observeAsState()
     val options by addViewModel.possiblePayees.observeAsState()
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier
-    ) {
-        OutlinedTextField(
-            value = (payee ?: ""),
-            onValueChange = {
-                addViewModel.setPayee(it)
-                expanded = true
-            },
-            label = { Text(stringResource(R.string.payee)) },
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            )
-        )
-        if (options?.isNotEmpty() ?: false) {
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.exposedDropdownSize(false)
-            ) {
-                options?.forEach {
-                    DropdownMenuItem(
-                        text = { Text(it) },
-                        onClick = {
-                            addViewModel.setPayee(it)
-                            focusManager.clearFocus()
-                            expanded = false
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
-                    )
-                }
-            }
-        }
-    }
+    OutlinedLooseDropdown(
+        options ?: emptyList(),
+        payee ?: "",
+        { addViewModel.setPayee(it) },
+        modifier
+    )
 }
 
 @Composable
 fun NoteSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
-    val focusManager = LocalFocusManager.current
     val note by addViewModel.note.observeAsState()
     val options by addViewModel.possibleNotes.observeAsState()
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier
-    ) {
-        OutlinedTextField(
-            value = (note ?: ""),
-            onValueChange = {
-                addViewModel.setNote(it)
-                expanded = true
-            },
-            label = { Text(stringResource(R.string.note)) },
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            )
-        )
-        if (options?.isNotEmpty() ?: false) {
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.exposedDropdownSize(false)
-            ) {
-                options?.forEach {
-                    DropdownMenuItem(
-                        text = { Text(it) },
-                        onClick = {
-                            addViewModel.setNote(it)
-                            focusManager.clearFocus()
-                            expanded = false
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
-                    )
-                }
-            }
-        }
-    }
+    OutlinedLooseDropdown(
+        options ?: emptyList(),
+        note ?: "",
+        { addViewModel.setNote(it) },
+        modifier
+    )
 }
 
 @Composable
@@ -397,39 +329,48 @@ fun AccountSelector(
     modifier: Modifier = Modifier,
     addViewModel: AddViewModel = viewModel()
 ) {
-    val focusManager = LocalFocusManager.current
     val options by addViewModel.accounts.observeAsState()
     val filteredOptions = options?.filter { it.contains(value, ignoreCase = true) } ?: emptyList()
+    LooseDropdown(filteredOptions, value, { addViewModel.setAccount(index, it) }, modifier)
+}
+
+@Composable
+fun OutlinedLooseDropdown(
+    options: List<String>,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val focusManager = LocalFocusManager.current
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
         modifier = modifier
     ) {
-        TextField(
+        OutlinedTextField(
             value = value,
-            onValueChange = {
-                addViewModel.setAccount(index, it)
-                expanded = true
-            },
+            onValueChange = onValueChange,
             singleLine = true,
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
+            modifier = Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
+                if (!it.hasFocus) { expanded = false }
+            },
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface
             )
         )
-        if (filteredOptions.isNotEmpty()) {
+        if (shouldShowDropdown(options, value)) {
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false },
+                onDismissRequest = { },
                 modifier = Modifier.exposedDropdownSize(true)
             ) {
-                filteredOptions.forEach {
+                options.forEach {
                     DropdownMenuItem(
                         text = { Text(it) },
                         onClick = {
-                            addViewModel.setAccount(index, it)
+                            onValueChange(it)
                             focusManager.clearFocus()
                             expanded = false
                         },
@@ -439,4 +380,56 @@ fun AccountSelector(
             }
         }
     }
+}
+
+@Composable
+fun LooseDropdown(
+    options: List<String>,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val focusManager = LocalFocusManager.current
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier
+    ) {
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            singleLine = true,
+            modifier = Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
+                if (!it.hasFocus) { expanded = false }
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
+        )
+        if (shouldShowDropdown(options, value)) {
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { },
+                modifier = Modifier.exposedDropdownSize(true)
+            ) {
+                options.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it) },
+                        onClick = {
+                            onValueChange(it)
+                            focusManager.clearFocus()
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+                }
+            }
+        }
+    }
+}
+
+fun shouldShowDropdown(options: List<String>, currentValue: String): Boolean {
+    return options.size > 1 || (options.size == 1 && options[0] != currentValue)
 }
