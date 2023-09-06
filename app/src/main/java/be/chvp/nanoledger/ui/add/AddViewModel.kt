@@ -79,9 +79,9 @@ class AddViewModel @Inject constructor(
                 val transaction = StringBuilder()
                 transaction.append(date.value!!.format(DateTimeFormatter.ISO_DATE))
                 if (status.value!! != " ") {
-                    transaction.append(" ${status.value} ")
+                    transaction.append(" ${status.value}")
                 }
-                transaction.append("${payee.value} | ${note.value}")
+                transaction.append(" ${payee.value} | ${note.value}")
                 transaction.append('\n')
                 // Drop last element, it should always be an empty posting
                 for (posting in postings.value!!.dropLast(1)) {
