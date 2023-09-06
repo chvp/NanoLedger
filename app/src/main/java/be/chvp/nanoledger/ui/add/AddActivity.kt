@@ -285,13 +285,13 @@ fun PostingRow(
         AccountSelector(
             index = index,
             value = posting.first,
-            modifier = Modifier.weight(0.65f).padding(start = 4.dp, end = 2.dp)
+            modifier = Modifier.weight(0.57f).padding(start = 4.dp, end = 2.dp)
         )
         TextField(
             value = posting.second,
             onValueChange = { addViewModel.setCurrency(index, it) },
             singleLine = true,
-            modifier = Modifier.weight(0.1f).padding(horizontal = 2.dp),
+            modifier = Modifier.weight(0.18f).padding(horizontal = 2.dp),
             colors = ExposedDropdownMenuDefaults.textFieldColors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface
@@ -311,7 +311,8 @@ fun PostingRow(
                     Text(
                         unbalancedAmount!!,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1
                     )
                 }
             },
