@@ -16,6 +16,7 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -65,6 +66,10 @@ class PreferencesActivity() : ComponentActivity() {
                 "!" to stringResource(R.string.status_pending),
                 "*" to stringResource(R.string.status_cleared)
             )
+            val currencyOrderMap = mapOf(
+                true to stringResource(R.string.currency_order_before),
+                false to stringResource(R.string.currency_order_after)
+            )
             NanoLedgerTheme {
                 Scaffold(topBar = { Bar() }) { contentPadding ->
                     Column(modifier = Modifier.padding(contentPadding)) {
@@ -75,6 +80,7 @@ class PreferencesActivity() : ComponentActivity() {
                         ) {
                             openFile.launch(arrayOf("*/*"))
                         }
+                        Divider()
                         val defaultCurrency by preferencesViewModel.defaultCurrency.observeAsState()
                         var newDefaultCurrency by remember { mutableStateOf(defaultCurrency ?: "") }
                         var defaultCurrencyOpen by remember { mutableStateOf(false) }
@@ -93,6 +99,7 @@ class PreferencesActivity() : ComponentActivity() {
                         ) {
                             OutlinedTextField(newDefaultCurrency, { newDefaultCurrency = it })
                         }
+                        Divider()
                         val defaultStatus by preferencesViewModel.defaultStatus.observeAsState()
                         var expandedStatus by rememberSaveable { mutableStateOf(false) }
                         ExposedDropdownMenuBox(
@@ -118,6 +125,40 @@ class PreferencesActivity() : ComponentActivity() {
                                         onClick = {
                                             preferencesViewModel.storeDefaultStatus(it.key)
                                             expandedStatus = false
+                                        },
+                                        contentPadding =
+                                        ExposedDropdownMenuDefaults.ItemContentPadding
+                                    )
+                                }
+                            }
+                        }
+                        Divider()
+                        val currencyBeforeAmount by
+                        preferencesViewModel.currencyBeforeAmount.observeAsState()
+                        var expandedCurrency by rememberSaveable { mutableStateOf(false) }
+                        ExposedDropdownMenuBox(
+                            expanded = expandedCurrency,
+                            onExpandedChange = { expandedCurrency = !expandedCurrency },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Setting(
+                                stringResource(R.string.currency_amount_order),
+                                currencyOrderMap[currencyBeforeAmount ?: true] ?: stringResource(
+                                    R.string.currency_order_before
+                                ),
+                                modifier = Modifier.menuAnchor()
+                            ) { expandedCurrency = true }
+                            ExposedDropdownMenu(
+                                expanded = expandedCurrency,
+                                onDismissRequest = { expandedCurrency = false },
+                                modifier = Modifier.exposedDropdownSize(true)
+                            ) {
+                                currencyOrderMap.forEach {
+                                    DropdownMenuItem(
+                                        text = { Text(it.value) },
+                                        onClick = {
+                                            preferencesViewModel.storeCurrencyBeforeAmount(it.key)
+                                            expandedCurrency = false
                                         },
                                         contentPadding =
                                         ExposedDropdownMenuDefaults.ItemContentPadding

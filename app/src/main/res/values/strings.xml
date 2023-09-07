@@ -6,6 +6,9 @@
     <string name="back">Back</string>
     <string name="calendar">Calendar</string>
     <string name="cancel">Cancel</string>
+    <string name="currency_amount_order">Order of currency and amount</string>
+    <string name="currency_order_before">Currency before amount</string>
+    <string name="currency_order_after">Currency after amount</string>
     <string name="date">Date</string>
     <string name="change_default_currency">Change default currency</string>
     <string name="default_currency">Default currency</string>

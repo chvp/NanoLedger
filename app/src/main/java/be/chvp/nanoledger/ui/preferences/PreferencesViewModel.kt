@@ -16,8 +16,12 @@ class PreferencesViewModel @Inject constructor(
     val fileUri: LiveData<Uri?> = preferencesDataSource.fileUri
     val defaultCurrency: LiveData<String> = preferencesDataSource.defaultCurrency
     val defaultStatus: LiveData<String> = preferencesDataSource.defaultStatus
+    val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
 
     fun storeFileUri(uri: Uri) = preferencesDataSource.setFileUri(uri)
     fun storeDefaultCurrency(currency: String) = preferencesDataSource.setDefaultCurrency(currency)
     fun storeDefaultStatus(status: String) = preferencesDataSource.setDefaultStatus(status)
+    fun storeCurrencyBeforeAmount(enable: Boolean) = preferencesDataSource.setCurrencyBeforeAmount(
+        enable
+    )
 }

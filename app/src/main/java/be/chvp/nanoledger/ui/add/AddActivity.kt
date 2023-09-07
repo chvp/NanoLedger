@@ -297,47 +297,84 @@ fun PostingRow(
     firstEmptyAmount: Boolean,
     addViewModel: AddViewModel = viewModel()
 ) {
-    val unbalancedAmount by addViewModel.unbalancedAmount.observeAsState()
+    val currencyBeforeAmount by addViewModel.currencyBeforeAmount.observeAsState()
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         AccountSelector(
             index = index,
             value = posting.first,
             modifier = Modifier.weight(0.57f).padding(start = 4.dp, end = 2.dp)
         )
-        TextField(
-            value = posting.second,
-            onValueChange = { addViewModel.setCurrency(index, it) },
-            singleLine = true,
-            modifier = Modifier.weight(0.18f).padding(horizontal = 2.dp),
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            ),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
-        )
-        TextField(
-            value = posting.third,
-            onValueChange = { addViewModel.setAmount(index, it) },
-            singleLine = true,
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            ),
-            placeholder = {
-                if (firstEmptyAmount && unbalancedAmount != null) {
-                    Text(
-                        unbalancedAmount!!,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth(),
-                        maxLines = 1
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier.weight(0.25f).padding(start = 2.dp, end = 4.dp),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
-        )
+        if (currencyBeforeAmount ?: true) {
+            CurrencyField(index, posting, Modifier.weight(0.18f).padding(horizontal = 2.dp))
+            AmountField(
+                index,
+                posting,
+                firstEmptyAmount,
+                Modifier.weight(0.25f).padding(start = 2.dp, end = 4.dp)
+            )
+        } else {
+            AmountField(
+                index,
+                posting,
+                firstEmptyAmount,
+                Modifier.weight(0.25f).padding(horizontal = 2.dp)
+            )
+            CurrencyField(index, posting, Modifier.weight(0.18f).padding(start = 2.dp, end = 4.dp))
+        }
     }
+}
+
+@Composable
+fun CurrencyField(
+    index: Int,
+    posting: Triple<String, String, String>,
+    modifier: Modifier = Modifier,
+    addViewModel: AddViewModel = viewModel()
+) {
+    TextField(
+        value = posting.second,
+        onValueChange = { addViewModel.setCurrency(index, it) },
+        singleLine = true,
+        modifier = modifier,
+        colors = ExposedDropdownMenuDefaults.textFieldColors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface
+        ),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+    )
+}
+
+@Composable
+fun AmountField(
+    index: Int,
+    posting: Triple<String, String, String>,
+    firstEmptyAmount: Boolean,
+    modifier: Modifier = Modifier,
+    addViewModel: AddViewModel = viewModel()
+) {
+    val unbalancedAmount by addViewModel.unbalancedAmount.observeAsState()
+    TextField(
+        value = posting.third,
+        onValueChange = { addViewModel.setAmount(index, it) },
+        singleLine = true,
+        colors = ExposedDropdownMenuDefaults.textFieldColors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface
+        ),
+        placeholder = {
+            if (firstEmptyAmount && unbalancedAmount != null) {
+                Text(
+                    unbalancedAmount!!,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1
+                )
+            }
+        },
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+        modifier = modifier,
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+    )
 }
 
 @Composable

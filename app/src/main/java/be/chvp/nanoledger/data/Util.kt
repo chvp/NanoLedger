@@ -49,3 +49,24 @@ fun SharedPreferences.stringLiveData(
 ): SharedPreferenceLiveData<String?> {
     return SharedPreferenceStringLiveData(this, key, default)
 }
+
+class SharedPreferenceBooleanLiveData(
+    sharedPrefs: SharedPreferences,
+    key: String,
+    private val default: Boolean
+) :
+    SharedPreferenceLiveData<Boolean>(sharedPrefs, key) {
+    init {
+        value = this.getValueFromPreferences(key)
+    }
+
+    override fun getValueFromPreferences(key: String): Boolean =
+        if (sharedPrefs.contains(key)) sharedPrefs.getBoolean(key, default) else default
+}
+
+fun SharedPreferences.booleanLiveData(
+    key: String,
+    default: Boolean = false
+): SharedPreferenceLiveData<Boolean> {
+    return SharedPreferenceBooleanLiveData(this, key, default)
+}

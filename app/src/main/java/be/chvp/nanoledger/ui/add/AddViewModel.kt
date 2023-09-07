@@ -76,6 +76,8 @@ class AddViewModel @Inject constructor(
     private val _latestError = MutableLiveData<Event<IOException>?>(null)
     val latestError: LiveData<Event<IOException>?> = _latestError
 
+    val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
+
     fun append(onFinish: suspend () -> Unit) {
         val uri = preferencesDataSource.getFileUri()
         if (uri != null) {
@@ -90,9 +92,15 @@ class AddViewModel @Inject constructor(
                 transaction.append('\n')
                 // Drop last element, it should always be an empty posting
                 for (posting in postings.value!!.dropLast(1)) {
-                    transaction.append(
-                        "    ${posting.first}      ${posting.second} ${posting.third}\n"
-                    )
+                    if (preferencesDataSource.getCurrencyBeforeAmount()) {
+                        transaction.append(
+                            "    ${posting.first}      ${posting.second} ${posting.third}\n"
+                        )
+                    } else {
+                        transaction.append(
+                            "    ${posting.first}      ${posting.third} ${posting.second}\n"
+                        )
+                    }
                 }
                 transaction.append('\n')
                 ledgerRepository.appendTo(

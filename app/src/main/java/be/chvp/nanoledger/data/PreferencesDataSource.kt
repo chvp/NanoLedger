@@ -10,6 +10,7 @@ import javax.inject.Inject
 const val FILE_URI_KEY = "file_uri"
 const val DEFAULT_CURRENCY_KEY = "default_currency"
 const val DEFAULT_STATUS_KEY = "default_status"
+const val CURRENCY_BEFORE_AMOUNT_KEY = "currency_before_amount"
 
 class PreferencesDataSource @Inject constructor(@ApplicationContext private val context: Context) {
     private val sharedPreferences = context.getSharedPreferences(
@@ -51,4 +52,20 @@ class PreferencesDataSource @Inject constructor(@ApplicationContext private val 
         DEFAULT_STATUS_KEY,
         status
     ).apply()
+
+    val currencyBeforeAmount: LiveData<Boolean> = sharedPreferences.booleanLiveData(
+        CURRENCY_BEFORE_AMOUNT_KEY,
+        true
+    )
+
+    fun getCurrencyBeforeAmount(): Boolean = sharedPreferences.getBoolean(
+        CURRENCY_BEFORE_AMOUNT_KEY,
+        true
+    )
+
+    fun setCurrencyBeforeAmount(currencyBeforeAmount: Boolean) =
+        sharedPreferences.edit().putBoolean(
+            CURRENCY_BEFORE_AMOUNT_KEY,
+            currencyBeforeAmount
+        ).apply()
 }
