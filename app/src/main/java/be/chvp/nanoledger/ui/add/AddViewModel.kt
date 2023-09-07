@@ -31,7 +31,7 @@ class AddViewModel @Inject constructor(
     private val _date = MutableLiveData<LocalDate>(LocalDate.now())
     val date: LiveData<LocalDate> = _date
 
-    private val _status = MutableLiveData<String>("*")
+    private val _status = MutableLiveData<String>(preferencesDataSource.getDefaultStatus())
     val status: LiveData<String> = _status
 
     private val _payee = MutableLiveData<String>("")

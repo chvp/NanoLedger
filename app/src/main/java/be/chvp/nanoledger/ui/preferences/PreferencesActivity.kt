@@ -16,6 +16,9 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -31,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +60,11 @@ class PreferencesActivity() : ComponentActivity() {
             }
         }
         setContent {
+            val statusMap = mapOf(
+                " " to stringResource(R.string.status_unmarked),
+                "!" to stringResource(R.string.status_pending),
+                "*" to stringResource(R.string.status_cleared)
+            )
             NanoLedgerTheme {
                 Scaffold(topBar = { Bar() }) { contentPadding ->
                     Column(modifier = Modifier.padding(contentPadding)) {
@@ -84,6 +93,38 @@ class PreferencesActivity() : ComponentActivity() {
                         ) {
                             OutlinedTextField(newDefaultCurrency, { newDefaultCurrency = it })
                         }
+                        val defaultStatus by preferencesViewModel.defaultStatus.observeAsState()
+                        var expandedStatus by rememberSaveable { mutableStateOf(false) }
+                        ExposedDropdownMenuBox(
+                            expanded = expandedStatus,
+                            onExpandedChange = { expandedStatus = !expandedStatus },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Setting(
+                                stringResource(R.string.default_status),
+                                statusMap[defaultStatus ?: " "] ?: stringResource(
+                                    R.string.status_unmarked
+                                ),
+                                modifier = Modifier.menuAnchor()
+                            ) { expandedStatus = true }
+                            ExposedDropdownMenu(
+                                expanded = expandedStatus,
+                                onDismissRequest = { expandedStatus = false },
+                                modifier = Modifier.exposedDropdownSize(true)
+                            ) {
+                                statusMap.forEach {
+                                    DropdownMenuItem(
+                                        text = { Text(it.value) },
+                                        onClick = {
+                                            preferencesViewModel.storeDefaultStatus(it.key)
+                                            expandedStatus = false
+                                        },
+                                        contentPadding =
+                                        ExposedDropdownMenuDefaults.ItemContentPadding
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -92,28 +133,32 @@ class PreferencesActivity() : ComponentActivity() {
 }
 
 @Composable
-fun Setting(text: String, subtext: String? = null, onClick: (() -> Unit)? = null) {
-    var modifier = Modifier.fillMaxWidth()
+fun Setting(
+    text: String,
+    subtext: String,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
+    var localModifier = modifier.fillMaxWidth()
     if (onClick != null) {
-        modifier = modifier.clickable(onClick = onClick)
+        localModifier = localModifier.clickable(onClick = onClick)
     }
-    Column(modifier = modifier) {
+    Column(modifier = localModifier) {
         Text(
             text,
             modifier = Modifier.padding(
                 top = 8.dp,
                 start = 8.dp,
-                bottom = if (subtext != null) 0.dp else 8.dp
+                end = 8.dp,
+                bottom = 0.dp
             )
         )
-        if (subtext != null) {
-            Text(
-                subtext,
-                modifier = Modifier.padding(bottom = 8.dp, start = 8.dp),
-                style = MaterialTheme.typography.bodyMedium,
-                color = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
-            )
-        }
+        Text(
+            subtext,
+            modifier = Modifier.padding(bottom = 8.dp, start = 8.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
+        )
     }
 }
 
