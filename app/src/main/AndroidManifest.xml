@@ -21,10 +21,14 @@
         </activity>
         <activity
             android:exported="false"
-            android:name=".ui.preferences.PreferencesActivity" />
+            android:name=".ui.preferences.PreferencesActivity"
+            android:windowSoftInputMode="adjustResize"
+            />
         <activity
             android:exported="false"
-            android:name=".ui.add.AddActivity" />
+            android:name=".ui.add.AddActivity"
+            android:windowSoftInputMode="adjustResize"
+            />
     </application>
 
 </manifest>
