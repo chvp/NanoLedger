@@ -2,6 +2,8 @@ package be.chvp.nanoledger.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -59,6 +61,21 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val context = LocalContext.current
+            val latestError by mainViewModel.latestError.observeAsState()
+            val errorMessage = stringResource(R.string.error_reading_file)
+            LaunchedEffect(latestError) {
+                val error = latestError?.get()
+                if (error != null) {
+                    Log.e("be.chvp.nanoledger", "Exception while reading file", error)
+                    Toast.makeText(
+                        context,
+                        errorMessage,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
             val fileUri by mainViewModel.fileUri.observeAsState()
             LaunchedEffect(fileUri) {
                 mainViewModel.refresh()

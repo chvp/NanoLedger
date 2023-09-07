@@ -2,6 +2,8 @@ package be.chvp.nanoledger.ui.add
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -36,6 +38,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +70,20 @@ class AddActivity() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val context = LocalContext.current
+            val latestError by addViewModel.latestError.observeAsState()
+            val errorMessage = stringResource(R.string.error_writing_file)
+            LaunchedEffect(latestError) {
+                val error = latestError?.get()
+                if (error != null) {
+                    Log.e("be.chvp.nanoledger", "Exception while writing file", error)
+                    Toast.makeText(
+                        context,
+                        errorMessage,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
             val scope = rememberCoroutineScope()
             NanoLedgerTheme {
                 Scaffold(

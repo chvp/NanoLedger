@@ -10,6 +10,8 @@
     <string name="change_default_currency">Change default currency</string>
     <string name="default_currency">Default currency</string>
     <string name="default_status">Default status</string>
+    <string name="error_reading_file">Error while reading file</string>
+    <string name="error_writing_file">Error while writing file</string>
     <string name="file">File</string>
     <string name="note">Note</string>
     <string name="payee">Payee</string>

@@ -9,7 +9,9 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.PreferencesDataSource
+import be.chvp.nanoledger.ui.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
@@ -71,6 +73,9 @@ class AddViewModel @Inject constructor(
             .let { if (it == BigDecimal.ZERO.setScale(it.scale())) "" else it.toString() }
     }
 
+    private val _latestError = MutableLiveData<Event<IOException>?>(null)
+    val latestError: LiveData<Event<IOException>?> = _latestError
+
     fun append(onFinish: suspend () -> Unit) {
         val uri = preferencesDataSource.getFileUri()
         if (uri != null) {
@@ -90,10 +95,27 @@ class AddViewModel @Inject constructor(
                     )
                 }
                 transaction.append('\n')
-                ledgerRepository.appendTo(uri, transaction.toString()) {
-                    _saving.postValue(false)
-                    onFinish()
-                }
+                ledgerRepository.appendTo(
+                    uri,
+                    transaction.toString(),
+                    {
+                        _saving.postValue(false)
+                        onFinish()
+                    },
+                    {
+                        _saving.postValue(false)
+                        _latestError.postValue(Event(it))
+                    },
+                    {
+                        // We ignore a read error, the write went through so the
+                        // only thing the user will experience is the
+                        // transaction not being in the transaction
+                        // overview. Which isn't optimal, but not a big problem
+                        // either.
+                        _saving.postValue(false)
+                        onFinish()
+                    }
+                )
             }
         }
     }

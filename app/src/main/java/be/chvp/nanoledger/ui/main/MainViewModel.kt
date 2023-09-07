@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.PreferencesDataSource
+import be.chvp.nanoledger.ui.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -24,12 +26,20 @@ class MainViewModel @Inject constructor(
     val fileUri = preferencesDataSource.fileUri
     val transactions = ledgerRepository.transactions
 
+    private val _latestError = MutableLiveData<Event<IOException>?>(null)
+    val latestError: LiveData<Event<IOException>?> = _latestError
+
     fun refresh() {
         _isRefreshing.value = true
         viewModelScope.launch(IO) {
-            ledgerRepository.readFrom(preferencesDataSource.getFileUri()) {
-                _isRefreshing.postValue(false)
-            }
+            ledgerRepository.readFrom(
+                preferencesDataSource.getFileUri(),
+                { _isRefreshing.postValue(false) },
+                {
+                    _isRefreshing.postValue(false)
+                    _latestError.postValue(Event(it))
+                }
+            )
         }
     }
 }
