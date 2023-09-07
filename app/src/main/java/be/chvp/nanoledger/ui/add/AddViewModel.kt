@@ -73,6 +73,29 @@ class AddViewModel @Inject constructor(
             .let { if (it == BigDecimal.ZERO.setScale(it.scale())) "" else it.toString() }
     }
 
+    val valid: LiveData<Boolean> = payee.switchMap { payee ->
+        postings.switchMap { postings ->
+            unbalancedAmount.map { unbalancedAmount ->
+                if (postings.size < 2) {
+                    return@map false
+                }
+                if (payee == "") {
+                    return@map false
+                }
+                if (postings.dropLast(1).any { it.first == "" }) {
+                    return@map false
+                }
+                if (unbalancedAmount != "" && postings.dropLast(1).all { it.third != "" }) {
+                    return@map false
+                }
+                if (postings.dropLast(1).filter { it.third == "" }.size > 1) {
+                    return@map false
+                }
+                return@map true
+            }
+        }
+    }
+
     private val _latestError = MutableLiveData<Event<IOException>?>(null)
     val latestError: LiveData<Event<IOException>?> = _latestError
 
@@ -88,7 +111,10 @@ class AddViewModel @Inject constructor(
                 if (status.value!! != " ") {
                     transaction.append(" ${status.value}")
                 }
-                transaction.append(" ${payee.value} | ${note.value}")
+                transaction.append(" ${payee.value}")
+                if (note.value!! != "") {
+                    transaction.append("| ${note.value}")
+                }
                 transaction.append('\n')
                 // Drop last element, it should always be an empty posting
                 for (posting in postings.value!!.dropLast(1)) {
@@ -141,9 +167,8 @@ class AddViewModel @Inject constructor(
     fun setAccount(index: Int, newAccount: String) {
         val result = ArrayList(postings.value!!)
         result[index] = Triple(newAccount, result[index].second, result[index].third)
-        if (result.last().first != "") {
-            result.add(emptyPosting())
-        }
+        result.removeIf { it.first == "" && it.third == "" }
+        result.add(emptyPosting())
         _postings.value = result
     }
 
@@ -156,9 +181,8 @@ class AddViewModel @Inject constructor(
     fun setAmount(index: Int, newAmount: String) {
         val result = ArrayList(postings.value!!)
         result[index] = Triple(result[index].first, result[index].second, newAmount)
-        if (result.last().third != "") {
-            result.add(emptyPosting())
-        }
+        result.removeIf { it.first == "" && it.third == "" }
+        result.add(emptyPosting())
         _postings.value = result
     }
 

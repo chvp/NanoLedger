@@ -25,6 +25,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -85,15 +86,27 @@ class AddActivity() : ComponentActivity() {
                 }
             }
             val scope = rememberCoroutineScope()
+            val saving by addViewModel.saving.observeAsState()
+            val valid by addViewModel.valid.observeAsState()
+            val enabled = !(saving ?: true) && (valid ?: false)
             NanoLedgerTheme {
                 Scaffold(
                     topBar = { Bar() },
                     floatingActionButton = {
-                        FloatingActionButton(onClick = {
-                            addViewModel.append() {
-                                scope.launch(Main) { finish() }
+                        FloatingActionButton(
+                            onClick = {
+                                if (enabled) {
+                                    addViewModel.append() {
+                                        scope.launch(Main) { finish() }
+                                    }
+                                }
+                            },
+                            containerColor = if (enabled) {
+                                FloatingActionButtonDefaults.containerColor
+                            } else {
+                                MaterialTheme.colorScheme.surface
                             }
-                        }) {
+                        ) {
                             Icon(
                                 Icons.Default.Done,
                                 contentDescription = stringResource(R.string.save)
