@@ -119,4 +119,18 @@ class TransactionParserTest {
         assertEquals(1, transactions.size)
         assertEquals(null, transactions[0].status)
     }
+
+    @Test
+    fun canParseTransactionSecondaryDate() {
+        val transactions = extractTransactions(
+            """
+            |2023-09-08=2023-09-09 * Shop | Groceries
+            |    assets:checking                                         -2.19 EUR
+            |    expenses:groceries                                       2.19 EUR
+            """.trimMargin().lines()
+        )
+
+        assertEquals(1, transactions.size)
+        assertEquals("2023-09-08=2023-09-09", transactions[0].date)
+    }
 }
