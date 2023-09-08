@@ -46,7 +46,7 @@ class PreferencesDataSource @Inject constructor(@ApplicationContext private val 
         " "
     ).map { it!! }
 
-    fun getDefaultStatus(): String = sharedPreferences.getString(DEFAULT_STATUS_KEY, "€")!!
+    fun getDefaultStatus(): String = sharedPreferences.getString(DEFAULT_STATUS_KEY, " ")!!
 
     fun setDefaultStatus(status: String) = sharedPreferences.edit().putString(
         DEFAULT_STATUS_KEY,
