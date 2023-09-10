@@ -1,0 +1,3 @@
+NanoLedger is a data entry app for plain text accounting. It supports the ledger and hledger syntax.
+
+You can view all transactions in a file, and easily add a new one. While adding, auto-completion is supported for payee, note and account names.

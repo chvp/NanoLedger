@@ -1,0 +1,1 @@
+Data entry app for plain text accounting
