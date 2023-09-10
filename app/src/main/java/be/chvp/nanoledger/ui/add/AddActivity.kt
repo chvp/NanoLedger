@@ -207,12 +207,6 @@ fun DateSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
         singleLine = true,
         onValueChange = {},
         label = { Text(stringResource(R.string.date)) },
-        trailingIcon = {
-            Icon(
-                Icons.Default.CalendarToday,
-                contentDescription = stringResource(R.string.calendar)
-            )
-        },
         colors = ExposedDropdownMenuDefaults.textFieldColors(
             focusedContainerColor = MaterialTheme.colorScheme.surface,
             unfocusedContainerColor = MaterialTheme.colorScheme.surface
