@@ -4,7 +4,6 @@
     <string name="add">Add</string>
     <string name="add_transaction">Add transaction</string>
     <string name="back">Back</string>
-    <string name="calendar">Calendar</string>
     <string name="cancel">Cancel</string>
     <string name="currency_amount_order">Order of currency and amount</string>
     <string name="currency_order_before">Currency before amount</string>
