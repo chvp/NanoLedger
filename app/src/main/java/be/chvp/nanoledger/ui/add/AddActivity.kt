@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -419,7 +418,12 @@ fun OutlinedLooseDropdown(
     ) {
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = {
+                if (it.length > value.length) {
+                    expanded = true
+                }
+                onValueChange(it)
+            },
             singleLine = true,
             label = label,
             modifier = Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
@@ -433,7 +437,7 @@ fun OutlinedLooseDropdown(
         if (shouldShowDropdown(options, value)) {
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { },
+                onDismissRequest = { expanded = false },
                 modifier = Modifier.exposedDropdownSize(true)
             ) {
                 options.forEach {
@@ -469,7 +473,12 @@ fun LooseDropdown(
     ) {
         TextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = {
+                if (it.length > value.length) {
+                    expanded = true
+                }
+                onValueChange(it)
+            },
             singleLine = true,
             modifier = Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
                 if (!it.hasFocus) { expanded = false }
@@ -483,7 +492,7 @@ fun LooseDropdown(
         if (shouldShowDropdown(options, value)) {
             ExposedDropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { },
+                onDismissRequest = { expanded = false },
                 modifier = Modifier.exposedDropdownSize(true)
             ) {
                 options.forEach {
