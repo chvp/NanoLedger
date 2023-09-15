@@ -113,12 +113,16 @@ class AddViewModel @Inject constructor(
                 }
                 transaction.append(" ${payee.value}")
                 if (note.value!! != "") {
-                    transaction.append("| ${note.value}")
+                    transaction.append(" | ${note.value}")
                 }
                 transaction.append('\n')
                 // Drop last element, it should always be an empty posting
                 for (posting in postings.value!!.dropLast(1)) {
-                    if (preferencesDataSource.getCurrencyBeforeAmount()) {
+                    if (posting.third == "") {
+                        transaction.append(
+                            "    ${posting.first}\n"
+                        )
+                    } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
                         transaction.append(
                             "    ${posting.first}      ${posting.second} ${posting.third}\n"
                         )
