@@ -1,0 +1,1 @@
+Fix formatting of posting when no amount was entered.
