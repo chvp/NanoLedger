@@ -2,7 +2,7 @@
 agp = "8.2.0-beta01"
 kotlin = "1.9.10"
 ksp = "1.9.10-1.0.13"
-hilt = "2.48"
+hilt = "2.48.1"
 core-ktx = "1.10.1"
 junit = "4.13.2"
 ktlint = "11.6.0"
