@@ -1,0 +1,1 @@
+Make sure to always return to main activity when backing out of add activity.
