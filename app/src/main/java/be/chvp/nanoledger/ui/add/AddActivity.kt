@@ -1,10 +1,12 @@
 package be.chvp.nanoledger.ui.add
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
@@ -58,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
+import be.chvp.nanoledger.ui.main.MainActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.ZoneOffset
@@ -86,6 +89,14 @@ class AddActivity() : ComponentActivity() {
                     ).show()
                 }
             }
+            BackHandler(enabled = true) {
+                finish()
+                startActivity(
+                    Intent(context, MainActivity::class.java).setFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    )
+                )
+            }
             val scope = rememberCoroutineScope()
             val saving by addViewModel.saving.observeAsState()
             val valid by addViewModel.valid.observeAsState()
@@ -98,7 +109,14 @@ class AddActivity() : ComponentActivity() {
                             onClick = {
                                 if (enabled) {
                                     addViewModel.append() {
-                                        scope.launch(Main) { finish() }
+                                        scope.launch(Main) {
+                                            finish()
+                                            startActivity(
+                                                Intent(context, MainActivity::class.java).setFlags(
+                                                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                                )
+                                            )
+                                        }
                                     }
                                 }
                             },
@@ -180,7 +198,16 @@ fun Bar() {
     TopAppBar(
         title = { Text(stringResource(R.string.add_transaction)) },
         navigationIcon = {
-            IconButton(onClick = { (context as Activity).finish() }) {
+            IconButton(onClick = {
+                (context as Activity).apply {
+                    startActivity(
+                        Intent(context, MainActivity::class.java).setFlags(
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        )
+                    )
+                    finish()
+                }
+            }) {
                 Icon(
                     Icons.Default.ArrowBack,
                     contentDescription = stringResource(R.string.back)
