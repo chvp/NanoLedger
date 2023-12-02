@@ -10,9 +10,9 @@ class TransactionParserTest {
         val result =
             extractTransactions(
                 """
-            |2023-08-31 * Payee | Note
-            |    assets            € -5.00
-            |    expenses    € 5.00
+                |2023-08-31 * Payee | Note
+                |    assets            € -5.00
+                |    expenses    € 5.00
                 """.trimMargin().lines(),
             )
 
@@ -35,9 +35,9 @@ class TransactionParserTest {
         val result =
             extractTransactions(
                 """
-            |2023-08-31 * Payee
-            |    assets            € -5.00
-            |    expenses    € 5.00
+                |2023-08-31 * Payee
+                |    assets            € -5.00
+                |    expenses    € 5.00
                 """.trimMargin().lines(),
             )
 
@@ -60,13 +60,13 @@ class TransactionParserTest {
         val transactions =
             extractTransactions(
                 """
-            |2023-08-31 * Payee | Note
-            |    assets            € -5.00
-            |    expenses    € 5.00
-            |2023-09-01 * Payee 2 | Note 2
-            |${'\t'}assets            € -10.00
-            |${'\t'}expenses:thing ${'\t'}   € 6.00
-            |${'\t'}expenses:thing 2    € 4.00
+                |2023-08-31 * Payee | Note
+                |    assets            € -5.00
+                |    expenses    € 5.00
+                |2023-09-01 * Payee 2 | Note 2
+                |${'\t'}assets            € -10.00
+                |${'\t'}expenses:thing ${'\t'}   € 6.00
+                |${'\t'}expenses:thing 2    € 4.00
                 """.trimMargin().lines(),
             )
 
@@ -99,10 +99,10 @@ class TransactionParserTest {
         val transactions =
             extractTransactions(
                 """
-            |include other.journal
-            |2023-08-31 * Payee | Note
-            |    assets            € -5.00
-            |    expenses    € 5.00
+                |include other.journal
+                |2023-08-31 * Payee | Note
+                |    assets            € -5.00
+                |    expenses    € 5.00
                 """.trimMargin().lines(),
             )
 
@@ -114,9 +114,9 @@ class TransactionParserTest {
         val transactions =
             extractTransactions(
                 """
-            |2023-09-05 Shop | Groceries
-            |    assets:checking                                         -2.19 EUR
-            |    expenses:groceries                                       2.19 EUR
+                |2023-09-05 Shop | Groceries
+                |    assets:checking                                         -2.19 EUR
+                |    expenses:groceries                                       2.19 EUR
                 """.trimMargin().lines(),
             )
 
@@ -129,9 +129,9 @@ class TransactionParserTest {
         val transactions =
             extractTransactions(
                 """
-            |2023-09-08=2023-09-09 * Shop | Groceries
-            |    assets:checking                                         -2.19 EUR
-            |    expenses:groceries                                       2.19 EUR
+                |2023-09-08=2023-09-09 * Shop | Groceries
+                |    assets:checking                                         -2.19 EUR
+                |    expenses:groceries                                       2.19 EUR
                 """.trimMargin().lines(),
             )
 
