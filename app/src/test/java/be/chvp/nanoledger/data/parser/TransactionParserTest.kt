@@ -5,16 +5,16 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TransactionParserTest {
-
     @Test
     fun canParseSimpleTransaction() {
-        val result = extractTransactions(
-            """
+        val result =
+            extractTransactions(
+                """
             |2023-08-31 * Payee | Note
             |    assets            € -5.00
             |    expenses    € 5.00
-            """.trimMargin().lines()
-        )
+                """.trimMargin().lines(),
+            )
 
         assertEquals(1, result.size)
         val transaction: Transaction = result[0]
@@ -32,13 +32,14 @@ class TransactionParserTest {
 
     @Test
     fun canParseSimpleTransactionNoNote() {
-        val result = extractTransactions(
-            """
+        val result =
+            extractTransactions(
+                """
             |2023-08-31 * Payee
             |    assets            € -5.00
             |    expenses    € 5.00
-            """.trimMargin().lines()
-        )
+                """.trimMargin().lines(),
+            )
 
         assertEquals(1, result.size)
         val transaction: Transaction = result[0]
@@ -56,8 +57,9 @@ class TransactionParserTest {
 
     @Test
     fun canParseSimpleJournal() {
-        val transactions = extractTransactions(
-            """
+        val transactions =
+            extractTransactions(
+                """
             |2023-08-31 * Payee | Note
             |    assets            € -5.00
             |    expenses    € 5.00
@@ -65,8 +67,8 @@ class TransactionParserTest {
             |${'\t'}assets            € -10.00
             |${'\t'}expenses:thing ${'\t'}   € 6.00
             |${'\t'}expenses:thing 2    € 4.00
-            """.trimMargin().lines()
-        )
+                """.trimMargin().lines(),
+            )
 
         assertEquals(2, transactions.size)
         assertEquals("2023-08-31", transactions[0].date)
@@ -94,27 +96,29 @@ class TransactionParserTest {
 
     @Test
     fun canParseJournalWithDirective() {
-        val transactions = extractTransactions(
-            """
+        val transactions =
+            extractTransactions(
+                """
             |include other.journal
             |2023-08-31 * Payee | Note
             |    assets            € -5.00
             |    expenses    € 5.00
-            """.trimMargin().lines()
-        )
+                """.trimMargin().lines(),
+            )
 
         assertEquals(1, transactions.size)
     }
 
     @Test
     fun canParseUnmarkedTransaction() {
-        val transactions = extractTransactions(
-            """
+        val transactions =
+            extractTransactions(
+                """
             |2023-09-05 Shop | Groceries
             |    assets:checking                                         -2.19 EUR
             |    expenses:groceries                                       2.19 EUR
-            """.trimMargin().lines()
-        )
+                """.trimMargin().lines(),
+            )
 
         assertEquals(1, transactions.size)
         assertEquals(null, transactions[0].status)
@@ -122,13 +126,14 @@ class TransactionParserTest {
 
     @Test
     fun canParseTransactionSecondaryDate() {
-        val transactions = extractTransactions(
-            """
+        val transactions =
+            extractTransactions(
+                """
             |2023-09-08=2023-09-09 * Shop | Groceries
             |    assets:checking                                         -2.19 EUR
             |    expenses:groceries                                       2.19 EUR
-            """.trimMargin().lines()
-        )
+                """.trimMargin().lines(),
+            )
 
         assertEquals(1, transactions.size)
         assertEquals("2023-09-08=2023-09-09", transactions[0].date)

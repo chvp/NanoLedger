@@ -53,36 +53,40 @@ class PreferencesActivity() : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val openFile = registerForActivityResult(OpenDocument()) { uri: Uri? ->
-            if (uri != null) {
-                getContentResolver().takePersistableUriPermission(
-                    uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-                preferencesViewModel.storeFileUri(uri)
+        val openFile =
+            registerForActivityResult(OpenDocument()) { uri: Uri? ->
+                if (uri != null) {
+                    getContentResolver().takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                    )
+                    preferencesViewModel.storeFileUri(uri)
+                }
             }
-        }
         setContent {
-            val statusMap = mapOf(
-                " " to stringResource(R.string.status_unmarked),
-                "!" to stringResource(R.string.status_pending),
-                "*" to stringResource(R.string.status_cleared)
-            )
-            val currencyOrderMap = mapOf(
-                true to stringResource(R.string.currency_order_before),
-                false to stringResource(R.string.currency_order_after)
-            )
+            val statusMap =
+                mapOf(
+                    " " to stringResource(R.string.status_unmarked),
+                    "!" to stringResource(R.string.status_pending),
+                    "*" to stringResource(R.string.status_cleared),
+                )
+            val currencyOrderMap =
+                mapOf(
+                    true to stringResource(R.string.currency_order_before),
+                    false to stringResource(R.string.currency_order_after),
+                )
             NanoLedgerTheme {
                 Scaffold(topBar = { Bar() }) { contentPadding ->
                     Column(
-                        modifier = Modifier
-                            .padding(contentPadding)
-                            .verticalScroll(rememberScrollState())
+                        modifier =
+                            Modifier
+                                .padding(contentPadding)
+                                .verticalScroll(rememberScrollState()),
                     ) {
                         val fileUri by preferencesViewModel.fileUri.observeAsState()
                         Setting(
                             stringResource(R.string.file),
-                            fileUri?.toString() ?: stringResource(R.string.select_file)
+                            fileUri?.toString() ?: stringResource(R.string.select_file),
                         ) {
                             openFile.launch(arrayOf("*/*"))
                         }
@@ -92,7 +96,7 @@ class PreferencesActivity() : ComponentActivity() {
                         var defaultCurrencyOpen by remember { mutableStateOf(false) }
                         Setting(
                             stringResource(R.string.default_currency),
-                            defaultCurrency ?: "€"
+                            defaultCurrency ?: "€",
                         ) {
                             defaultCurrencyOpen = true
                         }
@@ -101,7 +105,7 @@ class PreferencesActivity() : ComponentActivity() {
                             stringResource(R.string.change_default_currency),
                             true,
                             { preferencesViewModel.storeDefaultCurrency(newDefaultCurrency) },
-                            { defaultCurrencyOpen = false }
+                            { defaultCurrencyOpen = false },
                         ) {
                             OutlinedTextField(newDefaultCurrency, { newDefaultCurrency = it })
                         }
@@ -111,19 +115,19 @@ class PreferencesActivity() : ComponentActivity() {
                         ExposedDropdownMenuBox(
                             expanded = expandedStatus,
                             onExpandedChange = { expandedStatus = !expandedStatus },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             Setting(
                                 stringResource(R.string.default_status),
                                 statusMap[defaultStatus ?: " "] ?: stringResource(
-                                    R.string.status_unmarked
+                                    R.string.status_unmarked,
                                 ),
-                                modifier = Modifier.menuAnchor()
+                                modifier = Modifier.menuAnchor(),
                             ) { expandedStatus = true }
                             ExposedDropdownMenu(
                                 expanded = expandedStatus,
                                 onDismissRequest = { expandedStatus = false },
-                                modifier = Modifier.exposedDropdownSize(true)
+                                modifier = Modifier.exposedDropdownSize(true),
                             ) {
                                 statusMap.forEach {
                                     DropdownMenuItem(
@@ -133,31 +137,31 @@ class PreferencesActivity() : ComponentActivity() {
                                             expandedStatus = false
                                         },
                                         contentPadding =
-                                        ExposedDropdownMenuDefaults.ItemContentPadding
+                                            ExposedDropdownMenuDefaults.ItemContentPadding,
                                     )
                                 }
                             }
                         }
                         Divider()
                         val currencyBeforeAmount by
-                        preferencesViewModel.currencyBeforeAmount.observeAsState()
+                            preferencesViewModel.currencyBeforeAmount.observeAsState()
                         var expandedCurrency by rememberSaveable { mutableStateOf(false) }
                         ExposedDropdownMenuBox(
                             expanded = expandedCurrency,
                             onExpandedChange = { expandedCurrency = !expandedCurrency },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             Setting(
                                 stringResource(R.string.currency_amount_order),
                                 currencyOrderMap[currencyBeforeAmount ?: true] ?: stringResource(
-                                    R.string.currency_order_before
+                                    R.string.currency_order_before,
                                 ),
-                                modifier = Modifier.menuAnchor()
+                                modifier = Modifier.menuAnchor(),
                             ) { expandedCurrency = true }
                             ExposedDropdownMenu(
                                 expanded = expandedCurrency,
                                 onDismissRequest = { expandedCurrency = false },
-                                modifier = Modifier.exposedDropdownSize(true)
+                                modifier = Modifier.exposedDropdownSize(true),
                             ) {
                                 currencyOrderMap.forEach {
                                     DropdownMenuItem(
@@ -167,7 +171,7 @@ class PreferencesActivity() : ComponentActivity() {
                                             expandedCurrency = false
                                         },
                                         contentPadding =
-                                        ExposedDropdownMenuDefaults.ItemContentPadding
+                                            ExposedDropdownMenuDefaults.ItemContentPadding,
                                     )
                                 }
                             }
@@ -184,7 +188,7 @@ fun Setting(
     text: String,
     subtext: String,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     var localModifier = modifier.fillMaxWidth()
     if (onClick != null) {
@@ -193,18 +197,19 @@ fun Setting(
     Column(modifier = localModifier) {
         Text(
             text,
-            modifier = Modifier.padding(
-                top = 8.dp,
-                start = 8.dp,
-                end = 8.dp,
-                bottom = 0.dp
-            )
+            modifier =
+                Modifier.padding(
+                    top = 8.dp,
+                    start = 8.dp,
+                    end = 8.dp,
+                    bottom = 0.dp,
+                ),
         )
         Text(
             subtext,
             modifier = Modifier.padding(bottom = 8.dp, start = 8.dp),
             style = MaterialTheme.typography.bodyMedium,
-            color = LocalContentColor.current.copy(alpha = ContentAlpha.medium)
+            color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
         )
     }
 }
@@ -218,15 +223,16 @@ fun Bar() {
             IconButton(onClick = { (context as Activity).finish() }) {
                 Icon(
                     Icons.Default.ArrowBack,
-                    contentDescription = stringResource(R.string.back)
+                    contentDescription = stringResource(R.string.back),
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-        )
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
     )
 }
 
@@ -237,7 +243,7 @@ fun SettingDialog(
     canSave: Boolean,
     save: (() -> Unit),
     dismiss: (() -> Unit),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     if (opened) {
         AlertDialog(
@@ -248,10 +254,13 @@ fun SettingDialog(
                 TextButton(onClick = dismiss) { Text(stringResource(R.string.cancel)) }
             },
             confirmButton = {
-                TextButton(onClick = { save(); dismiss() }, enabled = canSave) {
+                TextButton(onClick = {
+                    save()
+                    dismiss()
+                }, enabled = canSave) {
                     Text(stringResource(R.string.save))
                 }
-            }
+            },
         )
     }
 }
