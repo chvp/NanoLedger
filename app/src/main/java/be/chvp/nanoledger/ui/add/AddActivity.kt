@@ -63,10 +63,10 @@ import be.chvp.nanoledger.R
 import be.chvp.nanoledger.ui.main.MainActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class AddActivity() : ComponentActivity() {
@@ -85,7 +85,7 @@ class AddActivity() : ComponentActivity() {
                     Toast.makeText(
                         context,
                         errorMessage,
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_LONG,
                     ).show()
                 }
             }
@@ -93,8 +93,8 @@ class AddActivity() : ComponentActivity() {
                 finish()
                 startActivity(
                     Intent(context, MainActivity::class.java).setFlags(
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    )
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP,
+                    ),
                 )
             }
             val scope = rememberCoroutineScope()
@@ -108,68 +108,75 @@ class AddActivity() : ComponentActivity() {
                         FloatingActionButton(
                             onClick = {
                                 if (enabled) {
-                                    addViewModel.append() {
+                                    addViewModel.append {
                                         scope.launch(Main) {
                                             finish()
                                             startActivity(
                                                 Intent(context, MainActivity::class.java).setFlags(
-                                                    Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                                )
+                                                    Intent.FLAG_ACTIVITY_CLEAR_TOP,
+                                                ),
                                             )
                                         }
                                     }
                                 }
                             },
-                            containerColor = if (enabled) {
-                                FloatingActionButtonDefaults.containerColor
-                            } else {
-                                MaterialTheme.colorScheme.surface
-                            }
+                            containerColor =
+                                if (enabled) {
+                                    FloatingActionButtonDefaults.containerColor
+                                } else {
+                                    MaterialTheme.colorScheme.surface
+                                },
                         ) {
                             Icon(
                                 Icons.Default.Done,
-                                contentDescription = stringResource(R.string.save)
+                                contentDescription = stringResource(R.string.save),
                             )
                         }
-                    }
+                    },
                 ) { contentPadding ->
                     Box(modifier = Modifier.padding(contentPadding).fillMaxSize()) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(rememberScrollState())
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState()),
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 4.dp, bottom = 2.dp),
-                                verticalAlignment = Alignment.Bottom
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 4.dp, bottom = 2.dp),
+                                verticalAlignment = Alignment.Bottom,
                             ) {
                                 DateSelector(
-                                    modifier = Modifier
-                                        .weight(0.3f)
-                                        .padding(start = 4.dp, end = 2.dp)
-                                        .fillMaxWidth()
+                                    modifier =
+                                        Modifier
+                                            .weight(0.3f)
+                                            .padding(start = 4.dp, end = 2.dp)
+                                            .fillMaxWidth(),
                                 )
                                 StatusSelector(
-                                    modifier = Modifier
-                                        .weight(0.12f)
-                                        .padding(horizontal = 2.dp)
-                                        .fillMaxWidth()
+                                    modifier =
+                                        Modifier
+                                            .weight(0.12f)
+                                            .padding(horizontal = 2.dp)
+                                            .fillMaxWidth(),
                                 )
                                 PayeeSelector(
-                                    modifier = Modifier
-                                        .weight(0.58f)
-                                        .padding(start = 2.dp, end = 4.dp)
-                                        .fillMaxWidth()
+                                    modifier =
+                                        Modifier
+                                            .weight(0.58f)
+                                            .padding(start = 2.dp, end = 4.dp)
+                                            .fillMaxWidth(),
                                 )
                             }
                             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
                                 NoteSelector(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(horizontal = 4.dp)
-                                        .fillMaxWidth()
+                                    modifier =
+                                        Modifier
+                                            .weight(1f)
+                                            .padding(horizontal = 4.dp)
+                                            .fillMaxWidth(),
                                 )
                             }
                             val postings by addViewModel.postings.observeAsState()
@@ -181,7 +188,7 @@ class AddActivity() : ComponentActivity() {
                                 PostingRow(
                                     index = i,
                                     posting = posting,
-                                    firstEmptyAmount = firstEmpty
+                                    firstEmptyAmount = firstEmpty,
                                 )
                             }
                         }
@@ -202,28 +209,32 @@ fun Bar() {
                 (context as Activity).apply {
                     startActivity(
                         Intent(context, MainActivity::class.java).setFlags(
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        )
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP,
+                        ),
                     )
                     finish()
                 }
             }) {
                 Icon(
                     Icons.Default.ArrowBack,
-                    contentDescription = stringResource(R.string.back)
+                    contentDescription = stringResource(R.string.back),
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-        )
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
     )
 }
 
 @Composable
-fun DateSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
+fun DateSelector(
+    modifier: Modifier = Modifier,
+    addViewModel: AddViewModel = viewModel(),
+) {
     val focusManager = LocalFocusManager.current
     val date by addViewModel.date.observeAsState()
     var dateDialogOpen by rememberSaveable { mutableStateOf(false) }
@@ -233,21 +244,27 @@ fun DateSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
         singleLine = true,
         onValueChange = {},
         label = { Text(stringResource(R.string.date)) },
-        colors = ExposedDropdownMenuDefaults.textFieldColors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface
-        ),
-        modifier = modifier.onFocusChanged {
-            if (it.isFocused) { dateDialogOpen = true }
-        }
+        colors =
+            ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            ),
+        modifier =
+            modifier.onFocusChanged {
+                if (it.isFocused) {
+                    dateDialogOpen = true
+                }
+            },
     )
     if (dateDialogOpen) {
-        val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = date
-                ?.atStartOfDay()
-                ?.toInstant(ZoneOffset.UTC)
-                ?.toEpochMilli()
-        )
+        val datePickerState =
+            rememberDatePickerState(
+                initialSelectedDateMillis =
+                    date
+                        ?.atStartOfDay()
+                        ?.toInstant(ZoneOffset.UTC)
+                        ?.toEpochMilli(),
+            )
         DatePickerDialog(
             onDismissRequest = { dateDialogOpen = false },
             confirmButton = {
@@ -258,7 +275,7 @@ fun DateSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
                 }) {
                     Text(stringResource(R.string.ok))
                 }
-            }
+            },
         ) {
             DatePicker(state = datePickerState)
         }
@@ -266,30 +283,34 @@ fun DateSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = vie
 }
 
 @Composable
-fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
+fun StatusSelector(
+    modifier: Modifier = Modifier,
+    addViewModel: AddViewModel = viewModel(),
+) {
     val status by addViewModel.status.observeAsState()
     val options = listOf(" ", "!", "*")
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = modifier
+        modifier = modifier,
     ) {
         OutlinedTextField(
             value = (status ?: ""),
             onValueChange = {},
             readOnly = true,
             modifier = Modifier.menuAnchor(),
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            ),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+            colors =
+                ExposedDropdownMenuDefaults.textFieldColors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                ),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
         )
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.exposedDropdownSize(true)
+            modifier = Modifier.exposedDropdownSize(true),
         ) {
             options.forEach {
                 DropdownMenuItem(
@@ -298,7 +319,7 @@ fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = v
                         addViewModel.setStatus(it)
                         expanded = false
                     },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                 )
             }
         }
@@ -306,26 +327,32 @@ fun StatusSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = v
 }
 
 @Composable
-fun PayeeSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
+fun PayeeSelector(
+    modifier: Modifier = Modifier,
+    addViewModel: AddViewModel = viewModel(),
+) {
     val payee by addViewModel.payee.observeAsState()
     val options by addViewModel.possiblePayees.observeAsState()
     OutlinedLooseDropdown(
         options ?: emptyList(),
         payee ?: "",
         { addViewModel.setPayee(it) },
-        modifier
+        modifier,
     ) { Text(stringResource(R.string.payee)) }
 }
 
 @Composable
-fun NoteSelector(modifier: Modifier = Modifier, addViewModel: AddViewModel = viewModel()) {
+fun NoteSelector(
+    modifier: Modifier = Modifier,
+    addViewModel: AddViewModel = viewModel(),
+) {
     val note by addViewModel.note.observeAsState()
     val options by addViewModel.possibleNotes.observeAsState()
     OutlinedLooseDropdown(
         options ?: emptyList(),
         note ?: "",
         { addViewModel.setNote(it) },
-        modifier
+        modifier,
     ) { Text(stringResource(R.string.note)) }
 }
 
@@ -334,14 +361,14 @@ fun PostingRow(
     index: Int,
     posting: Triple<String, String, String>,
     firstEmptyAmount: Boolean,
-    addViewModel: AddViewModel = viewModel()
+    addViewModel: AddViewModel = viewModel(),
 ) {
     val currencyBeforeAmount by addViewModel.currencyBeforeAmount.observeAsState()
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
         AccountSelector(
             index = index,
             value = posting.first,
-            modifier = Modifier.weight(0.57f).padding(start = 4.dp, end = 2.dp)
+            modifier = Modifier.weight(0.57f).padding(start = 4.dp, end = 2.dp),
         )
         if (currencyBeforeAmount ?: true) {
             CurrencyField(index, posting, Modifier.weight(0.18f).padding(horizontal = 2.dp))
@@ -349,14 +376,14 @@ fun PostingRow(
                 index,
                 posting,
                 firstEmptyAmount,
-                Modifier.weight(0.25f).padding(start = 2.dp, end = 4.dp)
+                Modifier.weight(0.25f).padding(start = 2.dp, end = 4.dp),
             )
         } else {
             AmountField(
                 index,
                 posting,
                 firstEmptyAmount,
-                Modifier.weight(0.25f).padding(horizontal = 2.dp)
+                Modifier.weight(0.25f).padding(horizontal = 2.dp),
             )
             CurrencyField(index, posting, Modifier.weight(0.18f).padding(start = 2.dp, end = 4.dp))
         }
@@ -368,18 +395,19 @@ fun CurrencyField(
     index: Int,
     posting: Triple<String, String, String>,
     modifier: Modifier = Modifier,
-    addViewModel: AddViewModel = viewModel()
+    addViewModel: AddViewModel = viewModel(),
 ) {
     TextField(
         value = posting.second,
         onValueChange = { addViewModel.setCurrency(index, it) },
         singleLine = true,
         modifier = modifier,
-        colors = ExposedDropdownMenuDefaults.textFieldColors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface
-        ),
-        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+        colors =
+            ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            ),
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
     )
 }
 
@@ -389,30 +417,31 @@ fun AmountField(
     posting: Triple<String, String, String>,
     firstEmptyAmount: Boolean,
     modifier: Modifier = Modifier,
-    addViewModel: AddViewModel = viewModel()
+    addViewModel: AddViewModel = viewModel(),
 ) {
     val unbalancedAmount by addViewModel.unbalancedAmount.observeAsState()
     TextField(
         value = posting.third,
         onValueChange = { addViewModel.setAmount(index, it) },
         singleLine = true,
-        colors = ExposedDropdownMenuDefaults.textFieldColors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface
-        ),
+        colors =
+            ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            ),
         placeholder = {
             if (firstEmptyAmount && unbalancedAmount != null) {
                 Text(
                     unbalancedAmount!!,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
         },
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
         modifier = modifier,
-        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
     )
 }
 
@@ -421,7 +450,7 @@ fun AccountSelector(
     index: Int,
     value: String,
     modifier: Modifier = Modifier,
-    addViewModel: AddViewModel = viewModel()
+    addViewModel: AddViewModel = viewModel(),
 ) {
     val options by addViewModel.accounts.observeAsState()
     val filteredOptions = options?.filter { it.contains(value, ignoreCase = true) } ?: emptyList()
@@ -434,14 +463,14 @@ fun OutlinedLooseDropdown(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: (@Composable () -> Unit)? = null
+    label: (@Composable () -> Unit)? = null,
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = modifier
+        modifier = modifier,
     ) {
         OutlinedTextField(
             value = value,
@@ -453,19 +482,23 @@ fun OutlinedLooseDropdown(
             },
             singleLine = true,
             label = label,
-            modifier = Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
-                if (!it.hasFocus) { expanded = false }
-            },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            )
+            modifier =
+                Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
+                    if (!it.hasFocus) {
+                        expanded = false
+                    }
+                },
+            colors =
+                ExposedDropdownMenuDefaults.textFieldColors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                ),
         )
         if (shouldShowDropdown(options, value)) {
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.exposedDropdownSize(true)
+                modifier = Modifier.exposedDropdownSize(true),
             ) {
                 options.forEach {
                     DropdownMenuItem(
@@ -475,7 +508,7 @@ fun OutlinedLooseDropdown(
                             focusManager.clearFocus()
                             expanded = false
                         },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     )
                 }
             }
@@ -489,14 +522,14 @@ fun LooseDropdown(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: (@Composable () -> Unit)? = null
+    label: (@Composable () -> Unit)? = null,
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = modifier
+        modifier = modifier,
     ) {
         TextField(
             value = value,
@@ -507,20 +540,24 @@ fun LooseDropdown(
                 onValueChange(it)
             },
             singleLine = true,
-            modifier = Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
-                if (!it.hasFocus) { expanded = false }
-            },
+            modifier =
+                Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
+                    if (!it.hasFocus) {
+                        expanded = false
+                    }
+                },
             label = label,
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-            )
+            colors =
+                ExposedDropdownMenuDefaults.textFieldColors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                ),
         )
         if (shouldShowDropdown(options, value)) {
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.exposedDropdownSize(true)
+                modifier = Modifier.exposedDropdownSize(true),
             ) {
                 options.forEach {
                     DropdownMenuItem(
@@ -530,7 +567,7 @@ fun LooseDropdown(
                             focusManager.clearFocus()
                             expanded = false
                         },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     )
                 }
             }
@@ -538,6 +575,9 @@ fun LooseDropdown(
     }
 }
 
-fun shouldShowDropdown(options: List<String>, currentValue: String): Boolean {
+fun shouldShowDropdown(
+    options: List<String>,
+    currentValue: String,
+): Boolean {
     return options.size > 1 || (options.size == 1 && options[0] != currentValue)
 }

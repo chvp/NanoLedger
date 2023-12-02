@@ -28,7 +28,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -38,10 +38,11 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs += arrayOf(
-            "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
-            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
-        )
+        freeCompilerArgs +=
+            arrayOf(
+                "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            )
     }
     lint {
         quiet = true
@@ -51,8 +52,8 @@ android {
                 "NewerVersionAvailable",
                 "IntentWithNullActionLaunch",
                 "GradleDependency",
-                "ComposableLambdaParameterNaming"
-            )
+                "ComposableLambdaParameterNaming",
+            ),
         )
         checkAllWarnings = true
         ignoreWarnings = false

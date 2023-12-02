@@ -2,7 +2,7 @@ package be.chvp.nanoledger.data
 
 data class Posting(
     val account: String,
-    val amount: String?
+    val amount: String?,
 )
 
 data class Transaction(
@@ -10,5 +10,5 @@ data class Transaction(
     val status: String?,
     val payee: String,
     val note: String?,
-    val postings: List<Posting>
+    val postings: List<Posting>,
 )

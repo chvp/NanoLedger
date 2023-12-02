@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(
                         context,
                         errorMessage,
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_LONG,
                     ).show()
                 }
             }
@@ -87,46 +87,49 @@ class MainActivity : ComponentActivity() {
                         if (fileUri != null) {
                             FloatingActionButton(onClick = {
                                 startActivity(
-                                    Intent(this, AddActivity::class.java)
+                                    Intent(this, AddActivity::class.java),
                                 )
                             }) {
                                 Icon(
                                     Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.add)
+                                    contentDescription = stringResource(R.string.add),
                                 )
                             }
                         }
-                    }
+                    },
                 ) { contentPadding ->
                     if (fileUri != null) {
                         MainContent(contentPadding)
                     } else {
                         Column(
                             modifier = Modifier.fillMaxSize().padding(contentPadding),
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Center,
                         ) {
                             Text(
                                 stringResource(R.string.no_file_yet),
                                 style = MaterialTheme.typography.headlineLarge,
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.align(Alignment.CenterHorizontally).padding(
-                                    horizontal = 16.dp
-                                )
+                                modifier =
+                                    Modifier.align(Alignment.CenterHorizontally).padding(
+                                        horizontal = 16.dp,
+                                    ),
                             )
                             Text(
                                 stringResource(R.string.go_to_settings),
-                                style = MaterialTheme.typography.headlineLarge.copy(
-                                    textDecoration = TextDecoration.Underline,
-                                    color = MaterialTheme.colorScheme.primary
-                                ),
+                                style =
+                                    MaterialTheme.typography.headlineLarge.copy(
+                                        textDecoration = TextDecoration.Underline,
+                                        color = MaterialTheme.colorScheme.primary,
+                                    ),
                                 textAlign = TextAlign.Center,
-                                modifier = Modifier.align(Alignment.CenterHorizontally).padding(
-                                    horizontal = 16.dp
-                                ).clickable {
-                                    startActivity(
-                                        Intent(this@MainActivity, PreferencesActivity::class.java)
-                                    )
-                                }
+                                modifier =
+                                    Modifier.align(Alignment.CenterHorizontally).padding(
+                                        horizontal = 16.dp,
+                                    ).clickable {
+                                        startActivity(
+                                            Intent(this@MainActivity, PreferencesActivity::class.java),
+                                        )
+                                    },
                             )
                         }
                     }
@@ -145,7 +148,10 @@ fun transactionHeader(t: Transaction): String {
 }
 
 @Composable
-fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = viewModel()) {
+fun MainContent(
+    contentPadding: PaddingValues,
+    mainViewModel: MainViewModel = viewModel(),
+) {
     val context = LocalContext.current
     val transactions by mainViewModel.transactions.observeAsState()
     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
@@ -155,44 +161,48 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
                     Card(
-                        modifier = Modifier.fillMaxWidth().padding(
-                            8.dp,
-                            if (it == 0) 8.dp else 4.dp,
-                            8.dp,
-                            if (it == transactions!!.size - 1) 8.dp else 4.dp
-                        )
+                        modifier =
+                            Modifier.fillMaxWidth().padding(
+                                8.dp,
+                                if (it == 0) 8.dp else 4.dp,
+                                8.dp,
+                                if (it == transactions!!.size - 1) 8.dp else 4.dp,
+                            ),
                     ) {
                         val tr = transactions!![transactions!!.size - it - 1]
                         Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                             Text(
                                 transactionHeader(tr),
                                 softWrap = false,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace
-                                ),
-                                overflow = TextOverflow.Ellipsis
+                                style =
+                                    MaterialTheme.typography.bodySmall.copy(
+                                        fontFamily = FontFamily.Monospace,
+                                    ),
+                                overflow = TextOverflow.Ellipsis,
                             )
                             for (p in tr.postings) {
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
                                 ) {
                                     Text(
                                         "  ${p.account}",
                                         softWrap = false,
-                                        style = MaterialTheme.typography.bodySmall.copy(
-                                            fontFamily = FontFamily.Monospace
-                                        ),
+                                        style =
+                                            MaterialTheme.typography.bodySmall.copy(
+                                                fontFamily = FontFamily.Monospace,
+                                            ),
                                         overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.weight(1f),
                                     )
                                     Text(
                                         p.amount ?: "",
                                         softWrap = false,
-                                        style = MaterialTheme.typography.bodySmall.copy(
-                                            fontFamily = FontFamily.Monospace
-                                        ),
-                                        modifier = Modifier.padding(start = 2.dp)
+                                        style =
+                                            MaterialTheme.typography.bodySmall.copy(
+                                                fontFamily = FontFamily.Monospace,
+                                            ),
+                                        modifier = Modifier.padding(start = 2.dp),
                                     )
                                 }
                             }
@@ -204,27 +214,29 @@ fun MainContent(contentPadding: PaddingValues, mainViewModel: MainViewModel = vi
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 item {
                     Text(
                         stringResource(R.string.no_transactions_yet),
                         style = MaterialTheme.typography.headlineLarge,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
                     Text(
                         stringResource(R.string.create_transaction),
-                        style = MaterialTheme.typography.headlineLarge.copy(
-                            textDecoration = TextDecoration.Underline,
-                            color = MaterialTheme.colorScheme.primary
-                        ),
+                        style =
+                            MaterialTheme.typography.headlineLarge.copy(
+                                textDecoration = TextDecoration.Underline,
+                                color = MaterialTheme.colorScheme.primary,
+                            ),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 16.dp).clickable {
-                            context.startActivity(
-                                Intent(context, AddActivity::class.java)
-                            )
-                        }
+                        modifier =
+                            Modifier.padding(horizontal = 16.dp).clickable {
+                                context.startActivity(
+                                    Intent(context, AddActivity::class.java),
+                                )
+                            },
                     )
                 }
             }
@@ -244,14 +256,15 @@ fun MainBar() {
             }) {
                 Icon(
                     Icons.Default.Settings,
-                    contentDescription = stringResource(R.string.settings)
+                    contentDescription = stringResource(R.string.settings),
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-        )
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
     )
 }

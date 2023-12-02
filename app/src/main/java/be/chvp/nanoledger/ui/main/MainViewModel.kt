@@ -9,37 +9,39 @@ import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.PreferencesDataSource
 import be.chvp.nanoledger.ui.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.IOException
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import java.io.IOException
+import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
-    application: Application,
-    private val preferencesDataSource: PreferencesDataSource,
-    private val ledgerRepository: LedgerRepository
-) : AndroidViewModel(application) {
-    private val _isRefreshing = MutableLiveData<Boolean>(false)
-    val isRefreshing: LiveData<Boolean> = _isRefreshing
+class MainViewModel
+    @Inject
+    constructor(
+        application: Application,
+        private val preferencesDataSource: PreferencesDataSource,
+        private val ledgerRepository: LedgerRepository,
+    ) : AndroidViewModel(application) {
+        private val _isRefreshing = MutableLiveData<Boolean>(false)
+        val isRefreshing: LiveData<Boolean> = _isRefreshing
 
-    val fileUri = preferencesDataSource.fileUri
-    val transactions = ledgerRepository.transactions
+        val fileUri = preferencesDataSource.fileUri
+        val transactions = ledgerRepository.transactions
 
-    private val _latestError = MutableLiveData<Event<IOException>?>(null)
-    val latestError: LiveData<Event<IOException>?> = _latestError
+        private val _latestError = MutableLiveData<Event<IOException>?>(null)
+        val latestError: LiveData<Event<IOException>?> = _latestError
 
-    fun refresh() {
-        _isRefreshing.value = true
-        viewModelScope.launch(IO) {
-            ledgerRepository.readFrom(
-                preferencesDataSource.getFileUri(),
-                { _isRefreshing.postValue(false) },
-                {
-                    _isRefreshing.postValue(false)
-                    _latestError.postValue(Event(it))
-                }
-            )
+        fun refresh() {
+            _isRefreshing.value = true
+            viewModelScope.launch(IO) {
+                ledgerRepository.readFrom(
+                    preferencesDataSource.getFileUri(),
+                    { _isRefreshing.postValue(false) },
+                    {
+                        _isRefreshing.postValue(false)
+                        _latestError.postValue(Event(it))
+                    },
+                )
+            }
         }
     }
-}
