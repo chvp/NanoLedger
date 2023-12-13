@@ -371,7 +371,7 @@ fun PostingRow(
             modifier = Modifier.weight(0.57f).padding(start = 4.dp, end = 2.dp),
         )
         if (currencyBeforeAmount ?: true) {
-            CurrencyField(index, posting, Modifier.weight(0.18f).padding(horizontal = 2.dp))
+            CurrencyField(index, posting, Modifier.weight(0.18f))
             AmountField(
                 index,
                 posting,
@@ -385,7 +385,7 @@ fun PostingRow(
                 firstEmptyAmount,
                 Modifier.weight(0.25f).padding(horizontal = 2.dp),
             )
-            CurrencyField(index, posting, Modifier.weight(0.18f).padding(start = 2.dp, end = 4.dp))
+            CurrencyField(index, posting, Modifier.weight(0.18f))
         }
     }
 }
