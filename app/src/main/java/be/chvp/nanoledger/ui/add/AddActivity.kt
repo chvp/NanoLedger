@@ -364,28 +364,28 @@ fun PostingRow(
     addViewModel: AddViewModel = viewModel(),
 ) {
     val currencyBeforeAmount by addViewModel.currencyBeforeAmount.observeAsState()
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 4.dp)) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp)) {
         AccountSelector(
             index = index,
             value = posting.first,
-            modifier = Modifier.weight(2f),
+            modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
         )
         if (currencyBeforeAmount ?: true) {
-            CurrencyField(index, posting, Modifier.weight(0.9f).padding(horizontal = 4.dp))
+            CurrencyField(index, posting, Modifier.weight(0.95f).padding(horizontal = 2.dp))
             AmountField(
                 index,
                 posting,
                 firstEmptyAmount,
-                Modifier.weight(1.3f),
+                Modifier.weight(1.25f).padding(horizontal = 2.dp),
             )
         } else {
             AmountField(
                 index,
                 posting,
                 firstEmptyAmount,
-                Modifier.weight(1.3f).padding(horizontal = 4.dp),
+                Modifier.weight(1.25f).padding(horizontal = 2.dp),
             )
-            CurrencyField(index, posting, Modifier.weight(0.9f))
+            CurrencyField(index, posting, Modifier.weight(0.95f).padding(horizontal = 2.dp))
         }
     }
 }
