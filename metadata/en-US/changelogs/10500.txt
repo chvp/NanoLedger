@@ -1,0 +1,1 @@
+Tweak posting row item widths to make currency a bit wider (by Ajnasz).
