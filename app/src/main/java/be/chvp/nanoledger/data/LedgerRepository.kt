@@ -49,7 +49,7 @@ class LedgerRepository
                 context.contentResolver.openOutputStream(fileUri, "wa")
                     ?.let { OutputStreamWriter(it) }
                     ?.use {
-                        if (fileContents.value!!.last() != "") {
+                        if (!fileContents.value!!.isEmpty() && fileContents.value!!.last() != "") {
                             it.write("\n")
                         }
                         it.write(text)
