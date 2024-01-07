@@ -8,11 +8,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1701787589,
-        "narHash": "sha256-ce+oQR4Zq9VOsLoh9bZT8Ip9PaMLcjjBUHVPzW5d7Cw=",
+        "lastModified": 1704627967,
+        "narHash": "sha256-XxorJ8NKO4XG1rUeGE8DLlOCE9x63c2FnC8QoudVGsg=",
         "owner": "numtide",
         "repo": "devshell",
-        "rev": "44ddedcbcfc2d52a76b64fb6122f209881bd3e1e",
+        "rev": "2c55ba1531bf1d4b31906914cb73fc339d0181d0",
         "type": "github"
       },
       "original": {
