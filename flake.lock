@@ -44,11 +44,11 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1701680307,
-        "narHash": "sha256-kAuep2h5ajznlPMD9rnQyffWG8EM/C73lejGofXvdM8=",
+        "lastModified": 1705306982,
+        "narHash": "sha256-ZOnxPL+HBfF/qzYFCcuU1fclOejFIgcaI7UXYAEhK2k=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "4022d587cbbfd70fe950c1e2083a02621806a725",
+        "rev": "c8eb208c255400b59b60ad5de17e9f8f7ef8ae30",
         "type": "github"
       },
       "original": {
