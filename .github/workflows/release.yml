@@ -34,7 +34,7 @@ jobs:
       run: "echo ${{ github.ref }} | sed 's#^refs/tags/#::set-output name=version::#'"
     - name: Create release
       id: create_release
-      uses: release-drafter/release-drafter@v5
+      uses: release-drafter/release-drafter@v6
       with:
         name: ${{ steps.parse_tag.outputs.version }}
         tag: ${{ steps.parse_tag.outputs.version }}
