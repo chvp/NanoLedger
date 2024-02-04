@@ -1,0 +1,2 @@
+ * Replace save button with spinning indicator while saving transaction
+ * If an error occurs while saving, allow copying it via a dialog
