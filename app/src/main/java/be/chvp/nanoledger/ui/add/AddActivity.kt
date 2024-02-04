@@ -1,10 +1,12 @@
 package be.chvp.nanoledger.ui.add
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -21,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -36,6 +39,10 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -47,6 +54,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -79,15 +87,27 @@ class AddActivity() : ComponentActivity() {
             val context = LocalContext.current
             val latestError by addViewModel.latestError.observeAsState()
             val errorMessage = stringResource(R.string.error_writing_file)
+            val showMessage = stringResource(R.string.show)
+            val scope = rememberCoroutineScope()
+            val snackbarHostState = remember { SnackbarHostState() }
+            var openErrorDialog by rememberSaveable { mutableStateOf(false) }
+            var errorDialogMessage by rememberSaveable { mutableStateOf("") }
             LaunchedEffect(latestError) {
                 val error = latestError?.get()
                 if (error != null) {
                     Log.e("be.chvp.nanoledger", "Exception while writing file", error)
-                    Toast.makeText(
-                        context,
-                        errorMessage,
-                        Toast.LENGTH_LONG,
-                    ).show()
+                    scope.launch {
+                        val result =
+                            snackbarHostState.showSnackbar(
+                                message = errorMessage,
+                                actionLabel = showMessage,
+                                duration = SnackbarDuration.Long,
+                            )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            openErrorDialog = true
+                            errorDialogMessage = error.stackTraceToString()
+                        }
+                    }
                 }
             }
             BackHandler(enabled = true) {
@@ -98,13 +118,13 @@ class AddActivity() : ComponentActivity() {
                     ),
                 )
             }
-            val scope = rememberCoroutineScope()
             val saving by addViewModel.saving.observeAsState()
             val valid by addViewModel.valid.observeAsState()
             val enabled = !(saving ?: true) && (valid ?: false)
             NanoLedgerTheme {
                 Scaffold(
                     topBar = { Bar() },
+                    snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     floatingActionButton = {
                         FloatingActionButton(
                             onClick = {
@@ -143,6 +163,24 @@ class AddActivity() : ComponentActivity() {
                     },
                 ) { contentPadding ->
                     Box(modifier = Modifier.padding(contentPadding).fillMaxSize()) {
+                        if (openErrorDialog) {
+                            AlertDialog(
+                                onDismissRequest = { openErrorDialog = false },
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+                                        val clip: ClipData = ClipData.newPlainText("simple text", errorDialogMessage)
+                                        clipboard.setPrimaryClip(clip)
+                                    }) { Text(stringResource(R.string.copy)) }
+                                },
+                                title = { Text(stringResource(R.string.error)) },
+                                text = { Text(errorDialogMessage) },
+                                dismissButton = {
+                                    TextButton(onClick = { openErrorDialog = false }) { Text(stringResource(R.string.dismiss)) }
+                                },
+                            )
+                        }
                         Column(
                             modifier =
                                 Modifier
