@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -127,10 +128,17 @@ class AddActivity() : ComponentActivity() {
                                     MaterialTheme.colorScheme.surface
                                 },
                         ) {
-                            Icon(
-                                Icons.Default.Done,
-                                contentDescription = stringResource(R.string.save),
-                            )
+                            if (saving ?: true) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Default.Done,
+                                    contentDescription = stringResource(R.string.save),
+                                )
+                            }
                         }
                     },
                 ) { contentPadding ->
