@@ -16,9 +16,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -90,7 +90,7 @@ class PreferencesActivity() : ComponentActivity() {
                         ) {
                             openFile.launch(arrayOf("*/*"))
                         }
-                        Divider()
+                        HorizontalDivider()
                         val defaultCurrency by preferencesViewModel.defaultCurrency.observeAsState()
                         var newDefaultCurrency by remember { mutableStateOf(defaultCurrency ?: "") }
                         var defaultCurrencyOpen by remember { mutableStateOf(false) }
@@ -109,7 +109,7 @@ class PreferencesActivity() : ComponentActivity() {
                         ) {
                             OutlinedTextField(newDefaultCurrency, { newDefaultCurrency = it })
                         }
-                        Divider()
+                        HorizontalDivider()
                         val defaultStatus by preferencesViewModel.defaultStatus.observeAsState()
                         var expandedStatus by rememberSaveable { mutableStateOf(false) }
                         ExposedDropdownMenuBox(
@@ -142,7 +142,7 @@ class PreferencesActivity() : ComponentActivity() {
                                 }
                             }
                         }
-                        Divider()
+                        HorizontalDivider()
                         val currencyBeforeAmount by
                             preferencesViewModel.currencyBeforeAmount.observeAsState()
                         var expandedCurrency by rememberSaveable { mutableStateOf(false) }
@@ -222,7 +222,7 @@ fun Bar() {
         navigationIcon = {
             IconButton(onClick = { (context as Activity).finish() }) {
                 Icon(
-                    Icons.Default.ArrowBack,
+                    Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = stringResource(R.string.back),
                 )
             }
