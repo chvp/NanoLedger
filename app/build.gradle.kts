@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "be.chvp.nanoledger"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 10700
         versionName = "0.1.6"
 
@@ -40,7 +40,6 @@ android {
         jvmTarget = "17"
         freeCompilerArgs +=
             arrayOf(
-                "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
                 "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             )
     }
@@ -48,11 +47,9 @@ android {
         quiet = true
         disable.addAll(
             arrayOf(
-                "OldTargetApi",
                 "NewerVersionAvailable",
-                "IntentWithNullActionLaunch",
                 "GradleDependency",
-                "ComposableLambdaParameterNaming",
+                "ObsoleteLintCustomCheck",
             ),
         )
         checkAllWarnings = true
@@ -66,7 +63,7 @@ android {
         viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = "1.5.9"
     }
     packaging {
         resources {
@@ -87,7 +84,6 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.activity.ktx)
     implementation(platform(libs.compose.bom))
-    implementation(libs.compose.material)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.material3)
     implementation(libs.compose.runtime)

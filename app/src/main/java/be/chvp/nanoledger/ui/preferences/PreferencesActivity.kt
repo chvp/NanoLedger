@@ -14,17 +14,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -42,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
@@ -90,7 +89,7 @@ class PreferencesActivity() : ComponentActivity() {
                         ) {
                             openFile.launch(arrayOf("*/*"))
                         }
-                        Divider()
+                        HorizontalDivider()
                         val defaultCurrency by preferencesViewModel.defaultCurrency.observeAsState()
                         var newDefaultCurrency by remember { mutableStateOf(defaultCurrency ?: "") }
                         var defaultCurrencyOpen by remember { mutableStateOf(false) }
@@ -109,7 +108,7 @@ class PreferencesActivity() : ComponentActivity() {
                         ) {
                             OutlinedTextField(newDefaultCurrency, { newDefaultCurrency = it })
                         }
-                        Divider()
+                        HorizontalDivider()
                         val defaultStatus by preferencesViewModel.defaultStatus.observeAsState()
                         var expandedStatus by rememberSaveable { mutableStateOf(false) }
                         ExposedDropdownMenuBox(
@@ -142,7 +141,7 @@ class PreferencesActivity() : ComponentActivity() {
                                 }
                             }
                         }
-                        Divider()
+                        HorizontalDivider()
                         val currencyBeforeAmount by
                             preferencesViewModel.currencyBeforeAmount.observeAsState()
                         var expandedCurrency by rememberSaveable { mutableStateOf(false) }
@@ -209,7 +208,7 @@ fun Setting(
             subtext,
             modifier = Modifier.padding(bottom = 8.dp, start = 8.dp),
             style = MaterialTheme.typography.bodyMedium,
-            color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
+            fontWeight = FontWeight.Normal,
         )
     }
 }
@@ -222,7 +221,7 @@ fun Bar() {
         navigationIcon = {
             IconButton(onClick = { (context as Activity).finish() }) {
                 Icon(
-                    Icons.Default.ArrowBack,
+                    Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = stringResource(R.string.back),
                 )
             }
