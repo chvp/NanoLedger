@@ -156,14 +156,22 @@ fun MainContent(
     val transactions by mainViewModel.transactions.observeAsState()
     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
     val state = rememberPullToRefreshState()
-    if (state.isRefreshing) {
-        LaunchedEffect(true) {
-            mainViewModel.refresh()
-        }
-    }
     if (state.isRefreshing && !(isRefreshing ?: false)) {
         LaunchedEffect(true) {
             state.endRefresh()
+        }
+    } else if (!state.isRefreshing && (isRefreshing ?: false)) {
+        LaunchedEffect(true) {
+            state.startRefresh()
+        }
+    }
+    if (state.isRefreshing) {
+        LaunchedEffect(true) {
+            mainViewModel.refresh()
+            // Due to the way compositing works, we cancel the refresh in the
+            // first if (even if the first if is moved below this one, and then
+            // we have no way to undo the cancel).
+            state.startRefresh()
         }
     }
     Box(modifier = Modifier.nestedScroll(state.nestedScrollConnection).padding(contentPadding)) {
