@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -209,7 +208,7 @@ fun Setting(
             subtext,
             modifier = Modifier.padding(bottom = 8.dp, start = 8.dp),
             style = MaterialTheme.typography.bodyMedium,
-            color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
+            fontWeight = FontWeight.Normal,
         )
     }
 }

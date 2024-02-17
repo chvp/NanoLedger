@@ -40,7 +40,6 @@ android {
         jvmTarget = "17"
         freeCompilerArgs +=
             arrayOf(
-                "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
                 "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             )
     }
@@ -87,7 +86,6 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.activity.ktx)
     implementation(platform(libs.compose.bom))
-    implementation(libs.compose.material)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.compose.material3)
     implementation(libs.compose.runtime)
