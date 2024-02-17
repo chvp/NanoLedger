@@ -20,9 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +38,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -155,8 +155,18 @@ fun MainContent(
     val context = LocalContext.current
     val transactions by mainViewModel.transactions.observeAsState()
     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
-    val state = rememberPullRefreshState(isRefreshing ?: false, { mainViewModel.refresh() })
-    Box(modifier = Modifier.pullRefresh(state).padding(contentPadding)) {
+    val state = rememberPullToRefreshState()
+    if (state.isRefreshing) {
+        LaunchedEffect(true) {
+            mainViewModel.refresh()
+        }
+    }
+    if (state.isRefreshing && !(isRefreshing ?: false)) {
+        LaunchedEffect(true) {
+            state.endRefresh()
+        }
+    }
+    Box(modifier = Modifier.nestedScroll(state.nestedScrollConnection).padding(contentPadding)) {
         if ((transactions?.size ?: 0) > 0 || (isRefreshing ?: true)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
@@ -241,7 +251,7 @@ fun MainContent(
                 }
             }
         }
-        PullRefreshIndicator(isRefreshing ?: false, state, Modifier.align(Alignment.TopCenter))
+        PullToRefreshContainer(state = state, modifier = Modifier.align(Alignment.TopCenter))
     }
 }
 
