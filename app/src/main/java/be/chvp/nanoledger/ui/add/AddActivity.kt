@@ -509,7 +509,7 @@ fun OutlinedLooseDropdown(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: (@Composable () -> Unit)? = null,
+    content: (@Composable () -> Unit)? = null,
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -527,7 +527,7 @@ fun OutlinedLooseDropdown(
                 onValueChange(it)
             },
             singleLine = true,
-            label = label,
+            label = content,
             modifier =
                 Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
                     if (!it.hasFocus) {
@@ -568,7 +568,7 @@ fun LooseDropdown(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    label: (@Composable () -> Unit)? = null,
+    content: (@Composable () -> Unit)? = null,
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -592,7 +592,7 @@ fun LooseDropdown(
                         expanded = false
                     }
                 },
-            label = label,
+            label = content,
             colors =
                 ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
