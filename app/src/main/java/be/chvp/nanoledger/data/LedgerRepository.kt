@@ -70,7 +70,13 @@ class LedgerRepository
                 fileUri
                     ?.let { context.contentResolver.openInputStream(it) }
                     ?.let { BufferedReader(InputStreamReader(it)) }
-                    ?.use { it.lines().forEach { result.add(it) } }
+                    ?.use { reader ->
+                        var line = reader.readLine()
+                        while (line != null) {
+                            result.add(line)
+                            line = reader.readLine()
+                        }
+                    }
                 val extracted = extractTransactions(result)
                 _fileContents.postValue(result)
                 _transactions.postValue(extracted)

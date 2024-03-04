@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "be.chvp.nanoledger"
-        minSdk = 26
+        minSdk = 21
         targetSdk = 34
         versionCode = 10700
         versionName = "0.1.6"
@@ -47,9 +47,10 @@ android {
         quiet = true
         disable.addAll(
             arrayOf(
-                "NewerVersionAvailable",
                 "GradleDependency",
+                "NewerVersionAvailable",
                 "ObsoleteLintCustomCheck",
+                "SimpleDateFormat",
             ),
         )
         checkAllWarnings = true
