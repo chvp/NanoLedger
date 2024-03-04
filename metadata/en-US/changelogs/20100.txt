@@ -1,0 +1,1 @@
+Support older Android versions up to Android 5.0.
