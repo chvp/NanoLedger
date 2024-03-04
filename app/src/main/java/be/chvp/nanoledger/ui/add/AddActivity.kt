@@ -74,8 +74,6 @@ import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class AddActivity() : ComponentActivity() {
@@ -283,9 +281,10 @@ fun DateSelector(
 ) {
     val focusManager = LocalFocusManager.current
     val date by addViewModel.date.observeAsState()
+    val formattedDate by addViewModel.formattedDate.observeAsState()
     var dateDialogOpen by rememberSaveable { mutableStateOf(false) }
     OutlinedTextField(
-        value = date?.format(DateTimeFormatter.ISO_DATE) ?: "",
+        value = formattedDate ?: "",
         readOnly = true,
         singleLine = true,
         onValueChange = {},
@@ -303,14 +302,7 @@ fun DateSelector(
             },
     )
     if (dateDialogOpen) {
-        val datePickerState =
-            rememberDatePickerState(
-                initialSelectedDateMillis =
-                    date
-                        ?.atStartOfDay()
-                        ?.toInstant(ZoneOffset.UTC)
-                        ?.toEpochMilli(),
-            )
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date?.getTime())
         DatePickerDialog(
             onDismissRequest = { dateDialogOpen = false },
             confirmButton = {
