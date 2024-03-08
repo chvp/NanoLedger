@@ -190,8 +190,7 @@ class AddViewModel
         ) {
             val result = ArrayList(postings.value!!)
             result[index] = Triple(newAccount, result[index].second, result[index].third)
-            result.removeIf { it.first == "" && it.third == "" }
-            _postings.value = result
+            _postings.value = removeEmpty(result)
         }
 
         fun setCurrency(
@@ -209,8 +208,18 @@ class AddViewModel
         ) {
             val result = ArrayList(postings.value!!)
             result[index] = Triple(result[index].first, result[index].second, newAmount)
-            result.removeIf { it.first == "" && it.third == "" }
-            _postings.value = result
+            _postings.value = removeEmpty(result)
+        }
+
+        fun removeEmpty(postings: List<Triple<String, String, String>>): List<Triple<String, String, String>> {
+            val result = ArrayList<Triple<String, String, String>>()
+            for (p in postings) {
+                if (p.first != "" || p.third != "") {
+                    result.add(p)
+                }
+            }
+            result.add(emptyPosting())
+            return result
         }
 
         fun emptyPosting(): Triple<String, String, String> {
