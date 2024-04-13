@@ -22,6 +22,6 @@ jobs:
       - run: nix flake update
       - run: nix build -L --no-link .#devShells.$(nix eval --impure --expr "builtins.currentSystem").nanoledger
       - run: nix eval --json ".#devShells.$(nix eval --impure --expr 'builtins.currentSystem').nanoledger.outPath" | sed 's/"\(.*\)"/\1/' | cachix push nanoledger
-      - uses: stefanzweifel/git-auto-commit-action@v5.0.0
+      - uses: stefanzweifel/git-auto-commit-action@v5.0.1
         with:
           commit_message: "Update flake dependencies"
