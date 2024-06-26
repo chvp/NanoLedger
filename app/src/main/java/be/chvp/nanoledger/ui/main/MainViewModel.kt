@@ -9,7 +9,6 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.PreferencesDataSource
-import be.chvp.nanoledger.data.Transaction
 import be.chvp.nanoledger.ui.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
@@ -47,8 +46,17 @@ class MainViewModel
                 }
             }
 
-        private val _latestError = MutableLiveData<Event<IOException>?>(null)
-        val latestError: LiveData<Event<IOException>?> = _latestError
+        private val _selectedIndex = MutableLiveData<Int?>(null)
+        val selectedIndex: LiveData<Int?> = _selectedIndex
+
+        private val _latestReadError = MutableLiveData<Event<IOException>?>(null)
+        val latestReadError: LiveData<Event<IOException>?> = _latestReadError
+
+        private val _latestWriteError = MutableLiveData<Event<IOException>?>(null)
+        val latestWriteError: LiveData<Event<IOException>?> = _latestWriteError
+
+        private val _latestMismatch = MutableLiveData<Event<Int>?>(null)
+        val latestMismatch: LiveData<Event<Int>?> = _latestMismatch
 
         fun refresh() {
             val uri = preferencesDataSource.getFileUri()
@@ -57,17 +65,29 @@ class MainViewModel
                 viewModelScope.launch(IO) {
                     ledgerRepository.readFrom(
                         uri,
-                        { _isRefreshing.postValue(false) },
+                        {
+                            _selectedIndex.postValue(null)
+                            _isRefreshing.postValue(false)
+                        },
                         {
                             _isRefreshing.postValue(false)
-                            _latestError.postValue(Event(it))
+                            _latestReadError.postValue(Event(it))
                         },
                     )
                 }
             }
         }
 
-        fun deleteTransaction(transaction: Transaction) {
+        fun toggleSelect(index: Int) {
+            if (selectedIndex.value == index) {
+                _selectedIndex.postValue(null)
+            } else {
+                _selectedIndex.postValue(index)
+            }
+        }
+
+        fun deleteSelected() {
+            val transaction = transactions.value!![selectedIndex.value!!]
             val uri = preferencesDataSource.getFileUri()
             if (uri != null) {
                 _isRefreshing.value = true
@@ -75,15 +95,21 @@ class MainViewModel
                     ledgerRepository.deleteTransaction(
                         uri,
                         transaction,
-                        {},
-                        { _isRefreshing.postValue(false) },
                         {
+                            _selectedIndex.postValue(null)
                             _isRefreshing.postValue(false)
-                            _latestError.postValue(Event(it))
                         },
                         {
                             _isRefreshing.postValue(false)
-                            _latestError.postValue(Event(it))
+                            _latestMismatch.postValue(Event(1))
+                        },
+                        {
+                            _isRefreshing.postValue(false)
+                            _latestWriteError.postValue(Event(it))
+                        },
+                        {
+                            _isRefreshing.postValue(false)
+                            _latestReadError.postValue(Event(it))
                         },
                     )
                 }

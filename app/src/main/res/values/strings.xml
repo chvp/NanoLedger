@@ -13,10 +13,12 @@
     <string name="date">Date</string>
     <string name="default_currency">Default currency</string>
     <string name="default_status">Default status</string>
+    <string name="delete">Delete</string>
     <string name="dismiss">Dismiss</string>
     <string name="error">Error</string>
     <string name="error_reading_file">Error while reading file</string>
     <string name="error_writing_file">Error while writing file</string>
+    <string name="mismatch_no_delete">File contents outdated, aborting delete</string>
     <string name="file">File</string>
     <string name="note">Note</string>
     <string name="ok">OK</string>
@@ -28,6 +30,8 @@
     <string name="status_cleared">Cleared (*)</string>
     <string name="status_pending">Pending (!)</string>
     <string name="status_unmarked">Unmarked</string>
+
+    <string name="stop_selection">Stop selection</string>
 
     <string name="no_file_yet">You don&#8217;t have a file configured yet.</string>
     <string name="go_to_settings">Go to the settings to configure one.</string>
