@@ -38,6 +38,46 @@ class LedgerRepository
                 )
             }
 
+        suspend fun deleteTransaction(
+            fileUri: Uri,
+            transaction: Transaction,
+            onFinish: suspend () -> Unit,
+            onMismatch: suspend() -> Unit,
+            onWriteError: suspend (IOException) -> Unit,
+            onReadError: suspend (IOException) -> Unit,
+        ) {
+            try {
+                val result = ArrayList<String>()
+                fileUri
+                    .let { context.contentResolver.openInputStream(it) }
+                    ?.let { BufferedReader(InputStreamReader(it)) }
+                    ?.use { it.lines().forEach { result.add(it) } }
+
+                if (!result.equals(fileContents.value)) {
+                    onMismatch()
+                } else {
+                    context.contentResolver.openOutputStream(fileUri, "wt")
+                        ?.let { OutputStreamWriter(it) }
+                        ?.use {
+                            fileContents.value!!.forEachIndexed { i, line ->
+                                if (i >= transaction.firstLine && i <= transaction.lastLine) {
+                                    return@forEachIndexed
+                                }
+                                // If the line after the transaction is empty, consider it a
+                                // divider for the next transaction and skip it as well
+                                if (i == transaction.lastLine + 1 && line == "") {
+                                    return@forEachIndexed
+                                }
+                                it.write("${line}\n")
+                            }
+                        }
+                    readFrom(fileUri, onFinish, onReadError)
+                }
+            } catch (e: IOException) {
+                onWriteError(e)
+            }
+        }
+
         suspend fun appendTo(
             fileUri: Uri,
             text: String,
@@ -61,14 +101,14 @@ class LedgerRepository
         }
 
         suspend fun readFrom(
-            fileUri: Uri?,
+            fileUri: Uri,
             onFinish: suspend () -> Unit,
             onReadError: suspend (IOException) -> Unit,
         ) {
             try {
                 val result = ArrayList<String>()
                 fileUri
-                    ?.let { context.contentResolver.openInputStream(it) }
+                    .let { context.contentResolver.openInputStream(it) }
                     ?.let { BufferedReader(InputStreamReader(it)) }
                     ?.use { it.lines().forEach { result.add(it) } }
                 val extracted = extractTransactions(result)

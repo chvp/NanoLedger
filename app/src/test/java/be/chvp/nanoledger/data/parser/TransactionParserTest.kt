@@ -19,6 +19,8 @@ class TransactionParserTest {
         assertEquals(1, result.size)
         val transaction: Transaction = result[0]
 
+        assertEquals(0, transaction.firstLine)
+        assertEquals(2, transaction.lastLine)
         assertEquals("2023-08-31", transaction.date)
         assertEquals("*", transaction.status)
         assertEquals("Payee", transaction.payee)
@@ -44,6 +46,8 @@ class TransactionParserTest {
         assertEquals(1, result.size)
         val transaction: Transaction = result[0]
 
+        assertEquals(0, transaction.firstLine)
+        assertEquals(2, transaction.lastLine)
         assertEquals("2023-08-31", transaction.date)
         assertEquals("*", transaction.status)
         assertEquals("Payee", transaction.payee)
@@ -71,6 +75,8 @@ class TransactionParserTest {
             )
 
         assertEquals(2, transactions.size)
+        assertEquals(0, transactions[0].firstLine)
+        assertEquals(2, transactions[0].lastLine)
         assertEquals("2023-08-31", transactions[0].date)
         assertEquals("*", transactions[0].status)
         assertEquals("Payee", transactions[0].payee)
@@ -81,6 +87,8 @@ class TransactionParserTest {
         assertEquals("expenses", transactions[0].postings[1].account)
         assertEquals("€ 5.00", transactions[0].postings[1].amount)
 
+        assertEquals(3, transactions[1].firstLine)
+        assertEquals(6, transactions[1].lastLine)
         assertEquals("2023-09-01", transactions[1].date)
         assertEquals("*", transactions[1].status)
         assertEquals("Payee 2", transactions[1].payee)

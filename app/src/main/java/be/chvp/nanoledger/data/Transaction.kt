@@ -8,6 +8,8 @@ data class Posting(
 }
 
 data class Transaction(
+    val firstLine: Int,
+    val lastLine: Int,
     val date: String,
     val status: String?,
     val payee: String,

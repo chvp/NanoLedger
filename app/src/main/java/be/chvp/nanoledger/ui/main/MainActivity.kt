@@ -199,6 +199,7 @@ fun MainContent(
         if ((transactions?.size ?: 0) > 0 || (isRefreshing ?: true)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
+                    val tr = transactions!![transactions!!.size - it - 1]
                     Card(
                         modifier =
                             Modifier.fillMaxWidth().padding(
@@ -206,9 +207,8 @@ fun MainContent(
                                 if (it == 0) 8.dp else 4.dp,
                                 8.dp,
                                 if (it == transactions!!.size - 1) 8.dp else 4.dp,
-                            ),
+                            ).clickable { mainViewModel.deleteTransaction(tr) },
                     ) {
-                        val tr = transactions!![transactions!!.size - it - 1]
                         Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                             Text(
                                 transactionHeader(tr),
