@@ -51,6 +51,7 @@ android {
                 "GradleDependency",
                 "NewerVersionAvailable",
                 "ObsoleteLintCustomCheck",
+                "OldTargetApi",
                 "SimpleDateFormat",
             ),
         )
