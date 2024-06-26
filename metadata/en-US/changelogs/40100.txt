@@ -1,0 +1,3 @@
+Allow deleting transactions
+
+Deleting can be done by tapping on a transaction (which selects it). This changes the toolbar so that a delete button becomes visible. Selection can be undone by tapping the transaction again, pressing the back button, or tapping the back icon in the toolbar.
