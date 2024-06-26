@@ -34,4 +34,8 @@
 
     <string name="no_transactions_yet">Couldn&#8217;t find any transactions.</string>
     <string name="create_transaction">Add a transaction.</string>
+
+    <string name="search">Search</string>
+    <string name="stop_searching">Stop searching</string>
+    <string name="no_search_results">Couldn&#8217;t find any results for your search.</string>
 </resources>

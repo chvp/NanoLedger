@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
@@ -17,16 +18,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
@@ -35,13 +42,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,6 +75,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val context = LocalContext.current
+            val searching by mainViewModel.searching.observeAsState()
             val latestError by mainViewModel.latestError.observeAsState()
             val errorMessage = stringResource(R.string.error_reading_file)
             LaunchedEffect(latestError) {
@@ -82,7 +96,13 @@ class MainActivity : ComponentActivity() {
             }
             NanoLedgerTheme {
                 Scaffold(
-                    topBar = { MainBar() },
+                    topBar = {
+                        if (searching ?: false) {
+                            SearchBar()
+                        } else {
+                            MainBar()
+                        }
+                    },
                     floatingActionButton = {
                         if (fileUri != null) {
                             FloatingActionButton(onClick = {
@@ -153,7 +173,8 @@ fun MainContent(
     mainViewModel: MainViewModel = viewModel(),
 ) {
     val context = LocalContext.current
-    val transactions by mainViewModel.transactions.observeAsState()
+    val transactions by mainViewModel.filteredTransactions.observeAsState()
+    val query by mainViewModel.query.observeAsState()
     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
     val state = rememberPullToRefreshState()
     if (state.isRefreshing && !(isRefreshing ?: false)) {
@@ -235,27 +256,36 @@ fun MainContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 item {
-                    Text(
-                        stringResource(R.string.no_transactions_yet),
-                        style = MaterialTheme.typography.headlineLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                    )
-                    Text(
-                        stringResource(R.string.create_transaction),
-                        style =
-                            MaterialTheme.typography.headlineLarge.copy(
-                                textDecoration = TextDecoration.Underline,
-                                color = MaterialTheme.colorScheme.primary,
-                            ),
-                        textAlign = TextAlign.Center,
-                        modifier =
-                            Modifier.padding(horizontal = 16.dp).clickable {
-                                context.startActivity(
-                                    Intent(context, AddActivity::class.java),
-                                )
-                            },
-                    )
+                    if (query.equals("")) {
+                        Text(
+                            stringResource(R.string.no_transactions_yet),
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                        Text(
+                            stringResource(R.string.create_transaction),
+                            style =
+                                MaterialTheme.typography.headlineLarge.copy(
+                                    textDecoration = TextDecoration.Underline,
+                                    color = MaterialTheme.colorScheme.primary,
+                                ),
+                            textAlign = TextAlign.Center,
+                            modifier =
+                                Modifier.padding(horizontal = 16.dp).clickable {
+                                    context.startActivity(
+                                        Intent(context, AddActivity::class.java),
+                                    )
+                                },
+                        )
+                    } else {
+                        Text(
+                            stringResource(R.string.no_search_results),
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
                 }
             }
         }
@@ -264,11 +294,14 @@ fun MainContent(
 }
 
 @Composable
-fun MainBar() {
+fun MainBar(mainViewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
         actions = {
+            IconButton(onClick = { mainViewModel.setSearching(true) }) {
+                Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search))
+            }
             IconButton(onClick = {
                 context.startActivity(Intent(context, PreferencesActivity::class.java))
             }) {
@@ -285,4 +318,71 @@ fun MainBar() {
                 actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
             ),
     )
+}
+
+@Composable
+fun SearchBar(mainViewModel: MainViewModel = viewModel()) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+    val query by mainViewModel.query.observeAsState()
+    TopAppBar(
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    mainViewModel.setSearching(false)
+                    mainViewModel.setQuery("")
+                },
+                modifier = Modifier.padding(start = 8.dp),
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.stop_searching))
+            }
+        },
+        title = {
+            TextField(
+                query ?: "",
+                { mainViewModel.setQuery(it) },
+                singleLine = true,
+                placeholder = {
+                    Text(
+                        stringResource(R.string.search),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Normal,
+                    )
+                },
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedTextColor = LocalContentColor.current,
+                        unfocusedTextColor = LocalContentColor.current,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        cursorColor = LocalContentColor.current,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
+                modifier = Modifier.fillMaxSize().focusRequester(focusRequester),
+                keyboardActions =
+                    KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                            focusRequester.freeFocus()
+                        },
+                    ),
+            )
+        },
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+    )
+    LaunchedEffect(focusRequester) {
+        focusRequester.requestFocus()
+    }
+    BackHandler {
+        mainViewModel.setSearching(false)
+        mainViewModel.setQuery("")
+    }
 }
