@@ -42,7 +42,7 @@ class LedgerRepository
             fileUri: Uri,
             transaction: Transaction,
             onFinish: suspend () -> Unit,
-            onMismatch: suspend() -> Unit,
+            onMismatch: suspend () -> Unit,
             onWriteError: suspend (IOException) -> Unit,
             onReadError: suspend (IOException) -> Unit,
         ) {
