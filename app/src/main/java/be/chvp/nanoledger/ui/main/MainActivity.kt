@@ -22,9 +22,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,15 +78,44 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             val searching by mainViewModel.searching.observeAsState()
-            val latestError by mainViewModel.latestError.observeAsState()
-            val errorMessage = stringResource(R.string.error_reading_file)
-            LaunchedEffect(latestError) {
-                val error = latestError?.get()
+            val selected by mainViewModel.selectedIndex.observeAsState()
+
+            val latestReadError by mainViewModel.latestReadError.observeAsState()
+            val readErrorMessage = stringResource(R.string.error_reading_file)
+            LaunchedEffect(latestReadError) {
+                val error = latestReadError?.get()
                 if (error != null) {
                     Log.e("be.chvp.nanoledger", "Exception while reading file", error)
                     Toast.makeText(
                         context,
-                        errorMessage,
+                        readErrorMessage,
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+
+            val latestWriteError by mainViewModel.latestWriteError.observeAsState()
+            val writeErrorMessage = stringResource(R.string.error_writing_file)
+            LaunchedEffect(latestWriteError) {
+                val error = latestWriteError?.get()
+                if (error != null) {
+                    Log.e("be.chvp.nanoledger", "Exception while writing file", error)
+                    Toast.makeText(
+                        context,
+                        writeErrorMessage,
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+
+            val latestMismatch by mainViewModel.latestMismatch.observeAsState()
+            val mismatchMessage = stringResource(R.string.mismatch_no_delete)
+            LaunchedEffect(latestMismatch) {
+                val error = latestMismatch?.get()
+                if (error != null) {
+                    Toast.makeText(
+                        context,
+                        mismatchMessage,
                         Toast.LENGTH_LONG,
                     ).show()
                 }
@@ -97,7 +128,9 @@ class MainActivity : ComponentActivity() {
             NanoLedgerTheme {
                 Scaffold(
                     topBar = {
-                        if (searching ?: false) {
+                        if (selected != null) {
+                            SelectionBar()
+                        } else if (searching ?: false) {
                             SearchBar()
                         } else {
                             MainBar()
@@ -176,6 +209,7 @@ fun MainContent(
     val transactions by mainViewModel.filteredTransactions.observeAsState()
     val query by mainViewModel.query.observeAsState()
     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
+    val selected by mainViewModel.selectedIndex.observeAsState()
     val state = rememberPullToRefreshState()
     if (state.isRefreshing && !(isRefreshing ?: false)) {
         LaunchedEffect(true) {
@@ -199,7 +233,26 @@ fun MainContent(
         if ((transactions?.size ?: 0) > 0 || (isRefreshing ?: true)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
+                    val index = transactions!!.size - it - 1
                     Card(
+                        colors =
+                            if (index == selected) {
+                                CardDefaults.outlinedCardColors()
+                            } else {
+                                CardDefaults.cardColors()
+                            },
+                        elevation =
+                            if (index == selected) {
+                                CardDefaults.outlinedCardElevation()
+                            } else {
+                                CardDefaults.cardElevation()
+                            },
+                        border =
+                            if (index == selected) {
+                                CardDefaults.outlinedCardBorder(true)
+                            } else {
+                                null
+                            },
                         modifier =
                             Modifier.fillMaxWidth().padding(
                                 8.dp,
@@ -208,41 +261,43 @@ fun MainContent(
                                 if (it == transactions!!.size - 1) 8.dp else 4.dp,
                             ),
                     ) {
-                        val tr = transactions!![transactions!!.size - it - 1]
-                        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                            Text(
-                                transactionHeader(tr),
-                                softWrap = false,
-                                style =
-                                    MaterialTheme.typography.bodySmall.copy(
-                                        fontFamily = FontFamily.Monospace,
-                                    ),
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            for (p in tr.postings) {
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
-                                    Text(
-                                        "  ${p.account}",
-                                        softWrap = false,
-                                        style =
-                                            MaterialTheme.typography.bodySmall.copy(
-                                                fontFamily = FontFamily.Monospace,
-                                            ),
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.weight(1f),
-                                    )
-                                    Text(
-                                        p.amount ?: "",
-                                        softWrap = false,
-                                        style =
-                                            MaterialTheme.typography.bodySmall.copy(
-                                                fontFamily = FontFamily.Monospace,
-                                            ),
-                                        modifier = Modifier.padding(start = 2.dp),
-                                    )
+                        Box(modifier = Modifier.clickable { mainViewModel.toggleSelect(index) }) {
+                            val tr = transactions!![index]
+                            Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                                Text(
+                                    transactionHeader(tr),
+                                    softWrap = false,
+                                    style =
+                                        MaterialTheme.typography.bodySmall.copy(
+                                            fontFamily = FontFamily.Monospace,
+                                        ),
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                for (p in tr.postings) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) {
+                                        Text(
+                                            "  ${p.account}",
+                                            softWrap = false,
+                                            style =
+                                                MaterialTheme.typography.bodySmall.copy(
+                                                    fontFamily = FontFamily.Monospace,
+                                                ),
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.weight(1f),
+                                        )
+                                        Text(
+                                            p.amount ?: "",
+                                            softWrap = false,
+                                            style =
+                                                MaterialTheme.typography.bodySmall.copy(
+                                                    fontFamily = FontFamily.Monospace,
+                                                ),
+                                            modifier = Modifier.padding(start = 2.dp),
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -318,6 +373,40 @@ fun MainBar(mainViewModel: MainViewModel = viewModel()) {
                 actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
             ),
     )
+}
+
+@Composable
+fun SelectionBar(mainViewModel: MainViewModel = viewModel()) {
+    val selected by mainViewModel.selectedIndex.observeAsState()
+    TopAppBar(
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    mainViewModel.toggleSelect(selected!!)
+                },
+                modifier = Modifier.padding(start = 8.dp),
+            ) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.stop_selection))
+            }
+        },
+        title = { },
+        actions = {
+            IconButton(onClick = { mainViewModel.deleteSelected() }) {
+                Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.delete))
+            }
+        },
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+    )
+
+    BackHandler {
+        mainViewModel.toggleSelect(selected!!)
+    }
 }
 
 @Composable

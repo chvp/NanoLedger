@@ -16,6 +16,8 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
         val match = headerRegex.find(lines[i])
         i += 1
         if (match != null) {
+            val firstLine = i - 1
+            var lastLine = i - 1
             val groups = match.groups
             val date = groups[1]!!.value
             val status = groups[5]?.value
@@ -27,6 +29,7 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
                 val stripped = lines[i].trim().replace(commentRegex, "")
                 i += 1
                 if (stripped.length > 0) {
+                    lastLine = i - 1
                     val components = stripped.split(postingSplitRegex, limit = 2)
                     if (components.size > 1) {
                         postings.add(Posting(components[0], components[1]))
@@ -35,7 +38,7 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
                     }
                 }
             }
-            result.add(Transaction(date, status, payee, note, postings))
+            result.add(Transaction(firstLine, lastLine, date, status, payee, note, postings))
         }
     }
     return result
