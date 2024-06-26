@@ -1,0 +1,1 @@
+Allow searching for transactions
