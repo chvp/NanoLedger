@@ -49,7 +49,7 @@
                 category = "tools";
                 help = "Build a signed APK";
                 command = ''
-                  rm -f "$APK_DIR/"*
+                  rm -rf "$APK_DIR/"*
                   gradle assembleRelease
                   "$BUILD_TOOLS_PATH/zipalign" -v -p 4 "$APK_DIR/app-release-unsigned.apk" "$APK_DIR/app-release-unsigned-aligned.apk"
 
@@ -62,7 +62,7 @@
                 category = "tools";
                 help = "Install a debug signed release APK";
                 command = ''
-                  rm -f "$APK_DIR/"*
+                  rm -rf "$APK_DIR/"*
                   gradle assembleRelease
                   "$BUILD_TOOLS_PATH/zipalign" -v -p 4 "$APK_DIR/app-release-unsigned.apk" "$APK_DIR/app-release-unsigned-aligned.apk"
                   echo android | "$BUILD_TOOLS_PATH/apksigner" sign --ks "$HOME/.android/debug.keystore" --out "$APK_DIR/app-release.apk" "$APK_DIR/app-release-unsigned-aligned.apk"
