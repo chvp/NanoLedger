@@ -1,0 +1,1 @@
+(Hopefully) fix reproducibility issues on F-Droid
