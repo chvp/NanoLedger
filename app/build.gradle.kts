@@ -33,6 +33,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -83,6 +84,7 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.android.desugar)
     implementation(libs.activity.compose)
     implementation(libs.activity.ktx)
     implementation(platform(libs.compose.bom))

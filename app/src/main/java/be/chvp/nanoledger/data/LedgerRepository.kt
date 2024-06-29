@@ -51,13 +51,7 @@ class LedgerRepository
                 fileUri
                     .let { context.contentResolver.openInputStream(it) }
                     ?.let { BufferedReader(InputStreamReader(it)) }
-                    ?.use { reader ->
-                        var line = reader.readLine()
-                        while (line != null) {
-                            result.add(line)
-                            line = reader.readLine()
-                        }
-                    }
+                    ?.use { it.lines().forEach { result.add(it) } }
 
                 if (!result.equals(fileContents.value)) {
                     onMismatch()
@@ -116,13 +110,7 @@ class LedgerRepository
                 fileUri
                     .let { context.contentResolver.openInputStream(it) }
                     ?.let { BufferedReader(InputStreamReader(it)) }
-                    ?.use { reader ->
-                        var line = reader.readLine()
-                        while (line != null) {
-                            result.add(line)
-                            line = reader.readLine()
-                        }
-                    }
+                    ?.use { it.lines().forEach { result.add(it) } }
                 val extracted = extractTransactions(result)
                 _fileContents.postValue(result)
                 _transactions.postValue(extracted)
