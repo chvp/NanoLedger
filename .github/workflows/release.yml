@@ -25,10 +25,10 @@ jobs:
     - name: Build release APK
       run: |
         ./gradlew assembleRelease
-        $ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+        $ANDROID_SDK_ROOT/build-tools/35.0.0/zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
         echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
-        echo "${{ secrets.KEYSTORE_PASSWORD }}" | $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign --ks keystore.jks --out app-release.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
-        $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner verify app-release.apk
+        echo "${{ secrets.KEYSTORE_PASSWORD }}" | $ANDROID_SDK_ROOT/build-tools/35.0.0/apksigner sign --ks keystore.jks --out app-release.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+        $ANDROID_SDK_ROOT/build-tools/35.0.0/apksigner verify app-release.apk
     - name: Parse tag
       id: parse_tag
       run: "echo ${{ github.ref }} | sed 's#^refs/tags/#::set-output name=version::#'"
