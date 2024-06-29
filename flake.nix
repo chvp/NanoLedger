@@ -2,7 +2,7 @@
   description = "Nanoledger android app";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:chvp/nixpkgs/bump-androidenv";
     devshell = {
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -13,10 +13,10 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; config = { android_sdk.accept_license = true; allowUnfree = true; }; overlays = [ devshell.overlays.default ]; };
-        buildToolsVersion = "34.0.0";
+        buildToolsVersion = "35.0.0";
         composed = pkgs.androidenv.composeAndroidPackages {
-          buildToolsVersions = [ buildToolsVersion ];
-          platformVersions = [ "33" "34" ];
+          buildToolsVersions = [ "34.0.0" buildToolsVersion ];
+          platformVersions = [ "34" "35" ];
         };
         fhsEnv = pkgs.buildFHSUserEnv {
           name = "android-sdk-env";

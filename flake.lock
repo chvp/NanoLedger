@@ -59,16 +59,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1719468428,
-        "narHash": "sha256-vN5xJAZ4UGREEglh3lfbbkIj+MPEYMuqewMn4atZFaQ=",
-        "owner": "nixos",
+        "lastModified": 1719672060,
+        "narHash": "sha256-ii/Boz9O1WlMAFGvzyvuxfPkabxlQ29evLq+d7QvFzY=",
+        "owner": "chvp",
         "repo": "nixpkgs",
-        "rev": "1e3deb3d8a86a870d925760db1a5adecc64d329d",
+        "rev": "3e1ea04727d569a01b3b6f161a176a4dc93e97a9",
         "type": "github"
       },
       "original": {
-        "owner": "nixos",
-        "ref": "nixpkgs-unstable",
+        "owner": "chvp",
+        "ref": "bump-androidenv",
         "repo": "nixpkgs",
         "type": "github"
       }
