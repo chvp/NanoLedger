@@ -15,11 +15,8 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.math.BigDecimal
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,10 +30,9 @@ class AddViewModel
         private val _saving = MutableLiveData<Boolean>(false)
         val saving: LiveData<Boolean> = _saving
 
-        private val _date = MutableLiveData<LocalDate>(LocalDate.now())
-        val date: LiveData<LocalDate> = _date
-        val formattedDate: LiveData<String> = _date.map { it.format(DateTimeFormatter.ISO_DATE) }
-        val dateMillis: LiveData<Long> = _date.map { it.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() }
+        private val _date = MutableLiveData<Date>(Date())
+        val date: LiveData<Date> = _date
+        val formattedDate: LiveData<String> = _date.map { SimpleDateFormat("yyyy-MM-dd").format(it) }
 
         private val _status = MutableLiveData<String>(preferencesDataSource.getDefaultStatus())
         val status: LiveData<String> = _status
@@ -117,7 +113,7 @@ class AddViewModel
                 _saving.value = true
                 viewModelScope.launch(IO) {
                     val transaction = StringBuilder()
-                    transaction.append(_date.value!!.format(DateTimeFormatter.ISO_DATE))
+                    transaction.append(SimpleDateFormat("yyyy-MM-dd").format(date.value!!))
                     if (status.value!! != " ") {
                         transaction.append(" ${status.value}")
                     }
@@ -169,7 +165,7 @@ class AddViewModel
         }
 
         fun setDate(dateMillis: Long) {
-            _date.value = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.of("UTC")).toLocalDate()
+            _date.value = Date(dateMillis)
         }
 
         fun setStatus(newStatus: String) {
@@ -190,7 +186,14 @@ class AddViewModel
         ) {
             val result = ArrayList(postings.value!!)
             result[index] = Triple(newAccount, result[index].second, result[index].third)
-            _postings.value = removeEmpty(result)
+            val filteredResult = ArrayList<Triple<String, String, String>>()
+            for (triple in result) {
+                if (triple.first != "" || triple.third != "") {
+                    filteredResult.add(triple)
+                }
+            }
+            filteredResult.add(emptyPosting())
+            _postings.value = filteredResult
         }
 
         fun setCurrency(
@@ -208,18 +211,14 @@ class AddViewModel
         ) {
             val result = ArrayList(postings.value!!)
             result[index] = Triple(result[index].first, result[index].second, newAmount)
-            _postings.value = removeEmpty(result)
-        }
-
-        fun removeEmpty(postings: List<Triple<String, String, String>>): List<Triple<String, String, String>> {
-            val result = ArrayList<Triple<String, String, String>>()
-            for (p in postings) {
-                if (p.first != "" || p.third != "") {
-                    result.add(p)
+            val filteredResult = ArrayList<Triple<String, String, String>>()
+            for (triple in result) {
+                if (triple.first != "" || triple.third != "") {
+                    filteredResult.add(triple)
                 }
             }
-            result.add(emptyPosting())
-            return result
+            filteredResult.add(emptyPosting())
+            _postings.value = filteredResult
         }
 
         fun emptyPosting(): Triple<String, String, String> {
