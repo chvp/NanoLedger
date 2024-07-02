@@ -284,8 +284,8 @@ fun DateSelector(
     addViewModel: AddViewModel = viewModel(),
 ) {
     val focusManager = LocalFocusManager.current
+    val date by addViewModel.date.observeAsState()
     val formattedDate by addViewModel.formattedDate.observeAsState()
-    val dateMillis by addViewModel.dateMillis.observeAsState()
     var dateDialogOpen by rememberSaveable { mutableStateOf(false) }
     OutlinedTextField(
         value = formattedDate ?: "",
@@ -306,7 +306,7 @@ fun DateSelector(
             },
     )
     if (dateDialogOpen) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = dateMillis)
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date?.getTime())
         DatePickerDialog(
             onDismissRequest = { dateDialogOpen = false },
             confirmButton = {
