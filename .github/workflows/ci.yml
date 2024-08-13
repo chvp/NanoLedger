@@ -62,4 +62,14 @@ jobs:
     - name: Setup Android problem matchers
       uses: jonasb/android-problem-matchers-action@v1
     - name: Build
-      run: ./gradlew assemble
+      run: |
+        ./gradlew assemble
+        $ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+        echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
+        echo "${{ secrets.KEYSTORE_PASSWORD }}" | $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign --ks keystore.jks --out app-release.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+        $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner verify app-release.apk
+    - name: Archive production APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: apk
+        path: app-release.apk
