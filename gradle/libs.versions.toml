@@ -10,7 +10,7 @@ androidx-test-ext-junit = "1.2.1"
 espresso-core = "3.6.1"
 lifecycle = "2.8.4"
 activity = "1.9.1"
-compose-bom = "2024.06.00"
+compose-bom = "2024.08.00"
 material = "1.12.0"
 
 [libraries]
