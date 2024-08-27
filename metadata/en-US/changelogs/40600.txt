@@ -1,0 +1,1 @@
+Disable minification to unblock f-droid verification
