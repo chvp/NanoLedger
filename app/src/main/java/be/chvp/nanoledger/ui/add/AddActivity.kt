@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -84,11 +85,12 @@ class AddActivity() : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             val latestError by addViewModel.latestError.observeAsState()
-            val errorMessage = stringResource(R.string.error_writing_file)
             val showMessage = stringResource(R.string.show)
             val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
             var openErrorDialog by rememberSaveable { mutableStateOf(false) }
+
+            val errorMessage = stringResource(R.string.error_writing_file)
             var errorDialogMessage by rememberSaveable { mutableStateOf("") }
             LaunchedEffect(latestError) {
                 val error = latestError?.get()
@@ -108,6 +110,20 @@ class AddActivity() : ComponentActivity() {
                     }
                 }
             }
+
+            val latestMismatch by addViewModel.latestMismatch.observeAsState()
+            val mismatchMessage = stringResource(R.string.mismatch_no_write)
+            LaunchedEffect(latestMismatch) {
+                val error = latestMismatch?.get()
+                if (error != null) {
+                    Toast.makeText(
+                        context,
+                        mismatchMessage,
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+
             BackHandler(enabled = true) {
                 finish()
                 startActivity(

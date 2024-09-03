@@ -18,6 +18,7 @@
     <string name="error">Error</string>
     <string name="error_reading_file">Error while reading file</string>
     <string name="error_writing_file">Error while writing file</string>
+    <string name="mismatch_no_write">File contents outdated, aborting write</string>
     <string name="mismatch_no_delete">File contents outdated, aborting delete</string>
     <string name="file">File</string>
     <string name="note">Note</string>
