@@ -1,0 +1,1 @@
+Fix writing to cloud storage providers that don't support appending to a file
