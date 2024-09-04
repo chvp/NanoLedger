@@ -88,19 +88,39 @@ class LedgerRepository
             fileUri: Uri,
             text: String,
             onFinish: suspend () -> Unit,
+            onMismatch: suspend () -> Unit,
             onWriteError: suspend (IOException) -> Unit,
             onReadError: suspend (IOException) -> Unit,
         ) {
             try {
-                context.contentResolver.openOutputStream(fileUri, "wa")
-                    ?.let { OutputStreamWriter(it) }
-                    ?.use {
-                        if (!fileContents.value!!.isEmpty() && fileContents.value!!.last() != "") {
-                            it.write("\n")
+                val result = ArrayList<String>()
+                fileUri
+                    .let { context.contentResolver.openInputStream(it) }
+                    ?.let { BufferedReader(InputStreamReader(it)) }
+                    ?.use { reader ->
+                        var line = reader.readLine()
+                        while (line != null) {
+                            result.add(line)
+                            line = reader.readLine()
                         }
-                        it.write(text)
                     }
-                readFrom(fileUri, onFinish, onReadError)
+
+                if (!result.equals(fileContents.value)) {
+                    onMismatch()
+                } else {
+                    context.contentResolver.openOutputStream(fileUri, "w")
+                        ?.let { OutputStreamWriter(it) }
+                        ?.use {
+                            fileContents.value!!.forEach { line ->
+                                it.write("${line}\n")
+                            }
+                            if (!fileContents.value!!.isEmpty() && fileContents.value!!.last() != "") {
+                                it.write("\n")
+                            }
+                            it.write(text)
+                        }
+                    readFrom(fileUri, onFinish, onReadError)
+                }
             } catch (e: IOException) {
                 onWriteError(e)
             }

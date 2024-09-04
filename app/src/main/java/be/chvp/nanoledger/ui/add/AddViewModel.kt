@@ -105,6 +105,9 @@ class AddViewModel
         private val _latestError = MutableLiveData<Event<IOException>?>(null)
         val latestError: LiveData<Event<IOException>?> = _latestError
 
+        private val _latestMismatch = MutableLiveData<Event<Int>?>(null)
+        val latestMismatch: LiveData<Event<Int>?> = _latestMismatch
+
         val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
 
         fun append(onFinish: suspend () -> Unit) {
@@ -145,6 +148,10 @@ class AddViewModel
                         {
                             _saving.postValue(false)
                             onFinish()
+                        },
+                        {
+                            _saving.postValue(false)
+                            _latestMismatch.postValue(Event(1))
                         },
                         {
                             _saving.postValue(false)
