@@ -38,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -353,7 +354,7 @@ fun StatusSelector(
             value = (status ?: ""),
             onValueChange = {},
             readOnly = true,
-            modifier = Modifier.menuAnchor(),
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
             colors =
                 ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -537,7 +538,7 @@ fun OutlinedLooseDropdown(
             singleLine = true,
             label = content,
             modifier =
-                Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
+                Modifier.menuAnchor(MenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
                     if (!it.hasFocus) {
                         expanded = false
                     }
@@ -595,7 +596,7 @@ fun LooseDropdown(
             },
             singleLine = true,
             modifier =
-                Modifier.menuAnchor().fillMaxWidth().onFocusChanged {
+                Modifier.menuAnchor(MenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
                     if (!it.hasFocus) {
                         expanded = false
                     }
