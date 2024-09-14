@@ -24,6 +24,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -121,7 +122,7 @@ class PreferencesActivity() : ComponentActivity() {
                                 statusMap[defaultStatus ?: " "] ?: stringResource(
                                     R.string.status_unmarked,
                                 ),
-                                modifier = Modifier.menuAnchor(),
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
                             ) { expandedStatus = true }
                             ExposedDropdownMenu(
                                 expanded = expandedStatus,
@@ -155,7 +156,7 @@ class PreferencesActivity() : ComponentActivity() {
                                 currencyOrderMap[currencyBeforeAmount ?: true] ?: stringResource(
                                     R.string.currency_order_before,
                                 ),
-                                modifier = Modifier.menuAnchor(),
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
                             ) { expandedCurrency = true }
                             ExposedDropdownMenu(
                                 expanded = expandedCurrency,

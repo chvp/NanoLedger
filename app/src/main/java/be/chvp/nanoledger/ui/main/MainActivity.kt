@@ -38,8 +38,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -210,26 +208,9 @@ fun MainContent(
     val query by mainViewModel.query.observeAsState()
     val isRefreshing by mainViewModel.isRefreshing.observeAsState()
     val selected by mainViewModel.selectedIndex.observeAsState()
-    val state = rememberPullToRefreshState()
-    if (state.isRefreshing && !(isRefreshing ?: false)) {
-        LaunchedEffect(true) {
-            state.endRefresh()
-        }
-    } else if (!state.isRefreshing && (isRefreshing ?: false)) {
-        LaunchedEffect(true) {
-            state.startRefresh()
-        }
-    }
-    if (state.isRefreshing) {
-        LaunchedEffect(true) {
-            mainViewModel.refresh()
-            // Due to the way compositing works, we cancel the refresh in the
-            // first if (even if the first if is moved below this one, and then
-            // we have no way to undo the cancel).
-            state.startRefresh()
-        }
-    }
-    Box(modifier = Modifier.nestedScroll(state.nestedScrollConnection).padding(contentPadding)) {
+    PullToRefreshBox(isRefreshing = (isRefreshing ?: false), onRefresh = {
+        mainViewModel.refresh()
+    }, contentAlignment = Alignment.TopCenter, modifier = Modifier.padding(contentPadding)) {
         if ((transactions?.size ?: 0) > 0 || (isRefreshing ?: true)) {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
@@ -344,7 +325,6 @@ fun MainContent(
                 }
             }
         }
-        PullToRefreshContainer(state = state, modifier = Modifier.align(Alignment.TopCenter))
     }
 }
 
