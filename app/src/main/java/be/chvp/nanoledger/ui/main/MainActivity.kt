@@ -8,7 +8,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +46,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -215,74 +216,7 @@ fun MainContent(
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
                     val index = transactions!!.size - it - 1
-                    Card(
-                        colors =
-                            if (index == selected) {
-                                CardDefaults.outlinedCardColors()
-                            } else {
-                                CardDefaults.cardColors()
-                            },
-                        elevation =
-                            if (index == selected) {
-                                CardDefaults.outlinedCardElevation()
-                            } else {
-                                CardDefaults.cardElevation()
-                            },
-                        border =
-                            if (index == selected) {
-                                CardDefaults.outlinedCardBorder(true)
-                            } else {
-                                null
-                            },
-                        modifier =
-                            Modifier.fillMaxWidth().padding(
-                                8.dp,
-                                if (it == 0) 8.dp else 4.dp,
-                                8.dp,
-                                if (it == transactions!!.size - 1) 8.dp else 4.dp,
-                            ),
-                    ) {
-                        Box(modifier = Modifier.clickable { mainViewModel.toggleSelect(index) }) {
-                            val tr = transactions!![index]
-                            Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                                Text(
-                                    transactionHeader(tr),
-                                    softWrap = false,
-                                    style =
-                                        MaterialTheme.typography.bodySmall.copy(
-                                            fontFamily = FontFamily.Monospace,
-                                        ),
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                for (p in tr.postings) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier.fillMaxWidth(),
-                                    ) {
-                                        Text(
-                                            "  ${p.account}",
-                                            softWrap = false,
-                                            style =
-                                                MaterialTheme.typography.bodySmall.copy(
-                                                    fontFamily = FontFamily.Monospace,
-                                                ),
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier.weight(1f),
-                                        )
-                                        Text(
-                                            p.amount ?: "",
-                                            softWrap = false,
-                                            style =
-                                                MaterialTheme.typography.bodySmall.copy(
-                                                    fontFamily = FontFamily.Monospace,
-                                                ),
-                                            modifier = Modifier.padding(start = 2.dp),
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    TransactionCard(selected, index, transactions, mainViewModel, it)
                 }
             }
         } else {
@@ -320,6 +254,89 @@ fun MainContent(
                             style = MaterialTheme.typography.headlineLarge,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(horizontal = 16.dp),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TransactionCard(selected: Int?, index: Int, transactions: List<Transaction>?, mainViewModel: MainViewModel, it: Int){
+
+    val isDarkTheme = isSystemInDarkTheme()
+
+    val backgroundColor = if (index == selected) {
+        if (isDarkTheme) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiaryContainer
+    } else {
+        if (isDarkTheme) MaterialTheme.colorScheme.inverseOnSurface
+        else MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    val contentColor = if (index == selected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        if (isDarkTheme) MaterialTheme.colorScheme.onSurface
+        else MaterialTheme.colorScheme.onSurface
+    }
+
+    val elevation = if (index == selected) {
+        8.dp
+    } else {
+        2.dp
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = contentColor
+        ),
+        elevation = CardDefaults.cardElevation(elevation),
+        border =if (index == selected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
+        modifier =
+        Modifier.fillMaxWidth().padding(
+            8.dp,
+            if (it == 0) 8.dp else 4.dp,
+            8.dp,
+            if (it == transactions!!.size - 1) 8.dp else 4.dp,
+        ),
+    ) {
+        Box(modifier = Modifier.clickable { mainViewModel.toggleSelect(index) }) {
+            val tr = transactions[index]
+            Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                Text(
+                    transactionHeader(tr),
+                    softWrap = false,
+                    style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        fontFamily = FontFamily.Monospace,
+                    ),
+                    overflow = TextOverflow.Ellipsis,
+                )
+                for (p in tr.postings) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            "  ${p.account}",
+                            softWrap = false,
+                            style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                fontFamily = FontFamily.Monospace,
+                            ),
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                            p.amount ?: "",
+                            softWrap = false,
+                            style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                fontFamily = FontFamily.Monospace,
+                            ),
+                            modifier = Modifier.padding(start = 2.dp),
                         )
                     }
                 }
