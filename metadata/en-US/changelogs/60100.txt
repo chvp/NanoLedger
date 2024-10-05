@@ -1,0 +1,2 @@
+* Add copy-and-edit functionality
+* Fix bug where actions on a transaction would use the wrong transaction when the transaction list is filtered

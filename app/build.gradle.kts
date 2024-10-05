@@ -15,8 +15,8 @@ android {
         applicationId = "be.chvp.nanoledger"
         minSdk = 21
         targetSdk = 34
-        versionCode = 50100
-        versionName = "0.5.0"
+        versionCode = 60100
+        versionName = "0.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
