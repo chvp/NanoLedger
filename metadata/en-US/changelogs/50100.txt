@@ -1,0 +1,3 @@
+Allow editing transactions
+
+Note that NanoLedger does not support the full (h)ledger syntax. Transactions added with NanoLedger should be editable, but if you use more esoteric amount syntax, NanoLedger might not parse those correctly (and will definitely lose costs/assertions). Dates are also required to be in ISO syntax (the same way NanoLedger writes them out). If your date is not in this format, the current date will be picked.
