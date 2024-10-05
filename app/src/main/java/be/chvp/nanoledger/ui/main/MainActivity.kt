@@ -49,6 +49,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -57,8 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.ui.add.AddActivity
+import be.chvp.nanoledger.ui.common.TRANSACTION_INDEX_KEY
 import be.chvp.nanoledger.ui.edit.EditActivity
-import be.chvp.nanoledger.ui.edit.TRANSACTION_INDEX_KEY
 import be.chvp.nanoledger.ui.preferences.PreferencesActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -303,6 +304,14 @@ fun SelectionBar(mainViewModel: MainViewModel = viewModel()) {
         },
         title = { },
         actions = {
+            IconButton(onClick = {
+                val intent = Intent(context, AddActivity::class.java)
+                intent.putExtra(TRANSACTION_INDEX_KEY, selected!!)
+                mainViewModel.toggleSelect(selected!!)
+                context.startActivity(intent)
+            }) {
+                Icon(painterResource(R.drawable.baseline_difference_24), contentDescription = stringResource(R.string.copy_and_edit))
+            }
             IconButton(onClick = {
                 val intent = Intent(context, EditActivity::class.java)
                 intent.putExtra(TRANSACTION_INDEX_KEY, selected!!)

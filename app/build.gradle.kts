@@ -81,6 +81,7 @@ configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
 }
 
 dependencies {
+    implementation(libs.appcompat)
     implementation(libs.activity.compose)
     implementation(libs.activity.ktx)
     implementation(platform(libs.compose.bom))
