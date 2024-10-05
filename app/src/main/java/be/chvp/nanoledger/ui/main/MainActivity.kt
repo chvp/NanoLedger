@@ -270,7 +270,7 @@ fun MainContent(
                                             modifier = Modifier.weight(1f),
                                         )
                                         Text(
-                                            p.amount ?: "",
+                                            p.amount?.original ?: "",
                                             softWrap = false,
                                             style =
                                                 MaterialTheme.typography.bodySmall.copy(
