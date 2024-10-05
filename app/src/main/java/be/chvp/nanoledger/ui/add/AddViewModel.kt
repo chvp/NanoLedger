@@ -9,6 +9,7 @@ import be.chvp.nanoledger.ui.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,6 +20,12 @@ class AddViewModel
         preferencesDataSource: PreferencesDataSource,
         ledgerRepository: LedgerRepository,
     ) : TransactionFormViewModel(application, preferencesDataSource, ledgerRepository) {
+        fun loadTransactionFromIndex(index: Int) {
+            setFromTransaction(ledgerRepository.transactions.value!![index])
+            // When copying, set the date to today
+            setDate(Date())
+        }
+
         override fun save(onFinish: suspend () -> Unit) {
             val uri = preferencesDataSource.getFileUri()
             if (uri != null) {

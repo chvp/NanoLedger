@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import be.chvp.nanoledger.R
+import be.chvp.nanoledger.ui.common.TRANSACTION_INDEX_KEY
 import be.chvp.nanoledger.ui.common.TransactionForm
 import be.chvp.nanoledger.ui.main.MainActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
@@ -45,6 +46,12 @@ class AddActivity() : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (getIntent().hasExtra(TRANSACTION_INDEX_KEY)) {
+            val transactionIndex = getIntent().getIntExtra(TRANSACTION_INDEX_KEY, 0)
+            addViewModel.loadTransactionFromIndex(transactionIndex)
+        }
+
         setContent {
             val context = LocalContext.current
             val scope = rememberCoroutineScope()

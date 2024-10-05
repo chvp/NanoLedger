@@ -8,6 +8,7 @@ import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.PreferencesDataSource
+import be.chvp.nanoledger.data.Transaction
 import be.chvp.nanoledger.ui.util.Event
 import java.io.IOException
 import java.math.BigDecimal
@@ -155,8 +156,25 @@ abstract class TransactionFormViewModel
 
         abstract fun save(onFinish: suspend () -> Unit)
 
+        fun setFromTransaction(transaction: Transaction) {
+            setDate(transaction.date)
+            setStatus(transaction.status ?: "")
+            setPayee(transaction.payee)
+            setNote(transaction.note ?: "")
+
+            transaction.postings.forEachIndexed { i, posting ->
+                setAccount(i, posting.account)
+                setCurrency(i, posting.amount?.currency ?: "")
+                setAmount(i, posting.amount?.quantity ?: "")
+            }
+        }
+
         fun setDate(dateMillis: Long) {
             _date.value = Date(dateMillis)
+        }
+
+        fun setDate(newDate: Date) {
+            _date.value = newDate
         }
 
         fun setDate(newDate: String) {

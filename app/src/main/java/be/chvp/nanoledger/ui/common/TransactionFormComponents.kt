@@ -54,6 +54,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
 import kotlinx.coroutines.launch
 
+val TRANSACTION_INDEX_KEY = "transaction_index"
+
 @Composable
 fun TransactionForm(
     viewModel: TransactionFormViewModel,

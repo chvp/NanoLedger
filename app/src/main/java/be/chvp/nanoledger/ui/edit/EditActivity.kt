@@ -32,14 +32,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import be.chvp.nanoledger.R
+import be.chvp.nanoledger.ui.common.TRANSACTION_INDEX_KEY
 import be.chvp.nanoledger.ui.common.TransactionForm
 import be.chvp.nanoledger.ui.main.MainActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-
-val TRANSACTION_INDEX_KEY = "transaction_index"
 
 @AndroidEntryPoint
 class EditActivity() : ComponentActivity() {
@@ -53,7 +52,7 @@ class EditActivity() : ComponentActivity() {
             finish()
         }
         val transactionIndex = getIntent().getIntExtra(TRANSACTION_INDEX_KEY, 0)
-        editViewModel.setFromIndex(transactionIndex)
+        editViewModel.loadTransactionFromIndex(transactionIndex)
 
         setContent {
             val context = LocalContext.current
@@ -65,10 +64,9 @@ class EditActivity() : ComponentActivity() {
                 finish()
                 startActivity(Intent(context, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             }
-            val loading by editViewModel.loading.observeAsState()
             val saving by editViewModel.saving.observeAsState()
             val valid by editViewModel.valid.observeAsState()
-            val enabled = !(saving ?: true) && (valid ?: false) && !(loading ?: true)
+            val enabled = !(saving ?: true) && (valid ?: false)
             NanoLedgerTheme {
                 Scaffold(
                     topBar = { Bar() },
@@ -96,7 +94,7 @@ class EditActivity() : ComponentActivity() {
                                     MaterialTheme.colorScheme.surface
                                 },
                         ) {
-                            if (saving ?: true || loading ?: true) {
+                            if (saving ?: true) {
                                 CircularProgressIndicator(
                                     color = MaterialTheme.colorScheme.secondary,
                                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
