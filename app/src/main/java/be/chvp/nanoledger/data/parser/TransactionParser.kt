@@ -1,13 +1,12 @@
 package be.chvp.nanoledger.data.parser
 
+import be.chvp.nanoledger.data.Amount
 import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.Transaction
 
 val datePart = "((\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2}(=(\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2})?)"
 val headerRegex = Regex("^$datePart[ \t]*(\\*|!)?([^|]*)(\\|(.*))?$")
 val postingRegex = Regex("^[ \t]+\\S.*$")
-val postingSplitRegex = Regex("[ \\t]{2,}")
-val commentRegex = Regex(";.*$")
 
 fun extractTransactions(lines: List<String>): List<Transaction> {
     val result = ArrayList<Transaction>()
@@ -26,20 +25,52 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
 
             val postings = ArrayList<Posting>()
             while (i < lines.size && postingRegex.find(lines[i]) != null) {
-                val stripped = lines[i].trim().replace(commentRegex, "")
-                i += 1
-                if (stripped.length > 0) {
-                    lastLine = i - 1
-                    val components = stripped.split(postingSplitRegex, limit = 2)
-                    if (components.size > 1) {
-                        postings.add(Posting(components[0], components[1]))
-                    } else {
-                        postings.add(Posting(components[0], null))
-                    }
+                val posting = extractPosting(lines[i])
+                if (posting != null) {
+                    lastLine = i
+                    postings.add(posting)
                 }
+                i += 1
             }
             result.add(Transaction(firstLine, lastLine, date, status, payee, note, postings))
         }
     }
     return result
+}
+
+val commentRegex = Regex(";.*$")
+val postingSplitRegex = Regex("[ \\t]{2,}")
+
+fun extractPosting(line: String): Posting? {
+    val stripped = line.trim().replace(commentRegex, "")
+    if (stripped.length == 0) {
+        return null
+    }
+
+    val components = stripped.split(postingSplitRegex, limit = 2)
+    if (components.size == 1) {
+        return Posting(components[0], null)
+    }
+
+    return Posting(components[0], extractAmount(components[1].trim()))
+}
+
+val assertionRegex = Regex("=.*$")
+val costRegex = Regex("@.*$")
+val quantityAtStartRegex = Regex("^(-? *[0-9][0-9,.]*)(.*)")
+val quantityAtEndRegex = Regex("(-? *[0-9][0-9,.]*)$")
+
+fun extractAmount(string: String): Amount {
+    val stripped = string.trim().replace(assertionRegex, "").trim().replace(costRegex, "").trim()
+    val matchForStart = quantityAtStartRegex.find(stripped)
+    if (matchForStart != null) {
+        val groups = matchForStart.groups
+        val quantity = groups[1]!!.value.trim()
+        val currency = groups[2]!!.value.trim()
+        return Amount(quantity, currency, string)
+    }
+    val quantity = quantityAtEndRegex.find(stripped)!!.value.trim()
+    val currency = stripped.replace(quantityAtEndRegex, "").trim()
+
+    return Amount(quantity, currency, string)
 }

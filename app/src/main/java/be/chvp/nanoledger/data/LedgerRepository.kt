@@ -38,6 +38,21 @@ class LedgerRepository
                 )
             }
 
+        suspend fun matches(fileUri: Uri): Boolean {
+            val result = ArrayList<String>()
+            fileUri
+                .let { context.contentResolver.openInputStream(it) }
+                ?.let { BufferedReader(InputStreamReader(it)) }
+                ?.use { reader ->
+                    var line = reader.readLine()
+                    while (line != null) {
+                        result.add(line)
+                        line = reader.readLine()
+                    }
+                }
+            return result.equals(fileContents.value)
+        }
+
         suspend fun deleteTransaction(
             fileUri: Uri,
             transaction: Transaction,
@@ -47,19 +62,7 @@ class LedgerRepository
             onReadError: suspend (IOException) -> Unit,
         ) {
             try {
-                val result = ArrayList<String>()
-                fileUri
-                    .let { context.contentResolver.openInputStream(it) }
-                    ?.let { BufferedReader(InputStreamReader(it)) }
-                    ?.use { reader ->
-                        var line = reader.readLine()
-                        while (line != null) {
-                            result.add(line)
-                            line = reader.readLine()
-                        }
-                    }
-
-                if (!result.equals(fileContents.value)) {
+                if (!matches(fileUri)) {
                     onMismatch()
                 } else {
                     context.contentResolver.openOutputStream(fileUri, "wt")
@@ -84,6 +87,49 @@ class LedgerRepository
             }
         }
 
+        suspend fun replaceTransaction(
+            fileUri: Uri,
+            transaction: Transaction,
+            text: String,
+            onFinish: suspend () -> Unit,
+            onMismatch: suspend () -> Unit,
+            onWriteError: suspend (IOException) -> Unit,
+            onReadError: suspend (IOException) -> Unit,
+        ) {
+            try {
+                if (!matches(fileUri)) {
+                    onMismatch()
+                } else {
+                    context.contentResolver.openOutputStream(fileUri, "wt")
+                        ?.let { OutputStreamWriter(it) }
+                        ?.use {
+                            fileContents.value!!.forEachIndexed { i, line ->
+                                // If we encounter the first line of the transaction, write out the replacement
+                                if (i == transaction.firstLine) {
+                                    it.write(text)
+                                    return@forEachIndexed
+                                }
+
+                                // Just skip all the next lines
+                                if (i > transaction.firstLine && i <= transaction.lastLine) {
+                                    return@forEachIndexed
+                                }
+
+                                // If the line after the transaction is empty, consider it a
+                                // divider for the next transaction and skip it as well
+                                if (i == transaction.lastLine + 1 && line == "") {
+                                    return@forEachIndexed
+                                }
+                                it.write("${line}\n")
+                            }
+                        }
+                    readFrom(fileUri, onFinish, onReadError)
+                }
+            } catch (e: IOException) {
+                onWriteError(e)
+            }
+        }
+
         suspend fun appendTo(
             fileUri: Uri,
             text: String,
@@ -93,19 +139,7 @@ class LedgerRepository
             onReadError: suspend (IOException) -> Unit,
         ) {
             try {
-                val result = ArrayList<String>()
-                fileUri
-                    .let { context.contentResolver.openInputStream(it) }
-                    ?.let { BufferedReader(InputStreamReader(it)) }
-                    ?.use { reader ->
-                        var line = reader.readLine()
-                        while (line != null) {
-                            result.add(line)
-                            line = reader.readLine()
-                        }
-                    }
-
-                if (!result.equals(fileContents.value)) {
+                if (!matches(fileUri)) {
                     onMismatch()
                 } else {
                     context.contentResolver.openOutputStream(fileUri, "w")

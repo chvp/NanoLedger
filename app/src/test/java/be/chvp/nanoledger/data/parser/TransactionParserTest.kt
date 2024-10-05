@@ -27,9 +27,9 @@ class TransactionParserTest {
         assertEquals("Note", transaction.note)
         assertEquals(2, transaction.postings.size)
         assertEquals("assets", transaction.postings[0].account)
-        assertEquals("€ -5.00", transaction.postings[0].amount)
+        assertEquals("€ -5.00", transaction.postings[0].amount?.original)
         assertEquals("expenses", transaction.postings[1].account)
-        assertEquals("€ 5.00", transaction.postings[1].amount)
+        assertEquals("€ 5.00", transaction.postings[1].amount?.original)
     }
 
     @Test
@@ -54,9 +54,9 @@ class TransactionParserTest {
         assertEquals(null, transaction.note)
         assertEquals(2, transaction.postings.size)
         assertEquals("assets", transaction.postings[0].account)
-        assertEquals("€ -5.00", transaction.postings[0].amount)
+        assertEquals("€ -5.00", transaction.postings[0].amount?.original)
         assertEquals("expenses", transaction.postings[1].account)
-        assertEquals("€ 5.00", transaction.postings[1].amount)
+        assertEquals("€ 5.00", transaction.postings[1].amount?.original)
     }
 
     @Test
@@ -83,9 +83,9 @@ class TransactionParserTest {
         assertEquals("Note", transactions[0].note)
         assertEquals(2, transactions[0].postings.size)
         assertEquals("assets", transactions[0].postings[0].account)
-        assertEquals("€ -5.00", transactions[0].postings[0].amount)
+        assertEquals("€ -5.00", transactions[0].postings[0].amount?.original)
         assertEquals("expenses", transactions[0].postings[1].account)
-        assertEquals("€ 5.00", transactions[0].postings[1].amount)
+        assertEquals("€ 5.00", transactions[0].postings[1].amount?.original)
 
         assertEquals(3, transactions[1].firstLine)
         assertEquals(6, transactions[1].lastLine)
@@ -95,11 +95,11 @@ class TransactionParserTest {
         assertEquals("Note 2", transactions[1].note)
         assertEquals(3, transactions[1].postings.size)
         assertEquals("assets", transactions[1].postings[0].account)
-        assertEquals("€ -10.00", transactions[1].postings[0].amount)
+        assertEquals("€ -10.00", transactions[1].postings[0].amount?.original)
         assertEquals("expenses:thing", transactions[1].postings[1].account)
-        assertEquals("€ 6.00", transactions[1].postings[1].amount)
+        assertEquals("€ 6.00", transactions[1].postings[1].amount?.original)
         assertEquals("expenses:thing 2", transactions[1].postings[2].account)
-        assertEquals("€ 4.00", transactions[1].postings[2].amount)
+        assertEquals("€ 4.00", transactions[1].postings[2].amount?.original)
     }
 
     @Test
@@ -145,5 +145,175 @@ class TransactionParserTest {
 
         assertEquals(1, transactions.size)
         assertEquals("2023-09-08=2023-09-09", transactions[0].date)
+    }
+
+    @Test
+    fun canParseAmountWithNoCurrency() {
+        val amountString = "1,000.00"
+
+        val amount = extractAmount(amountString)
+        assertEquals("1,000.00", amount.original)
+        assertEquals("1,000.00", amount.quantity)
+        assertEquals("", amount.currency)
+    }
+
+    @Test
+    fun canParseNegativeAmountWithNoCurrency() {
+        val amountString = "-1,000.00"
+
+        val amount = extractAmount(amountString)
+        assertEquals("-1,000.00", amount.original)
+        assertEquals("-1,000.00", amount.quantity)
+        assertEquals("", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyBefore1() {
+        val amountString = "€ 1,000.00"
+
+        val amount = extractAmount(amountString)
+        assertEquals("€ 1,000.00", amount.original)
+        assertEquals("1,000.00", amount.quantity)
+        assertEquals("€", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyBefore2() {
+        val amountString = "€- 1,000.00"
+
+        val amount = extractAmount(amountString)
+        assertEquals("€- 1,000.00", amount.original)
+        assertEquals("- 1,000.00", amount.quantity)
+        assertEquals("€", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyBefore3() {
+        val amountString = "EUR -1,000.00"
+
+        val amount = extractAmount(amountString)
+        assertEquals("EUR -1,000.00", amount.original)
+        assertEquals("-1,000.00", amount.quantity)
+        assertEquals("EUR", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyBefore4() {
+        val amountString = "EUR1,000.00"
+
+        val amount = extractAmount(amountString)
+        assertEquals("EUR1,000.00", amount.original)
+        assertEquals("1,000.00", amount.quantity)
+        assertEquals("EUR", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyAfter1() {
+        val amountString = "5,0.0 €"
+
+        val amount = extractAmount(amountString)
+        assertEquals("5,0.0 €", amount.original)
+        assertEquals("5,0.0", amount.quantity)
+        assertEquals("€", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyAfter2() {
+        val amountString = "5,0.0€"
+
+        val amount = extractAmount(amountString)
+        assertEquals("5,0.0€", amount.original)
+        assertEquals("5,0.0", amount.quantity)
+        assertEquals("€", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyAfter3() {
+        val amountString = "5,0.0 EUR"
+
+        val amount = extractAmount(amountString)
+        assertEquals("5,0.0 EUR", amount.original)
+        assertEquals("5,0.0", amount.quantity)
+        assertEquals("EUR", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyAfter4() {
+        val amountString = "5,0.0EUR"
+
+        val amount = extractAmount(amountString)
+        assertEquals("5,0.0EUR", amount.original)
+        assertEquals("5,0.0", amount.quantity)
+        assertEquals("EUR", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithComplexCurrencyBefore1() {
+        val amountString = "\"5,0\" 5,0.0"
+
+        val amount = extractAmount(amountString)
+        assertEquals("\"5,0\" 5,0.0", amount.original)
+        assertEquals("5,0.0", amount.quantity)
+        assertEquals("\"5,0\"", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithComplexCurrencyBefore2() {
+        val amountString = "\"5,0\"- 5,0.0"
+
+        val amount = extractAmount(amountString)
+        assertEquals("\"5,0\"- 5,0.0", amount.original)
+        assertEquals("- 5,0.0", amount.quantity)
+        assertEquals("\"5,0\"", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithComplexCurrencyAfter1() {
+        val amountString = "100005,0.0\"a commodity with spaces, what will they think of next?\""
+
+        val amount = extractAmount(amountString)
+        assertEquals("100005,0.0\"a commodity with spaces, what will they think of next?\"", amount.original)
+        assertEquals("100005,0.0", amount.quantity)
+        assertEquals("\"a commodity with spaces, what will they think of next?\"", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithComplexCurrencyAfter2() {
+        val amountString = "-    100005,0.0 \"*&+\""
+
+        val amount = extractAmount(amountString)
+        assertEquals("-    100005,0.0 \"*&+\"", amount.original)
+        assertEquals("-    100005,0.0", amount.quantity)
+        assertEquals("\"*&+\"", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithComplexCurrencyAfterAndAssertion() {
+        val amountString = "-    100005,0.0 \"*&+\"=abc"
+
+        val amount = extractAmount(amountString)
+        assertEquals("-    100005,0.0 \"*&+\"=abc", amount.original)
+        assertEquals("-    100005,0.0", amount.quantity)
+        assertEquals("\"*&+\"", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithComplexCurrencyAfterAndCost() {
+        val amountString = "-    100005,0.0 \"*&+\"@ 15 EUR"
+
+        val amount = extractAmount(amountString)
+        assertEquals("-    100005,0.0 \"*&+\"@ 15 EUR", amount.original)
+        assertEquals("-    100005,0.0", amount.quantity)
+        assertEquals("\"*&+\"", amount.currency)
+    }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyBeforeAndAssertion() {
+        val amountString = "€ 8.00 = € -2.00"
+
+        val amount = extractAmount(amountString)
+        assertEquals("€ 8.00 = € -2.00", amount.original)
+        assertEquals("8.00", amount.quantity)
+        assertEquals("€", amount.currency)
     }
 }
