@@ -306,4 +306,14 @@ class TransactionParserTest {
         assertEquals("-    100005,0.0", amount.quantity)
         assertEquals("\"*&+\"", amount.currency)
     }
+
+    @Test
+    fun canParseAmountWithSimpleCurrencyBeforeAndAssertion() {
+        val amountString = "€ 8.00 = € -2.00"
+
+        val amount = extractAmount(amountString)
+        assertEquals("€ 8.00 = € -2.00", amount.original)
+        assertEquals("8.00", amount.quantity)
+        assertEquals("€", amount.currency)
+    }
 }
