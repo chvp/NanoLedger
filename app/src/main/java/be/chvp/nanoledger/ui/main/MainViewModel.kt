@@ -38,10 +38,11 @@ class MainViewModel
         val filteredTransactions =
             transactions.switchMap { ts ->
                 _query.map { query ->
+                    val indexedTs = ts.mapIndexed { index, t -> index to t }
                     if (query.equals("")) {
-                        ts
+                        indexedTs
                     } else {
-                        ts.filter { t -> t.contains(query) }
+                        indexedTs.filter { (i, t) -> t.contains(query) }
                     }
                 }
             }

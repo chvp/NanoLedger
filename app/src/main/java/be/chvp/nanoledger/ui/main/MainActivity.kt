@@ -204,10 +204,11 @@ fun MainContent(
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
                     val index = transactions!!.size - it - 1
+                    val (originalIndex, transaction) = transactions!![index]
                     TransactionCard(
-                        transactions!![index],
-                        index == selected,
-                        { mainViewModel.toggleSelect(index) },
+                        transaction,
+                        originalIndex == selected,
+                        { mainViewModel.toggleSelect(originalIndex) },
                         Modifier.fillMaxWidth().padding(
                             8.dp,
                             if (it == 0) 8.dp else 4.dp,
