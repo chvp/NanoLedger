@@ -29,6 +29,11 @@
             android:name=".ui.add.AddActivity"
             android:windowSoftInputMode="adjustResize"
             />
+        <activity
+            android:exported="false"
+            android:name=".ui.edit.EditActivity"
+            android:windowSoftInputMode="adjustResize"
+            />
     </application>
 
 </manifest>

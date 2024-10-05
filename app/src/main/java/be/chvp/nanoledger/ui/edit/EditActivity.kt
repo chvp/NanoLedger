@@ -1,9 +1,9 @@
-
-package be.chvp.nanoledger.ui.add
+package be.chvp.nanoledger.ui.edit
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -39,12 +39,22 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 
+val TRANSACTION_INDEX_KEY = "transaction_index"
+
 @AndroidEntryPoint
-class AddActivity() : ComponentActivity() {
-    private val addViewModel: AddViewModel by viewModels()
+class EditActivity() : ComponentActivity() {
+    private val editViewModel: EditViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!getIntent().hasExtra(TRANSACTION_INDEX_KEY)) {
+            Log.e("be.chvp.nanoledger", "Edit started without transaction index")
+            finish()
+        }
+        val transactionIndex = getIntent().getIntExtra(TRANSACTION_INDEX_KEY, 0)
+        editViewModel.setFromIndex(transactionIndex)
+
         setContent {
             val context = LocalContext.current
             val scope = rememberCoroutineScope()
@@ -55,9 +65,10 @@ class AddActivity() : ComponentActivity() {
                 finish()
                 startActivity(Intent(context, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             }
-            val saving by addViewModel.saving.observeAsState()
-            val valid by addViewModel.valid.observeAsState()
-            val enabled = !(saving ?: true) && (valid ?: false)
+            val loading by editViewModel.loading.observeAsState()
+            val saving by editViewModel.saving.observeAsState()
+            val valid by editViewModel.valid.observeAsState()
+            val enabled = !(saving ?: true) && (valid ?: false) && !(loading ?: true)
             NanoLedgerTheme {
                 Scaffold(
                     topBar = { Bar() },
@@ -66,7 +77,7 @@ class AddActivity() : ComponentActivity() {
                         FloatingActionButton(
                             onClick = {
                                 if (enabled) {
-                                    addViewModel.save {
+                                    editViewModel.save {
                                         scope.launch(Main) {
                                             finish()
                                             startActivity(
@@ -85,7 +96,7 @@ class AddActivity() : ComponentActivity() {
                                     MaterialTheme.colorScheme.surface
                                 },
                         ) {
-                            if (saving ?: true) {
+                            if (saving ?: true || loading ?: true) {
                                 CircularProgressIndicator(
                                     color = MaterialTheme.colorScheme.secondary,
                                     trackColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -99,7 +110,7 @@ class AddActivity() : ComponentActivity() {
                         }
                     },
                 ) { contentPadding ->
-                    TransactionForm(addViewModel, contentPadding, snackbarHostState)
+                    TransactionForm(editViewModel, contentPadding, snackbarHostState)
                 }
             }
         }
@@ -110,7 +121,7 @@ class AddActivity() : ComponentActivity() {
 fun Bar() {
     val context = LocalContext.current
     TopAppBar(
-        title = { Text(stringResource(R.string.add_transaction)) },
+        title = { Text(stringResource(R.string.edit_transaction)) },
         navigationIcon = {
             IconButton(onClick = {
                 (context as Activity).apply {

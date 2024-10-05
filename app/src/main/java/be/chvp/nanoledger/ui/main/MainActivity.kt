@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
@@ -56,6 +57,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.ui.add.AddActivity
+import be.chvp.nanoledger.ui.edit.EditActivity
+import be.chvp.nanoledger.ui.edit.TRANSACTION_INDEX_KEY
 import be.chvp.nanoledger.ui.preferences.PreferencesActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -285,6 +288,7 @@ fun MainBar(mainViewModel: MainViewModel = viewModel()) {
 
 @Composable
 fun SelectionBar(mainViewModel: MainViewModel = viewModel()) {
+    val context = LocalContext.current
     val selected by mainViewModel.selectedIndex.observeAsState()
     TopAppBar(
         navigationIcon = {
@@ -299,6 +303,14 @@ fun SelectionBar(mainViewModel: MainViewModel = viewModel()) {
         },
         title = { },
         actions = {
+            IconButton(onClick = {
+                val intent = Intent(context, EditActivity::class.java)
+                intent.putExtra(TRANSACTION_INDEX_KEY, selected!!)
+                mainViewModel.toggleSelect(selected!!)
+                context.startActivity(intent)
+            }) {
+                Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.edit))
+            }
             IconButton(onClick = { mainViewModel.deleteSelected() }) {
                 Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.delete))
             }

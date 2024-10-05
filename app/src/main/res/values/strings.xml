@@ -15,6 +15,8 @@
     <string name="default_status">Default status</string>
     <string name="delete">Delete</string>
     <string name="dismiss">Dismiss</string>
+    <string name="edit">Edit</string>
+    <string name="edit_transaction">Edit transaction</string>
     <string name="error">Error</string>
     <string name="error_reading_file">Error while reading file</string>
     <string name="error_writing_file">Error while writing file</string>
