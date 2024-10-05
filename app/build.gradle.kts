@@ -46,6 +46,7 @@ android {
         quiet = true
         disable.addAll(
             arrayOf(
+                "AndroidGradlePluginVersion",
                 "GradleDependency",
                 "NewerVersionAvailable",
                 "ObsoleteLintCustomCheck",
