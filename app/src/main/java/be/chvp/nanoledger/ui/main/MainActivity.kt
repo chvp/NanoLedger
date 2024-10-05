@@ -10,10 +10,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,8 +23,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,15 +49,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
-import be.chvp.nanoledger.data.Transaction
 import be.chvp.nanoledger.ui.add.AddActivity
 import be.chvp.nanoledger.ui.preferences.PreferencesActivity
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
@@ -190,14 +183,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun transactionHeader(t: Transaction): String {
-    var res = t.date
-    if (t.status != null) res += " ${t.status}"
-    res += " ${t.payee}"
-    if (t.note != null) res += " | ${t.note}"
-    return res
-}
-
 @Composable
 fun MainContent(
     contentPadding: PaddingValues,
@@ -215,74 +200,17 @@ fun MainContent(
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(transactions?.size ?: 0) {
                     val index = transactions!!.size - it - 1
-                    Card(
-                        colors =
-                            if (index == selected) {
-                                CardDefaults.outlinedCardColors()
-                            } else {
-                                CardDefaults.cardColors()
-                            },
-                        elevation =
-                            if (index == selected) {
-                                CardDefaults.outlinedCardElevation()
-                            } else {
-                                CardDefaults.cardElevation()
-                            },
-                        border =
-                            if (index == selected) {
-                                CardDefaults.outlinedCardBorder(true)
-                            } else {
-                                null
-                            },
-                        modifier =
-                            Modifier.fillMaxWidth().padding(
-                                8.dp,
-                                if (it == 0) 8.dp else 4.dp,
-                                8.dp,
-                                if (it == transactions!!.size - 1) 8.dp else 4.dp,
-                            ),
-                    ) {
-                        Box(modifier = Modifier.clickable { mainViewModel.toggleSelect(index) }) {
-                            val tr = transactions!![index]
-                            Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                                Text(
-                                    transactionHeader(tr),
-                                    softWrap = false,
-                                    style =
-                                        MaterialTheme.typography.bodySmall.copy(
-                                            fontFamily = FontFamily.Monospace,
-                                        ),
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                                for (p in tr.postings) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier.fillMaxWidth(),
-                                    ) {
-                                        Text(
-                                            "  ${p.account}",
-                                            softWrap = false,
-                                            style =
-                                                MaterialTheme.typography.bodySmall.copy(
-                                                    fontFamily = FontFamily.Monospace,
-                                                ),
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier.weight(1f),
-                                        )
-                                        Text(
-                                            p.amount?.original ?: "",
-                                            softWrap = false,
-                                            style =
-                                                MaterialTheme.typography.bodySmall.copy(
-                                                    fontFamily = FontFamily.Monospace,
-                                                ),
-                                            modifier = Modifier.padding(start = 2.dp),
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    TransactionCard(
+                        transactions!![index],
+                        index == selected,
+                        { mainViewModel.toggleSelect(index) },
+                        Modifier.fillMaxWidth().padding(
+                            8.dp,
+                            if (it == 0) 8.dp else 4.dp,
+                            8.dp,
+                            if (it == transactions!!.size - 1) 8.dp else 4.dp,
+                        ),
+                    )
                 }
             }
         } else {
