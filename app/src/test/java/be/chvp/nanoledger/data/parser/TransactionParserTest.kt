@@ -316,4 +316,14 @@ class TransactionParserTest {
         assertEquals("8.00", amount.quantity)
         assertEquals("€", amount.currency)
     }
+
+    @Test
+    fun canParseAmountWithOnlyAssertion() {
+        val amountString = "= 10"
+
+        val amount = extractAmount(amountString)
+        assertEquals("= 10", amount.original)
+        assertEquals("", amount.quantity)
+        assertEquals("", amount.currency)
+    }
 }
