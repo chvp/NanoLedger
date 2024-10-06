@@ -1,0 +1,1 @@
+Fix bug where NanoLedger crashed on amounts that only contained an assertion
