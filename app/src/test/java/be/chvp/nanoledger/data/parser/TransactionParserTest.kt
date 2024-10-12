@@ -326,4 +326,33 @@ class TransactionParserTest {
         assertEquals("", amount.quantity)
         assertEquals("", amount.currency)
     }
+
+    @Test
+    fun doesNotCrashOnExpressionAmount1() {
+        val amountString = "(1 * € 2)"
+
+        val amount = extractAmount(amountString)
+        assertEquals("(1 * € 2)", amount.original)
+        assertEquals("", amount.quantity)
+        assertEquals("", amount.currency)
+    }
+
+    @Test
+    fun doesNotCrashOnExpressionAmount2() {
+        val amountString = "(3 * 10.5 €)"
+
+        val amount = extractAmount(amountString)
+        assertEquals("(3 * 10.5 €)", amount.original)
+        assertEquals("", amount.quantity)
+        assertEquals("", amount.currency)
+    }
+
+    fun doesNotCrashOnInvalidAmount() {
+        val amountString = "abc"
+
+        val amount = extractAmount(amountString)
+        assertEquals("abc", amount.original)
+        assertEquals("", amount.quantity)
+        assertEquals("", amount.currency)
+    }
 }

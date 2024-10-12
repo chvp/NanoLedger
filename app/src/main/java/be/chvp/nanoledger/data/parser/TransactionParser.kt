@@ -74,8 +74,12 @@ fun extractAmount(string: String): Amount {
         val currency = groups[2]!!.value.trim()
         return Amount(quantity, currency, string)
     }
-    val quantity = quantityAtEndRegex.find(stripped)!!.value.trim()
-    val currency = stripped.replace(quantityAtEndRegex, "").trim()
+    val matchForEnd = quantityAtEndRegex.find(stripped)
+    if (matchForEnd != null) {
+        val quantity = matchForEnd.value.trim()
+        val currency = stripped.replace(quantityAtEndRegex, "").trim()
+        return Amount(quantity, currency, string)
+    }
 
-    return Amount(quantity, currency, string)
+    return Amount("", "", string)
 }
