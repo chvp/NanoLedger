@@ -1,0 +1,1 @@
+Fix NanoLedger crashing on amounts it can't parse
