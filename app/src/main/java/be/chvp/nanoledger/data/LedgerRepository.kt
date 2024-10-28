@@ -142,7 +142,7 @@ class LedgerRepository
                 if (!matches(fileUri)) {
                     onMismatch()
                 } else {
-                    context.contentResolver.openOutputStream(fileUri, "w")
+                    context.contentResolver.openOutputStream(fileUri, "wt")
                         ?.let { OutputStreamWriter(it) }
                         ?.use {
                             fileContents.value!!.forEach { line ->
