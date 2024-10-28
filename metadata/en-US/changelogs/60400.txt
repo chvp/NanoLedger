@@ -1,0 +1,1 @@
+Fix bug where NanoLedger would duplicate the full contents of the journal on some devices/Android implementations
