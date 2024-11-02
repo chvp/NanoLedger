@@ -16,7 +16,7 @@
         buildToolsVersion = "34.0.0";
         composed = pkgs.androidenv.composeAndroidPackages {
           buildToolsVersions = [ buildToolsVersion ];
-          platformVersions = [ "33" "34" ];
+          platformVersions = [ "35" ];
         };
         fhsEnv = pkgs.buildFHSUserEnv {
           name = "android-sdk-env";
