@@ -1,6 +1,3 @@
-[submodule "ledger/ledger_lib"]
-	path = ledger/ledger_lib
-	url = git@github.com:hhio618/ledger.git
 [submodule "go-ledger"]
 	path = go-ledger
 	url = git@github.com:hhio618/ledger.git
