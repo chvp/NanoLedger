@@ -37,7 +37,6 @@ install:
 
 # Initialize gomobile
 init:
-	@cd ledger
 	@gomobile init
 
 ## Build Ledger AAR
@@ -45,6 +44,6 @@ ledger: $(AAR_PATH)
 
 $(AAR_PATH):
 	@mkdir -p $(@D)
-	@gomobile bind -target=android -o $(AAR_PATH)
+	@gomobile bind -target=android -o $(AAR_PATH) .
 	@touch $@
 

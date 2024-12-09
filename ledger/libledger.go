@@ -1,4 +1,4 @@
-package ledger
+package libledger
 
 import "fmt"
 
@@ -6,4 +6,3 @@ import "fmt"
 func Greet(name string) string {
     return fmt.Sprintf("Hello, %s!", name)
 }
-

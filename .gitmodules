@@ -1,3 +1,0 @@
-[submodule "go-ledger"]
-	path = go-ledger
-	url = git@github.com:hhio618/ledger.git
