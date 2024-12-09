@@ -8,8 +8,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 const val FILE_URI_KEY = "file_uri"
+const val PRICE_FILE_URI_KEY = "price_file_uri"
 const val DEFAULT_CURRENCY_KEY = "default_currency"
 const val DEFAULT_STATUS_KEY = "default_status"
+const val LEDGER_COMMAND_KEY = "ledger_command"
 const val CURRENCY_BEFORE_AMOUNT_KEY = "currency_before_amount"
 
 class PreferencesDataSource
@@ -35,6 +37,18 @@ class PreferencesDataSource
                 fileUri?.toString(),
             ).apply()
 
+        private val priceFileUriData = sharedPreferences.stringLiveData(PRICE_FILE_URI_KEY)
+
+        val priceFileUri: LiveData<Uri?> = priceFileUriData.map { it?.let { Uri.parse(it) } }
+
+        fun getPriceFileUri(): Uri? = sharedPreferences.getString(PRICE_FILE_URI_KEY, null)?.let { Uri.parse(it) }
+
+        fun setPriceFileUri(priceFileUri: Uri?) =
+            sharedPreferences.edit().putString(
+                PRICE_FILE_URI_KEY,
+                priceFileUri?.toString(),
+            ).apply()
+
         val defaultCurrency: LiveData<String> =
             sharedPreferences.stringLiveData(
                 DEFAULT_CURRENCY_KEY,
@@ -48,6 +62,21 @@ class PreferencesDataSource
                 DEFAULT_CURRENCY_KEY,
                 currency,
             ).apply()
+
+        val ledgerCommand: LiveData<String> =
+            sharedPreferences.stringLiveData(
+                LEDGER_COMMAND_KEY,
+                "",
+            ).map { it!! }
+
+        fun getLedgerCommand(): String = sharedPreferences.getString(LEDGER_COMMAND_KEY, "")!!
+
+        fun setLedgerCommand(command: String) =
+            sharedPreferences.edit().putString(
+                LEDGER_COMMAND_KEY,
+                command,
+            ).apply()
+
 
         val defaultStatus: LiveData<String> =
             sharedPreferences.stringLiveData(

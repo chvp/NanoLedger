@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Gradle: androidx.compose.ui:ui-android:1.7.5@aar" external-system-id="GRADLE">
+    <ANNOTATIONS>
+      <root url="jar://$USER_HOME$/.gradle/caches/8.10.2/transforms/433bd4e12d0cc7d34ae3760ffb17ae43/transformed/ui-release/annotations.zip!/" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/8.10.2/transforms/433bd4e12d0cc7d34ae3760ffb17ae43/transformed/ui-release/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/8.10.2/transforms/433bd4e12d0cc7d34ae3760ffb17ae43/transformed/ui-release/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/8.10.2/transforms/433bd4e12d0cc7d34ae3760ffb17ae43/transformed/ui-release/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.compose.ui/ui-android/1.7.5/28bcf1977e634610892bc9334bcef44c0d644099/ui-1.7.5-samples-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/androidx.compose.ui/ui-android/1.7.5/eea53862c31f3ca5ce778f7106deb24329a611f1/ui-android-1.7.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

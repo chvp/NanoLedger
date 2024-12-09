@@ -32,6 +32,11 @@
             />
         <activity
             android:exported="false"
+            android:name=".ui.stats.StatsActivity"
+            android:windowSoftInputMode="adjustResize"
+            />
+        <activity
+            android:exported="false"
             android:name=".ui.edit.EditActivity"
             android:windowSoftInputMode="adjustResize"
             />

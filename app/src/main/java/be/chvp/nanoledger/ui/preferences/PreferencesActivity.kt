@@ -65,6 +65,16 @@ class PreferencesActivity() : ComponentActivity() {
                     preferencesViewModel.storeFileUri(uri)
                 }
             }
+        val openPriceFile =
+            registerForActivityResult(OpenDocument()) { uri: Uri? ->
+                if (uri != null) {
+                    getContentResolver().takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                    )
+                    preferencesViewModel.storePriceFileUri(uri)
+                }
+            }
         setContent {
             val statusMap =
                 mapOf(
@@ -91,6 +101,14 @@ class PreferencesActivity() : ComponentActivity() {
                             fileUri?.toString() ?: stringResource(R.string.select_file),
                         ) {
                             openFile.launch(arrayOf("*/*"))
+                        }
+                        HorizontalDivider()
+                        val priceFileUri by preferencesViewModel.priceFileUri.observeAsState()
+                        Setting(
+                            stringResource(R.string.price_file),
+                            priceFileUri?.toString() ?: stringResource(R.string.select_file),
+                        ) {
+                            openPriceFile.launch(arrayOf("*/*"))
                         }
                         HorizontalDivider()
                         val defaultCurrency by preferencesViewModel.defaultCurrency.observeAsState()

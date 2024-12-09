@@ -16,11 +16,14 @@ class PreferencesViewModel
         private val preferencesDataSource: PreferencesDataSource,
     ) : AndroidViewModel(application) {
         val fileUri: LiveData<Uri?> = preferencesDataSource.fileUri
+        val priceFileUri: LiveData<Uri?> = preferencesDataSource.priceFileUri
         val defaultCurrency: LiveData<String> = preferencesDataSource.defaultCurrency
         val defaultStatus: LiveData<String> = preferencesDataSource.defaultStatus
         val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
 
         fun storeFileUri(uri: Uri) = preferencesDataSource.setFileUri(uri)
+
+        fun storePriceFileUri(uri: Uri) = preferencesDataSource.setPriceFileUri(uri)
 
         fun storeDefaultCurrency(currency: String) = preferencesDataSource.setDefaultCurrency(currency)
 
