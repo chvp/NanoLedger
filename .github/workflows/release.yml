@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/cache@v4.1.2
+    - uses: actions/cache@v4.2.0
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
@@ -21,7 +21,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
     - name: Setup Android SDK Tools
-      uses: android-actions/setup-android@v3.2.1
+      uses: android-actions/setup-android@v3.2.2
     - name: Build release APK
       run: |
         ./gradlew assembleRelease
