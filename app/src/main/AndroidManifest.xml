@@ -8,11 +8,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NanoLedger"
+        android:windowSoftInputMode="adjustResize"
         >
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.NanoLedger"
             android:launchMode="singleInstance">
             <intent-filter>
@@ -23,17 +23,14 @@
         <activity
             android:exported="false"
             android:name=".ui.preferences.PreferencesActivity"
-            android:windowSoftInputMode="adjustResize"
             />
         <activity
             android:exported="false"
             android:name=".ui.add.AddActivity"
-            android:windowSoftInputMode="adjustResize"
             />
         <activity
             android:exported="false"
             android:name=".ui.edit.EditActivity"
-            android:windowSoftInputMode="adjustResize"
             />
     </application>
 
