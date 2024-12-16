@@ -11,6 +11,7 @@ const val FILE_URI_KEY = "file_uri"
 const val DEFAULT_CURRENCY_KEY = "default_currency"
 const val DEFAULT_STATUS_KEY = "default_status"
 const val CURRENCY_BEFORE_AMOUNT_KEY = "currency_before_amount"
+const val POSTING_WIDTH_KEY = "posting_width"
 
 class PreferencesDataSource
     @Inject
@@ -80,4 +81,10 @@ class PreferencesDataSource
                 CURRENCY_BEFORE_AMOUNT_KEY,
                 currencyBeforeAmount,
             ).apply()
+
+        val postingWidth: LiveData<Int> = sharedPreferences.intLiveData(POSTING_WIDTH_KEY, 72).map { it!! }
+
+        fun getPostingWidth(): Int = sharedPreferences.getInt(POSTING_WIDTH_KEY, 72)!!
+
+        fun setPostingWidth(width: Int) = sharedPreferences.edit().putInt(POSTING_WIDTH_KEY, width).apply()
     }
