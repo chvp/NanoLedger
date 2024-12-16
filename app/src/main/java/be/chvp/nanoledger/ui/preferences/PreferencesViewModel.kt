@@ -16,12 +16,15 @@ class PreferencesViewModel
         private val preferencesDataSource: PreferencesDataSource,
     ) : AndroidViewModel(application) {
         val fileUri: LiveData<Uri?> = preferencesDataSource.fileUri
+        val decimalSeparator: LiveData<String> = preferencesDataSource.decimalSeparator
         val defaultCurrency: LiveData<String> = preferencesDataSource.defaultCurrency
         val defaultStatus: LiveData<String> = preferencesDataSource.defaultStatus
         val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
         val postingWidth: LiveData<Int> = preferencesDataSource.postingWidth
 
         fun storeFileUri(uri: Uri) = preferencesDataSource.setFileUri(uri)
+
+        fun storeDecimalSeparator(separator: String) = preferencesDataSource.setDecimalSeparator(separator)
 
         fun storeDefaultCurrency(currency: String) = preferencesDataSource.setDefaultCurrency(currency)
 

@@ -72,15 +72,29 @@ abstract class TransactionFormViewModel
                     .map { it.third }
                     .filter { it != "" }
                     .map {
+                        val cleaned =
+                            it.replace(
+                                Regex("[^-0-9${preferencesDataSource.getDecimalSeparator()}]"),
+                                "",
+                            ).replace(preferencesDataSource.getDecimalSeparator(), ".")
                         try {
-                            BigDecimal(it)
+                            BigDecimal(cleaned)
                         } catch (e: NumberFormatException) {
                             BigDecimal.ZERO
                         }
                     }
                     .fold(BigDecimal.ZERO) { l, r -> l + r }
                     .let { it.negate() }
-                    .let { if (it == BigDecimal.ZERO.setScale(it.scale())) "" else it.toString() }
+                    .let {
+                        if (it == BigDecimal.ZERO.setScale(it.scale())) {
+                            ""
+                        } else {
+                            it.toString().replace(
+                                ".",
+                                preferencesDataSource.getDecimalSeparator(),
+                            )
+                        }
+                    }
             }
 
         val valid: LiveData<Boolean> =
