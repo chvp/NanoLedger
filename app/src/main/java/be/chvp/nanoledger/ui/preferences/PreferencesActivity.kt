@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -85,7 +86,7 @@ class PreferencesActivity() : ComponentActivity() {
                     "," to stringResource(R.string.separator_comma),
                 )
             NanoLedgerTheme {
-                Scaffold(topBar = { Bar() }) { contentPadding ->
+                Scaffold(topBar = { Bar() }, modifier = Modifier.imePadding()) { contentPadding ->
                     Column(
                         modifier =
                             Modifier
