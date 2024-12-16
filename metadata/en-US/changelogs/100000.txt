@@ -1,0 +1,4 @@
+* Allow configuring a decimal separator
+* Allow configuring the width with which postings are written out
+* Always show amount hint in last row
+* Fix the app not resizing well when the keyboard pops up
