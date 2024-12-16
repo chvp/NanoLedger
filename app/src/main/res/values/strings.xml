@@ -6,6 +6,7 @@
     <string name="back">Back</string>
     <string name="cancel">Cancel</string>
     <string name="change_default_currency">Change default currency</string>
+    <string name="change_posting_width">Change posting width</string>
     <string name="copy">Copy</string>
     <string name="copy_and_edit">Copy and edit</string>
     <string name="currency_amount_order">Order of currency and amount</string>
@@ -27,6 +28,7 @@
     <string name="note">Note</string>
     <string name="ok">OK</string>
     <string name="payee">Payee</string>
+    <string name="posting_width">Width of postings written to file</string>
     <string name="save">Save</string>
     <string name="select_file">Select file…</string>
     <string name="settings">Settings</string>

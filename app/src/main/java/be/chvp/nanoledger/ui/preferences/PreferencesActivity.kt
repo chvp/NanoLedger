@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
@@ -110,6 +112,26 @@ class PreferencesActivity() : ComponentActivity() {
                             { defaultCurrencyOpen = false },
                         ) {
                             OutlinedTextField(newDefaultCurrency, { newDefaultCurrency = it })
+                        }
+                        HorizontalDivider()
+                        val postingWidth by preferencesViewModel.postingWidth.observeAsState()
+                        var newPostingWidth by remember { mutableStateOf("${postingWidth ?: 72}") }
+                        var postingWidthOpen by remember { mutableStateOf(false) }
+                        Setting(stringResource(R.string.posting_width), "${postingWidth ?: 72}") {
+                            postingWidthOpen = true
+                        }
+                        SettingDialog(postingWidthOpen, stringResource(R.string.change_posting_width), true, {
+                            preferencesViewModel.storePostingWidth(Integer.parseInt(newPostingWidth))
+                        }, { postingWidthOpen = false }) {
+                            OutlinedTextField(
+                                newPostingWidth,
+                                {
+                                    if (it.isEmpty() || it.matches(Regex("^\\d+$"))) {
+                                        newPostingWidth = it
+                                    }
+                                },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            )
                         }
                         HorizontalDivider()
                         val defaultStatus by preferencesViewModel.defaultStatus.observeAsState()
