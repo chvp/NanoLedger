@@ -140,11 +140,9 @@ fun TransactionForm(
                 )
             }
             val postings by viewModel.postings.observeAsState()
-            var encounteredEmptyAmount = false
             postings?.forEachIndexed { i, posting ->
-                val firstEmpty = encounteredEmptyAmount == false && posting.third == ""
-                encounteredEmptyAmount = encounteredEmptyAmount || firstEmpty
-                PostingRow(i, posting, firstEmpty, viewModel)
+                val showAmountHint = posting.first == "" && posting.third == ""
+                PostingRow(i, posting, showAmountHint, viewModel)
             }
         }
     }
@@ -274,7 +272,7 @@ fun NoteSelector(
 fun PostingRow(
     index: Int,
     posting: Triple<String, String, String>,
-    firstEmptyAmount: Boolean,
+    showAmountHint: Boolean,
     viewModel: TransactionFormViewModel,
 ) {
     val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState()
@@ -290,7 +288,7 @@ fun PostingRow(
             AmountField(
                 index,
                 posting,
-                firstEmptyAmount,
+                showAmountHint,
                 viewModel,
                 Modifier.weight(1.25f).padding(horizontal = 2.dp),
             )
@@ -298,7 +296,7 @@ fun PostingRow(
             AmountField(
                 index,
                 posting,
-                firstEmptyAmount,
+                showAmountHint,
                 viewModel,
                 Modifier.weight(1.25f).padding(horizontal = 2.dp),
             )
@@ -332,7 +330,7 @@ fun CurrencyField(
 fun AmountField(
     index: Int,
     posting: Triple<String, String, String>,
-    firstEmptyAmount: Boolean,
+    showAmountHint: Boolean,
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -347,7 +345,7 @@ fun AmountField(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
             ),
         placeholder = {
-            if (firstEmptyAmount && unbalancedAmount != null) {
+            if (showAmountHint && unbalancedAmount != null) {
                 Text(
                     unbalancedAmount!!,
                     textAlign = TextAlign.Center,
