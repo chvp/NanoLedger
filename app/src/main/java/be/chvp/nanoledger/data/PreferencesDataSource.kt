@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 const val FILE_URI_KEY = "file_uri"
+const val DECIMAL_SEPARATOR_KEY = "decimal_separator"
 const val DEFAULT_CURRENCY_KEY = "default_currency"
 const val DEFAULT_STATUS_KEY = "default_status"
 const val CURRENCY_BEFORE_AMOUNT_KEY = "currency_before_amount"
@@ -63,6 +64,12 @@ class PreferencesDataSource
                 DEFAULT_STATUS_KEY,
                 status,
             ).apply()
+
+        val decimalSeparator: LiveData<String> = sharedPreferences.stringLiveData(DECIMAL_SEPARATOR_KEY, ".").map { it!! }
+
+        fun getDecimalSeparator(): String = sharedPreferences.getString(DECIMAL_SEPARATOR_KEY, ".")!!
+
+        fun setDecimalSeparator(separator: String) = sharedPreferences.edit().putString(DECIMAL_SEPARATOR_KEY, separator).apply()
 
         val currencyBeforeAmount: LiveData<Boolean> =
             sharedPreferences.booleanLiveData(

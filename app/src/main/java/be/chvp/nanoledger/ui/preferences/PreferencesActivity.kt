@@ -79,6 +79,11 @@ class PreferencesActivity() : ComponentActivity() {
                     true to stringResource(R.string.currency_order_before),
                     false to stringResource(R.string.currency_order_after),
                 )
+            val separatorMap =
+                mapOf(
+                    "." to stringResource(R.string.separator_point),
+                    "," to stringResource(R.string.separator_comma),
+                )
             NanoLedgerTheme {
                 Scaffold(topBar = { Bar() }) { contentPadding ->
                     Column(
@@ -159,6 +164,39 @@ class PreferencesActivity() : ComponentActivity() {
                                         onClick = {
                                             preferencesViewModel.storeDefaultStatus(it.key)
                                             expandedStatus = false
+                                        },
+                                        contentPadding =
+                                            ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    )
+                                }
+                            }
+                        }
+                        HorizontalDivider()
+                        val decimalSeparator by preferencesViewModel.decimalSeparator.observeAsState()
+                        var expandedSeparator by rememberSaveable { mutableStateOf(false) }
+                        ExposedDropdownMenuBox(
+                            expanded = expandedSeparator,
+                            onExpandedChange = { expandedSeparator = !expandedSeparator },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Setting(
+                                stringResource(R.string.decimal_separator),
+                                separatorMap[decimalSeparator ?: "."] ?: stringResource(
+                                    R.string.separator_point,
+                                ),
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+                            ) { expandedSeparator = true }
+                            ExposedDropdownMenu(
+                                expanded = expandedSeparator,
+                                onDismissRequest = { expandedSeparator = false },
+                                modifier = Modifier.exposedDropdownSize(true),
+                            ) {
+                                separatorMap.forEach {
+                                    DropdownMenuItem(
+                                        text = { Text(it.value) },
+                                        onClick = {
+                                            preferencesViewModel.storeDecimalSeparator(it.key)
+                                            expandedSeparator = false
                                         },
                                         contentPadding =
                                             ExposedDropdownMenuDefaults.ItemContentPadding,
