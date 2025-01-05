@@ -108,13 +108,16 @@ abstract class TransactionFormViewModel
                         if (payee == "") {
                             return@map false
                         }
-                        if (postings.dropLast(1).any { it.first == "" }) {
+                        if (unbalancedAmount != "" &&
+                            postings.dropLast(1).all {
+                                it.third != "" ||
+                                (it.first == "" && it.third == "" && it.fourth != "") // its a note, allow empty amount
+                            }) {
                             return@map false
                         }
-                        if (unbalancedAmount != "" && postings.dropLast(1).all { it.third != "" }) {
-                            return@map false
-                        }
-                        if (postings.dropLast(1).filter { it.third == "" }.size > 1) {
+                        if (postings.dropLast(1).filter {
+                            it.third == "" ||  (it.first == "" && it.third == "" && it.fourth != "") // its a note, allow empty amount
+                        }.size > 1) {
                             return@map false
                         }
                         return@map true
