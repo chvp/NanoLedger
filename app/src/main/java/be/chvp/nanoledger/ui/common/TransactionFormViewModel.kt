@@ -151,20 +151,29 @@ abstract class TransactionFormViewModel
             transaction.append('\n')
             // Drop last element, it should always be an empty posting (and the only empty posting)
             for (posting in postings.value!!.dropLast(1)) {
-                val usedLength = 7 + posting.first.length + posting.second.length + posting.third.length
+                val usedLength = 7 +
+                        posting.first.length +
+                        posting.second.length +
+                        posting.third.length +
+                        posting.fourth.length
+
                 val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
                 val spaces = " ".repeat(maxOf(0, numberOfSpaces))
-                if (posting.third == "") {
+
+                if (posting.first == "") {
+                    // this posting is a note
+                    transaction.append("${posting.fourth}\n")
+                } else if (posting.third == "") {
                     transaction.append(
-                        "    ${posting.first}\n",
+                        "    ${posting.first}${posting.fourth}\n",
                     )
                 } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
                     transaction.append(
-                        "    ${posting.first}  ${spaces}${posting.second} ${posting.third}\n",
+                        "    ${posting.first}  ${spaces}${posting.second} ${posting.third}${posting.fourth}\n",
                     )
                 } else {
                     transaction.append(
-                        "    ${posting.first}  ${spaces}${posting.third} ${posting.second}\n",
+                        "    ${posting.first}  ${spaces}${posting.third} ${posting.second}${posting.fourth}\n",
                     )
                 }
             }
