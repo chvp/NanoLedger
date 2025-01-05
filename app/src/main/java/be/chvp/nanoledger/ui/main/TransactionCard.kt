@@ -75,7 +75,7 @@ fun TransactionCard(
                                 modifier = Modifier.weight(1f),
                             )
                         }
-                    } else{
+                    } else {
                         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                             Text(
                                 "  ${p.account}",
@@ -92,7 +92,6 @@ fun TransactionCard(
                             )
                         }
                     }
-
                 }
             }
         }

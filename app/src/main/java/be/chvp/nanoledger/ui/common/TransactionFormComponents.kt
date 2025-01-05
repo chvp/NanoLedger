@@ -144,11 +144,10 @@ fun TransactionForm(
             postings?.forEachIndexed { i, posting ->
                 val isNote = posting.first == "" && posting.third == "" && posting.fourth != ""
                 // do not show notes rows in the UI
-                if (!isNote){
+                if (!isNote) {
                     val showAmountHint = posting.first == "" && posting.third == ""
                     PostingRow(i, posting, showAmountHint, viewModel)
                 }
-
             }
         }
     }

@@ -10,12 +10,12 @@ import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.PreferencesDataSource
 import be.chvp.nanoledger.data.Transaction
 import be.chvp.nanoledger.ui.util.Event
+import be.chvp.nanoledger.ui.util.Quadruple
 import java.io.IOException
 import java.math.BigDecimal
 import java.text.ParsePosition
 import java.text.SimpleDateFormat
 import java.util.Date
-import be.chvp.nanoledger.ui.util.Quadruple
 
 val dateFormat = SimpleDateFormat("yyyy-MM-dd")
 
@@ -111,8 +111,9 @@ abstract class TransactionFormViewModel
                         if (unbalancedAmount != "" &&
                             postings.dropLast(1).all {
                                 it.third != "" ||
-                                (it.first == "" && it.third == "" && it.fourth != "") // its a note, allow empty amount
-                            }) {
+                                    (it.first == "" && it.third == "" && it.fourth != "") // its a note, allow empty amount
+                            }
+                        ) {
                             return@map false
                         }
                         if (postings.dropLast(1).filter {
@@ -277,7 +278,7 @@ abstract class TransactionFormViewModel
 
             val filteredResult = ArrayList<Quadruple<String, String, String, String>>()
             for (quadruple in result) {
-                if ( quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "" ) {
+                if (quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "") {
                     filteredResult.add(quadruple)
                 }
             }

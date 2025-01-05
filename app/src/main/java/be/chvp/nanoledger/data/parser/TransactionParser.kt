@@ -42,16 +42,15 @@ val commentRegex = Regex("[ \\t]*;.*$")
 val postingSplitRegex = Regex("[ \\t]{2,}")
 
 fun extractPosting(line: String): Posting? {
-
     // the three components of a posting
     var account: String? = null
     var amount: Amount? = null
     var note: String? = null
 
     // check if we have a note in the posting
-    val comment_match = commentRegex.find(line)
-    if (comment_match != null) {
-        note = comment_match.value
+    val commentMatch = commentRegex.find(line)
+    if (commentMatch != null) {
+        note = commentMatch.value
     }
 
     val stripped = line.trim().replace(commentRegex, "")
@@ -64,7 +63,6 @@ fun extractPosting(line: String): Posting? {
         if (components.size > 1) {
             amount = extractAmount(components[1].trim())
         }
-
     }
 
     return Posting(account, amount, note)
