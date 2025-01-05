@@ -116,9 +116,11 @@ abstract class TransactionFormViewModel
                         ) {
                             return@map false
                         }
-                        if (postings.dropLast(1).filter {
-                            it.third == "" ||  (it.first == "" && it.third == "" && it.fourth != "") // its a note, allow empty amount
-                        }.size > 1) {
+                        if (
+                            postings.dropLast(1).filter {
+                                it.third == "" || (it.first == "" && it.third == "" && it.fourth != "") // its a note, allow empty amount
+                            }.size > 1
+                        ) {
                             return@map false
                         }
                         return@map true
@@ -155,11 +157,12 @@ abstract class TransactionFormViewModel
             transaction.append('\n')
             // Drop last element, it should always be an empty posting (and the only empty posting)
             for (posting in postings.value!!.dropLast(1)) {
-                val usedLength = 7 +
-                        posting.first.length +
-                        posting.second.length +
-                        posting.third.length +
-                        posting.fourth.length
+                val usedLength =
+                    7 +
+                    posting.first.length +
+                    posting.second.length +
+                    posting.third.length +
+                    posting.fourth.length
 
                 val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
                 val spaces = " ".repeat(maxOf(0, numberOfSpaces))
@@ -236,7 +239,7 @@ abstract class TransactionFormViewModel
             result[index] = Quadruple(newAccount, result[index].second, result[index].third, result[index].fourth)
             val filteredResult = ArrayList<Quadruple<String, String, String, String>>()
             for (quadruple in result) {
-                if ( quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "" ) {
+                if (quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "") {
                     filteredResult.add(quadruple)
                 }
             }
@@ -261,7 +264,7 @@ abstract class TransactionFormViewModel
             result[index] = Quadruple(result[index].first, result[index].second, newAmount, result[index].fourth)
             val filteredResult = ArrayList<Quadruple<String, String, String, String>>()
             for (quadruple in result) {
-                if ( quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "" ) {
+                if (quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "") {
                     filteredResult.add(quadruple)
                 }
             }
