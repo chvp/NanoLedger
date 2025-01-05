@@ -27,7 +27,7 @@ class LedgerRepository
         val accounts: LiveData<Set<String>> =
             transactions.map {
                 val result = HashSet<String>()
-                it.forEach { result.addAll(it.postings.map { it.account }) }
+                it.forEach { result.addAll(it.postings.map { it.account ?: "" }) }
                 result
             }
         val payees: LiveData<Set<String>> = transactions.map { HashSet(it.map { it.payee }) }
