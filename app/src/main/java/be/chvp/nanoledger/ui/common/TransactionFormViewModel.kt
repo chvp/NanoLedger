@@ -159,10 +159,10 @@ abstract class TransactionFormViewModel
             for (posting in postings.value!!.dropLast(1)) {
                 val usedLength =
                     7 +
-                    posting.first.length +
-                    posting.second.length +
-                    posting.third.length +
-                    posting.fourth.length
+                        posting.first.length +
+                        posting.second.length +
+                        posting.third.length +
+                        posting.fourth.length
 
                 val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
                 val spaces = " ".repeat(maxOf(0, numberOfSpaces))
