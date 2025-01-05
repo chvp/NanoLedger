@@ -15,6 +15,7 @@ import java.math.BigDecimal
 import java.text.ParsePosition
 import java.text.SimpleDateFormat
 import java.util.Date
+import be.chvp.nanoledger.ui.util.Quadruple
 
 val dateFormat = SimpleDateFormat("yyyy-MM-dd")
 
@@ -61,10 +62,10 @@ abstract class TransactionFormViewModel
             }
 
         private val _postings =
-            MutableLiveData<List<Triple<String, String, String>>>(
+            MutableLiveData<List<Quadruple<String, String, String, String>>>(
                 listOf(emptyPosting()),
             )
-        val postings: LiveData<List<Triple<String, String, String>>> = _postings
+        val postings: LiveData<List<Quadruple<String, String, String, String>>> = _postings
         val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
         val unbalancedAmount: LiveData<String> =
             postings.map {
@@ -180,9 +181,10 @@ abstract class TransactionFormViewModel
             setNote(transaction.note ?: "")
 
             transaction.postings.forEachIndexed { i, posting ->
-                setAccount(i, posting.account)
+                setAccount(i, posting.account ?: "")
                 setCurrency(i, posting.amount?.currency ?: "")
                 setAmount(i, posting.amount?.quantity ?: "")
+                setPostingNote(i, posting.note ?: "")
             }
         }
 
@@ -218,11 +220,11 @@ abstract class TransactionFormViewModel
             newAccount: String,
         ) {
             val result = ArrayList(postings.value!!)
-            result[index] = Triple(newAccount, result[index].second, result[index].third)
-            val filteredResult = ArrayList<Triple<String, String, String>>()
-            for (triple in result) {
-                if (triple.first != "" || triple.third != "") {
-                    filteredResult.add(triple)
+            result[index] = Quadruple(newAccount, result[index].second, result[index].third, result[index].fourth)
+            val filteredResult = ArrayList<Quadruple<String, String, String, String>>()
+            for (quadruple in result) {
+                if ( quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "" ) {
+                    filteredResult.add(quadruple)
                 }
             }
             filteredResult.add(emptyPosting())
@@ -234,7 +236,7 @@ abstract class TransactionFormViewModel
             newCurrency: String,
         ) {
             val result = ArrayList(postings.value!!)
-            result[index] = Triple(result[index].first, newCurrency, result[index].third)
+            result[index] = Quadruple(result[index].first, newCurrency, result[index].third, result[index].fourth)
             _postings.value = result
         }
 
@@ -243,18 +245,35 @@ abstract class TransactionFormViewModel
             newAmount: String,
         ) {
             val result = ArrayList(postings.value!!)
-            result[index] = Triple(result[index].first, result[index].second, newAmount)
-            val filteredResult = ArrayList<Triple<String, String, String>>()
-            for (triple in result) {
-                if (triple.first != "" || triple.third != "") {
-                    filteredResult.add(triple)
+            result[index] = Quadruple(result[index].first, result[index].second, newAmount, result[index].fourth)
+            val filteredResult = ArrayList<Quadruple<String, String, String, String>>()
+            for (quadruple in result) {
+                if ( quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "" ) {
+                    filteredResult.add(quadruple)
                 }
             }
             filteredResult.add(emptyPosting())
             _postings.value = filteredResult
         }
 
-        fun emptyPosting(): Triple<String, String, String> {
-            return Triple("", preferencesDataSource.getDefaultCurrency(), "")
+        fun setPostingNote(
+            index: Int,
+            newPostingNote: String,
+        ) {
+            val result = ArrayList(postings.value!!)
+            result[index] = Quadruple(result[index].first, result[index].second, result[index].third, newPostingNote)
+
+            val filteredResult = ArrayList<Quadruple<String, String, String, String>>()
+            for (quadruple in result) {
+                if ( quadruple.first != "" || quadruple.third != "" || quadruple.fourth != "" ) {
+                    filteredResult.add(quadruple)
+                }
+            }
+            filteredResult.add(emptyPosting())
+            _postings.value = filteredResult
+        }
+
+        fun emptyPosting(): Quadruple<String, String, String, String> {
+            return Quadruple("", preferencesDataSource.getDefaultCurrency(), "", "")
         }
     }
