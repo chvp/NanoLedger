@@ -157,11 +157,7 @@ abstract class TransactionFormViewModel
             transaction.append('\n')
             // Drop last element, it should always be an empty posting (and the only empty posting)
             for (posting in postings.value!!.dropLast(1)) {
-                val usedLength =
-                    7 +
-                        posting.first.length +
-                        posting.second.length +
-                        posting.third.length
+                val usedLength = 7 + posting.first.length + posting.second.length + posting.third.length
 
                 val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
                 val spaces = " ".repeat(maxOf(0, numberOfSpaces))
