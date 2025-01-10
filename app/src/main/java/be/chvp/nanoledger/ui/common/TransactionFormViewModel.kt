@@ -157,7 +157,6 @@ abstract class TransactionFormViewModel
             transaction.append('\n')
             // Drop last element, it should always be an empty posting (and the only empty posting)
             for (posting in postings.value!!.dropLast(1)) {
-
                 val account = posting.account ?: ""
                 val currency = posting.amount?.currency ?: ""
                 val amount = posting.amount?.quantity ?: ""
@@ -177,11 +176,11 @@ abstract class TransactionFormViewModel
                     )
                 } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
                     transaction.append(
-                        "    ${account}  ${spaces}${currency} ${amount}${note}\n",
+                        "    $account  $spaces$currency $amount$note\n",
                     )
                 } else {
                     transaction.append(
-                        "    ${account}  ${spaces}${amount} ${currency}${note}\n",
+                        "    $account  $spaces$amount $currency$note\n",
                     )
                 }
             }
@@ -196,9 +195,7 @@ abstract class TransactionFormViewModel
             setStatus(transaction.status ?: "")
             setPayee(transaction.payee)
             setNote(transaction.note ?: "")
-
-            setPostings( transaction.postings )
-
+            setPostings(transaction.postings)
         }
 
         fun setDate(dateMillis: Long) {

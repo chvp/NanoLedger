@@ -15,5 +15,4 @@ data class Posting(
     fun isNote() = account == null && amount == null && note != ""
 
     fun isEmpty() = account == null && amount == null && note == null
-
 }
