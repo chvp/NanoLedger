@@ -38,7 +38,7 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
     return result
 }
 
-val commentRegex = Regex("[ \\t]*;.*$")
+val commentRegex = Regex(";.*$")
 val postingSplitRegex = Regex("[ \\t]{2,}")
 
 fun extractPosting(line: String): Posting? {
@@ -47,13 +47,17 @@ fun extractPosting(line: String): Posting? {
     var amount: Amount? = null
     var note: String? = null
 
+    val trimmed = line.trim()
+
     // check if we have a note in the posting
-    val commentMatch = commentRegex.find(line)
+    val commentMatch = commentRegex.find(trimmed)
     if (commentMatch != null) {
         note = commentMatch.value
     }
 
-    val stripped = line.trim().replace(commentRegex, "")
+    // trim again the string after removing the comment, as we don't know
+    // if between the comment and the amount there is any white space
+    val stripped = trimmed.replace(commentRegex, "").trim()
     // if we have more content than just a note, continue parsing
     if (stripped.isNotEmpty()) {
         val components = stripped.split(postingSplitRegex, limit = 2)
