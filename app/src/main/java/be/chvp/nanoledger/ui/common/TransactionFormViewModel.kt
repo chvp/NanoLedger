@@ -260,7 +260,7 @@ abstract class TransactionFormViewModel
             val original = result[index].amount?.original ?: ""
             var newAmount: Amount? = null
 
-            if (quantity != "" || original == "" || newCurrency == "") {
+            if (quantity != "" || original != "" || newCurrency != "") {
                 newAmount = Amount(quantity, newCurrency, original)
             }
 
@@ -277,7 +277,7 @@ abstract class TransactionFormViewModel
             val original = result[index].amount?.original ?: ""
             var newAmount: Amount? = null
 
-            if (newAmountString != "" || original == "" || currency == "") {
+            if (newAmountString != "" || original != "" || currency != "") {
                 newAmount = Amount(newAmountString, currency, original)
             }
 
