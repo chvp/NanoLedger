@@ -52,7 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
-import be.chvp.nanoledger.ui.util.Quadruple
+import be.chvp.nanoledger.data.Posting
 import kotlinx.coroutines.launch
 
 val TRANSACTION_INDEX_KEY = "transaction_index"
@@ -142,10 +142,9 @@ fun TransactionForm(
             }
             val postings by viewModel.postings.observeAsState()
             postings?.forEachIndexed { i, posting ->
-                val isNote = posting.first == "" && posting.third == "" && posting.fourth != ""
                 // do not show notes rows in the UI
-                if (!isNote) {
-                    val showAmountHint = posting.first == "" && posting.third == ""
+                if (!posting.isNote() || i == postings!!.size - 1) {
+                    val showAmountHint = posting.account == null && posting.amount == null
                     PostingRow(i, posting, showAmountHint, viewModel)
                 }
             }
@@ -276,7 +275,7 @@ fun NoteSelector(
 @Composable
 fun PostingRow(
     index: Int,
-    posting: Quadruple<String, String, String, String>,
+    posting: Posting,
     showAmountHint: Boolean,
     viewModel: TransactionFormViewModel,
 ) {
@@ -284,7 +283,7 @@ fun PostingRow(
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp)) {
         AccountSelector(
             index = index,
-            value = posting.first,
+            value = posting.account ?: "",
             viewModel,
             modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
         )
@@ -313,12 +312,12 @@ fun PostingRow(
 @Composable
 fun CurrencyField(
     index: Int,
-    posting: Quadruple<String, String, String, String>,
+    posting: Posting,
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
 ) {
     TextField(
-        value = posting.second,
+        value = posting.amount?.currency ?: "",
         onValueChange = { viewModel.setCurrency(index, it) },
         singleLine = true,
         modifier = modifier,
@@ -334,14 +333,14 @@ fun CurrencyField(
 @Composable
 fun AmountField(
     index: Int,
-    posting: Quadruple<String, String, String, String>,
+    posting: Posting,
     showAmountHint: Boolean,
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
 ) {
     val unbalancedAmount by viewModel.unbalancedAmount.observeAsState()
     TextField(
-        value = posting.third,
+        value = posting.amount?.quantity ?: "",
         onValueChange = { viewModel.setAmount(index, it) },
         singleLine = true,
         colors =
