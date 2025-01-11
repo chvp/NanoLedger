@@ -10,7 +10,7 @@ data class Posting(
     // secondary constructor for empty Posting
     constructor() : this(null, null, null) {}
 
-    fun contains(query: String) = account?.contains(query, ignoreCase = true) ?: false
+    fun contains(query: String) = account?.contains(query, ignoreCase = true) ?: note?.contains(query, ignoreCase = true) ?: false
 
     fun isNote() = account == null && amount == null && note != ""
 
