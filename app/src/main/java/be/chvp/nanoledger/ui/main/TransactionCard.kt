@@ -65,20 +65,33 @@ fun TransactionCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 for (p in transaction.postings) {
-                    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            "  ${p.account}",
-                            softWrap = false,
-                            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Text(
-                            p.amount?.original ?: "",
-                            softWrap = false,
-                            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                            modifier = Modifier.padding(start = 2.dp),
-                        )
+                    if (p.isNote()) {
+                        val trimmedNote = p.note!!.trim()
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                "  $trimmedNote",
+                                softWrap = false,
+                                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+                    } else {
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                "  ${p.account}",
+                                softWrap = false,
+                                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Text(
+                                p.amount?.original ?: "",
+                                softWrap = false,
+                                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                                modifier = Modifier.padding(start = 2.dp),
+                            )
+                        }
                     }
                 }
             }

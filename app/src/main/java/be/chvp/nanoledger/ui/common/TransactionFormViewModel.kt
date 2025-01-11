@@ -6,7 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
+import be.chvp.nanoledger.data.Amount
 import be.chvp.nanoledger.data.LedgerRepository
+import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.PreferencesDataSource
 import be.chvp.nanoledger.data.Transaction
 import be.chvp.nanoledger.ui.util.Event
@@ -61,16 +63,16 @@ abstract class TransactionFormViewModel
             }
 
         private val _postings =
-            MutableLiveData<List<Triple<String, String, String>>>(
-                listOf(emptyPosting()),
+            MutableLiveData<List<Posting>>(
+                listOf(Posting()),
             )
-        val postings: LiveData<List<Triple<String, String, String>>> = _postings
+        val postings: LiveData<List<Posting>> = _postings
         val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
         val unbalancedAmount: LiveData<String> =
             postings.map {
                 it
-                    .map { it.third }
-                    .filter { it != "" }
+                    .mapNotNull { it.amount }
+                    .map { it.quantity }
                     .map {
                         val cleaned =
                             it.replace(
@@ -107,13 +109,18 @@ abstract class TransactionFormViewModel
                         if (payee == "") {
                             return@map false
                         }
-                        if (postings.dropLast(1).any { it.first == "" }) {
+                        if (unbalancedAmount != "" &&
+                            postings.dropLast(1).all {
+                                it.amount != null || it.isNote() // its a note, allow empty amount
+                            }
+                        ) {
                             return@map false
                         }
-                        if (unbalancedAmount != "" && postings.dropLast(1).all { it.third != "" }) {
-                            return@map false
-                        }
-                        if (postings.dropLast(1).filter { it.third == "" }.size > 1) {
+                        if (
+                            postings.dropLast(1).filter {
+                                it.amount == null || it.isNote() // its a note, allow empty amount
+                            }.size > 1
+                        ) {
                             return@map false
                         }
                         return@map true
@@ -150,20 +157,30 @@ abstract class TransactionFormViewModel
             transaction.append('\n')
             // Drop last element, it should always be an empty posting (and the only empty posting)
             for (posting in postings.value!!.dropLast(1)) {
-                val usedLength = 7 + posting.first.length + posting.second.length + posting.third.length
+                val account = posting.account ?: ""
+                val currency = posting.amount?.currency ?: ""
+                val amount = posting.amount?.quantity ?: ""
+                val note = posting.note ?: ""
+
+                val usedLength = 7 + account.length + currency.length + amount.length
+
                 val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
                 val spaces = " ".repeat(maxOf(0, numberOfSpaces))
-                if (posting.third == "") {
+
+                if (posting.isNote()) {
+                    // this posting is a note
+                    transaction.append("${note}\n")
+                } else if (posting.amount == null) {
                     transaction.append(
-                        "    ${posting.first}\n",
+                        "    ${account}${note}\n",
                     )
                 } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
                     transaction.append(
-                        "    ${posting.first}  ${spaces}${posting.second} ${posting.third}\n",
+                        "    $account  $spaces$currency $amount$note\n",
                     )
                 } else {
                     transaction.append(
-                        "    ${posting.first}  ${spaces}${posting.third} ${posting.second}\n",
+                        "    $account  $spaces$amount $currency$note\n",
                     )
                 }
             }
@@ -178,12 +195,7 @@ abstract class TransactionFormViewModel
             setStatus(transaction.status ?: "")
             setPayee(transaction.payee)
             setNote(transaction.note ?: "")
-
-            transaction.postings.forEachIndexed { i, posting ->
-                setAccount(i, posting.account)
-                setCurrency(i, posting.amount?.currency ?: "")
-                setAmount(i, posting.amount?.quantity ?: "")
-            }
+            setPostings(transaction.postings)
         }
 
         fun setDate(dateMillis: Long) {
@@ -213,20 +225,29 @@ abstract class TransactionFormViewModel
             _note.value = newNote
         }
 
+        fun setPostings(newPostings: List<Posting>) {
+            _postings.value = filterPostings(newPostings)
+        }
+
+        fun filterPostings(postings: List<Posting>): ArrayList<Posting> {
+            val filteredResult = ArrayList<Posting>()
+            for (posting in postings) {
+                if (!posting.isEmpty()) {
+                    filteredResult.add(posting)
+                }
+            }
+
+            filteredResult.add(Posting())
+            return filteredResult
+        }
+
         fun setAccount(
             index: Int,
             newAccount: String,
         ) {
             val result = ArrayList(postings.value!!)
-            result[index] = Triple(newAccount, result[index].second, result[index].third)
-            val filteredResult = ArrayList<Triple<String, String, String>>()
-            for (triple in result) {
-                if (triple.first != "" || triple.third != "") {
-                    filteredResult.add(triple)
-                }
-            }
-            filteredResult.add(emptyPosting())
-            _postings.value = filteredResult
+            result[index] = Posting(newAccount, result[index].amount, result[index].note)
+            _postings.value = filterPostings(result)
         }
 
         fun setCurrency(
@@ -234,27 +255,42 @@ abstract class TransactionFormViewModel
             newCurrency: String,
         ) {
             val result = ArrayList(postings.value!!)
-            result[index] = Triple(result[index].first, newCurrency, result[index].third)
-            _postings.value = result
+
+            val quantity = result[index].amount?.quantity ?: ""
+            val original = result[index].amount?.original ?: ""
+            var newAmount: Amount? = null
+
+            if (quantity != "" || original != "" || newCurrency != "") {
+                newAmount = Amount(quantity, newCurrency, original)
+            }
+
+            result[index] = Posting(result[index].account, newAmount, result[index].note)
+            _postings.value = filterPostings(result)
         }
 
         fun setAmount(
             index: Int,
-            newAmount: String,
+            newAmountString: String,
         ) {
             val result = ArrayList(postings.value!!)
-            result[index] = Triple(result[index].first, result[index].second, newAmount)
-            val filteredResult = ArrayList<Triple<String, String, String>>()
-            for (triple in result) {
-                if (triple.first != "" || triple.third != "") {
-                    filteredResult.add(triple)
-                }
+            val currency = result[index].amount?.currency ?: ""
+            val original = result[index].amount?.original ?: ""
+            var newAmount: Amount? = null
+
+            if (newAmountString != "" || original != "" || currency != "") {
+                newAmount = Amount(newAmountString, currency, original)
             }
-            filteredResult.add(emptyPosting())
-            _postings.value = filteredResult
+
+            result[index] = Posting(result[index].account, newAmount, result[index].note)
+            _postings.value = filterPostings(result)
         }
 
-        fun emptyPosting(): Triple<String, String, String> {
-            return Triple("", preferencesDataSource.getDefaultCurrency(), "")
+        fun setPostingNote(
+            index: Int,
+            newPostingNote: String,
+        ) {
+            val result = ArrayList(postings.value!!)
+            result[index] = Posting(result[index].account, result[index].amount, newPostingNote)
+            _postings.value = filterPostings(result)
         }
     }
