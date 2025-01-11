@@ -66,10 +66,10 @@ fun TransactionCard(
                 )
                 for (p in transaction.postings) {
                     if (p.isNote()) {
-                        val trimmed_note = p.note!!.trim()
+                        val trimmedNote = p.note!!.trim()
                         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                "  $trimmed_note",
+                                "  $trimmedNote",
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                                 overflow = TextOverflow.Ellipsis,
