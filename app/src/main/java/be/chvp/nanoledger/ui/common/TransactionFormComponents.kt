@@ -144,8 +144,7 @@ fun TransactionForm(
             postings?.forEachIndexed { i, posting ->
                 // do not show notes rows in the UI
                 if (!posting.isNote() || i == postings!!.size - 1) {
-                    val showAmountHint = posting.account == null && posting.amount == null
-                    PostingRow(i, posting, showAmountHint, viewModel)
+                    PostingRow(i, posting, posting.isEmpty(), viewModel)
                 }
             }
         }
