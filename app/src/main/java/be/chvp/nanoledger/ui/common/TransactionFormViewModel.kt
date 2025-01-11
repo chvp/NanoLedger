@@ -275,7 +275,7 @@ abstract class TransactionFormViewModel
 
         fun setPostingNote(
             index: Int,
-            newPostingNote: String,
+            newPostingNote: String?,
         ) {
             val result = ArrayList(postings.value!!)
             result[index] = Posting(result[index].account, result[index].amount, newPostingNote)
