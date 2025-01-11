@@ -3,6 +3,8 @@ package be.chvp.nanoledger.data.parser
 import be.chvp.nanoledger.data.Transaction
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class TransactionParserTest {
     @Test
@@ -145,6 +147,61 @@ class TransactionParserTest {
 
         assertEquals(1, transactions.size)
         assertEquals("2023-09-08=2023-09-09", transactions[0].date)
+    }
+
+    @Test
+    fun canParsePostingNote() {
+        val transactions =
+            extractTransactions(
+                """
+                |2023-09-08 * Shop | Groceries
+                |    ; Note for the transaction
+                |    assets:checking                                         -2.19 EUR; Payee:Test
+                |    assets:cash                                             -1.00 EUR
+                |    ; another note
+                |    expenses:groceries                                       3.19 EUR      ; Payee: Another
+                """.trimMargin().lines(),
+            )
+
+        assertEquals("    ; Note for the transaction", transactions[0].postings[0].note)
+        assertEquals("; Payee:Test", transactions[0].postings[1].note)
+        assertEquals(null, transactions[0].postings[2].note)
+        assertEquals("    ; another note", transactions[0].postings[3].note)
+        assertEquals("      ; Payee: Another", transactions[0].postings[4].note)
+    }
+
+    @Test
+    fun testPostingWithOnlyNoteIsNotEmpty() {
+        val transactions =
+            extractTransactions(
+                """
+                |2023-09-08 * Shop | Groceries
+                |    ; Note for the transaction
+                |    assets:checking                                         -2.19 EUR
+                |    expenses:groceries                                       2.19 EUR
+                """.trimMargin().lines(),
+            )
+
+        assertEquals("    ; Note for the transaction", transactions[0].postings[0].note)
+        assertTrue(transactions[0].postings[0].isNote())
+        assertFalse(transactions[0].postings[0].isEmpty())
+    }
+
+    @Test
+    fun canParsePostingWithNoAmountAndNote() {
+        val transactions =
+            extractTransactions(
+                """
+                |2023-09-08 * Shop | Groceries
+                |    ; Note for the transaction
+                |    assets:checking                                         -2.19 EUR
+                |    expenses:groceries                                                ; Casual note
+                """.trimMargin().lines(),
+            )
+
+        assertEquals("                                                ; Casual note", transactions[0].postings[2].note)
+        assertEquals(null, transactions[0].postings[2].amount)
+        assertEquals("expenses:groceries", transactions[0].postings[2].account)
     }
 
     @Test
