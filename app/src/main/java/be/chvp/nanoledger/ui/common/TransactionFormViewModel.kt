@@ -145,6 +145,8 @@ abstract class TransactionFormViewModel
 
         val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
 
+        val detailedPostings: LiveData<Boolean> = preferencesDataSource.detailedPostings
+
         protected fun toTransactionString(): String {
             val transaction = StringBuilder()
             transaction.append(dateFormat.format(date.value!!))
@@ -158,7 +160,13 @@ abstract class TransactionFormViewModel
             transaction.append('\n')
             // Drop last element, it should always be an empty posting (and the only empty posting)
             for (posting in postings.value!!.dropLast(1)) {
-                val account = posting.account ?: ""
+                var account = posting.account ?: ""
+                // only save the status if not empty, else does not have sense
+                if (account.isNotEmpty()) {
+                    val status = posting.status ?: ""
+                    account = "$status $account".trim()
+                }
+
                 val currency = posting.amount?.currency ?: ""
                 val quantity = posting.amount?.quantity ?: ""
                 val note = posting.note ?: ""
@@ -234,7 +242,7 @@ abstract class TransactionFormViewModel
             newAccount: String,
         ) {
             val result = ArrayList(postings.value!!)
-            result[index] = Posting(newAccount, result[index].amount, result[index].note)
+            result[index] = Posting(newAccount, result[index].status, result[index].amount, result[index].note)
             _postings.value = filterPostings(result)
         }
 
@@ -252,7 +260,7 @@ abstract class TransactionFormViewModel
                 newAmount = Amount(quantity, newCurrency, original)
             }
 
-            result[index] = Posting(result[index].account, newAmount, result[index].note)
+            result[index] = Posting(result[index].account, result[index].status, newAmount, result[index].note)
             _postings.value = filterPostings(result)
         }
 
@@ -269,7 +277,7 @@ abstract class TransactionFormViewModel
                 newAmount = Amount(newAmountString, currency, original)
             }
 
-            result[index] = Posting(result[index].account, newAmount, result[index].note)
+            result[index] = Posting(result[index].account, result[index].status, newAmount, result[index].note)
             _postings.value = filterPostings(result)
         }
 
@@ -278,7 +286,16 @@ abstract class TransactionFormViewModel
             newPostingNote: String?,
         ) {
             val result = ArrayList(postings.value!!)
-            result[index] = Posting(result[index].account, result[index].amount, newPostingNote)
+            result[index] = Posting(result[index].account, result[index].status, result[index].amount, newPostingNote)
+            _postings.value = filterPostings(result)
+        }
+
+        fun setPostingStatus(
+            index: Int,
+            newStatus: String?
+        ) {
+            val result = ArrayList(postings.value!!)
+            result[index] = Posting(result[index].account, newStatus, result[index].amount, result[index].note)
             _postings.value = filterPostings(result)
         }
 

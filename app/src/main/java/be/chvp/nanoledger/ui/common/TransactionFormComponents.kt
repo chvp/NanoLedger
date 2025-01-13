@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,8 +58,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.data.Posting
 import kotlinx.coroutines.launch
@@ -139,7 +138,7 @@ fun TransactionForm(
                 verticalAlignment = Alignment.Bottom,
             ) {
                 DateSelector(viewModel, Modifier.weight(0.3f).padding(start = 4.dp, end = 2.dp).fillMaxWidth())
-                StatusSelector(viewModel, Modifier.weight(0.12f).padding(horizontal = 2.dp).fillMaxWidth())
+                StatusSelector(viewModel.status.value ?: "", Modifier.weight(0.12f).padding(horizontal = 2.dp).fillMaxWidth(), onClick = { viewModel.setStatus(it) })
                 PayeeSelector(viewModel, Modifier.weight(0.58f).padding(start = 2.dp, end = 4.dp).fillMaxWidth())
             }
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
@@ -204,10 +203,11 @@ fun DateSelector(
 
 @Composable
 fun StatusSelector(
-    viewModel: TransactionFormViewModel,
+    startStatus: String,
     modifier: Modifier = Modifier,
+    onClick: (newValue: String) -> Unit,
 ) {
-    val status by viewModel.status.observeAsState()
+    var status by remember { mutableStateOf(startStatus) }
     val options = listOf(" ", "!", "*")
     var expanded by rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
@@ -216,7 +216,7 @@ fun StatusSelector(
         modifier = modifier,
     ) {
         OutlinedTextField(
-            value = (status ?: ""),
+            value = status,
             onValueChange = {},
             readOnly = true,
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
@@ -236,7 +236,8 @@ fun StatusSelector(
                 DropdownMenuItem(
                     text = { Text(it) },
                     onClick = {
-                        viewModel.setStatus(it)
+                        onClick(it)
+                        status = it
                         expanded = false
                     },
                     contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -284,93 +285,72 @@ fun PostingRow(
     viewModel: TransactionFormViewModel,
 ) {
     val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState()
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp)) {
-        AccountSelector(
-            index = index,
-            value = posting.account ?: "",
-            viewModel,
-            modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
-        )
-        if (currencyBeforeAmount ?: true) {
-            CurrencyField(index, posting, viewModel, Modifier.weight(0.95f).padding(horizontal = 2.dp))
-            AmountField(
-                index,
-                posting,
-                showAmountHint,
-                viewModel,
-                Modifier.weight(1.25f).padding(horizontal = 2.dp),
-            )
-        } else {
-            AmountField(
-                index,
-                posting,
-                showAmountHint,
-                viewModel,
-                Modifier.weight(1.25f).padding(horizontal = 2.dp),
-            )
-            CurrencyField(index, posting, viewModel, Modifier.weight(0.95f).padding(horizontal = 2.dp))
+    // for some reason, the rows starts focused
+    var focusedRow by remember { mutableStateOf(true) }
+    Column(
+        modifier = Modifier.fillMaxSize().focusGroup().onFocusChanged {
+            focusedRow = !focusedRow
         }
-        ShowNoteButton(index, posting, viewModel, Modifier)
-    }
-}
-
-@Composable
-fun PostingNoteDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: (newNoteText: String) -> Unit,
-    startText: String
-) {
-    var text by remember { mutableStateOf(startText) }
-
-    Dialog(onDismissRequest = { onDismissRequest() }) {
-        // Draw a rectangle shape with rounded corners inside the dialog
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                TextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    label = { Text("Note") },
-                    modifier = Modifier.padding(16.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp)) {
+            AccountSelector(
+                index = index,
+                value = posting.account ?: "",
+                viewModel,
+                modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
+            )
+            if (currencyBeforeAmount ?: true) {
+                CurrencyField(index, posting, viewModel, Modifier.weight(0.95f).padding(horizontal = 2.dp))
+                AmountField(
+                    index,
+                    posting,
+                    showAmountHint,
+                    viewModel,
+                    Modifier.weight(1.25f).padding(horizontal = 2.dp),
                 )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    TextButton(
-                        onClick = { onDismissRequest() },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Dismiss")
-                    }
-                    TextButton(
-                        onClick = { onConfirmation(text) },
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Text("Save")
-                    }
-                }
+            } else {
+                AmountField(
+                    index,
+                    posting,
+                    showAmountHint,
+                    viewModel,
+                    Modifier.weight(1.25f).padding(horizontal = 2.dp),
+                )
+                CurrencyField(index, posting, viewModel, Modifier.weight(0.95f).padding(horizontal = 2.dp))
             }
         }
+
+        if (focusedRow && viewModel.detailedPostings.value!!) {
+            PostingDetailsRow(index, posting, viewModel, Modifier.padding(16.dp))
+        }
     }
+
 }
 
 @Composable
-fun ShowNoteButton(
+fun PostingDetailsRow(
     index: Int,
     posting: Posting,
     viewModel: TransactionFormViewModel,
     modifier: Modifier
+) {
+
+    Row(
+        modifier = modifier
+    ) {
+        StatusSelector(posting.status ?: "", modifier = Modifier.weight(0.10f).padding(horizontal = 2.dp).fillMaxWidth(), onClick = {
+            viewModel.setPostingStatus(index, it)
+        })
+        NoteField(index, posting, viewModel, modifier = Modifier.weight(0.58f).padding(start = 4.dp, end = 4.dp).fillMaxWidth())
+    }
+}
+
+@Composable
+fun NoteField(
+    index: Int,
+    posting: Posting,
+    viewModel: TransactionFormViewModel,
+    modifier: Modifier = Modifier,
 ) {
 
     val startNoteRegex = Regex("[ \\t]*;[ \\t]*")
@@ -381,36 +361,31 @@ fun ShowNoteButton(
     // for the dialog, remove the note start and trim the result
     val noteText = (posting.note ?: "").replace(noteStart, "").trim()
 
-    var showPostingNoteDialog by remember { mutableStateOf(false) }
+    TextField(
+        value = noteText,
+        onValueChange = {
+            var finalNote: String? = null
+            val trimmedNote = it.trim()
 
-    Button(
-        onClick = { showPostingNoteDialog = true } ,
-        modifier = modifier
-    ) {
-        Text("\uD83D\uDCDD")
-    }
+            // if the result trimmed is not empty, construct the full note,
+            // else pass a null note as we are deleting the value
+            if (trimmedNote != "") {
+                finalNote = noteStart + trimmedNote
+            }
 
-    if (showPostingNoteDialog) {
-        PostingNoteDialog(
-            onConfirmation = { newNote: String ->
-
-                var finalNote: String? = null
-                val trimmedNote = newNote.trim()
-
-                // if the result trimmed is not empty, construct the full note,
-                // else pass a null note as we are deleting the value
-                if (trimmedNote != "") {
-                    finalNote = noteStart + trimmedNote
-                }
-
-                viewModel.setPostingNote(index, finalNote)
-                showPostingNoteDialog = false
-             },
-            onDismissRequest = { showPostingNoteDialog = false },
-            startText = noteText
+            viewModel.setPostingNote(index, finalNote)
+        },
+        label = { Text("Note") },
+        singleLine = true,
+        modifier = modifier,
+        colors =
+        ExposedDropdownMenuDefaults.textFieldColors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
         )
-    }
+    )
 }
+
 
 @Composable
 fun CurrencyField(
