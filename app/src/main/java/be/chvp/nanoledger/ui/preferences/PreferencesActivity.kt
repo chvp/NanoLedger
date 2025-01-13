@@ -80,6 +80,11 @@ class PreferencesActivity() : ComponentActivity() {
                     true to stringResource(R.string.currency_order_before),
                     false to stringResource(R.string.currency_order_after),
                 )
+            val postingsInfoMap =
+                mapOf(
+                    true to stringResource(R.string.detailed_postings),
+                    false to stringResource(R.string.basic_postings),
+                )
             val separatorMap =
                 mapOf(
                     "." to stringResource(R.string.separator_point),
@@ -235,6 +240,40 @@ class PreferencesActivity() : ComponentActivity() {
                                         },
                                         contentPadding =
                                             ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    )
+                                }
+                            }
+                        }
+                        HorizontalDivider()
+                        val detailedPostings by
+                            preferencesViewModel.detailedPostings.observeAsState()
+                        var expandedDetailedPostings by rememberSaveable { mutableStateOf(false) }
+                        ExposedDropdownMenuBox(
+                            expanded = expandedDetailedPostings,
+                            onExpandedChange = { expandedDetailedPostings = !expandedDetailedPostings },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Setting(
+                                stringResource(R.string.currency_amount_order),
+                                postingsInfoMap[detailedPostings ?: true] ?: stringResource(
+                                    R.string.basic_postings,
+                                ),
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+                            ) { expandedDetailedPostings = true }
+                            ExposedDropdownMenu(
+                                expanded = expandedDetailedPostings,
+                                onDismissRequest = { expandedDetailedPostings = false },
+                                modifier = Modifier.exposedDropdownSize(true),
+                            ) {
+                                postingsInfoMap.forEach {
+                                    DropdownMenuItem(
+                                        text = { Text(it.value) },
+                                        onClick = {
+                                            preferencesViewModel.storeDetailedPostings(it.key)
+                                            expandedDetailedPostings = false
+                                        },
+                                        contentPadding =
+                                        ExposedDropdownMenuDefaults.ItemContentPadding,
                                     )
                                 }
                             }

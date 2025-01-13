@@ -20,6 +20,7 @@ class PreferencesViewModel
         val defaultCurrency: LiveData<String> = preferencesDataSource.defaultCurrency
         val defaultStatus: LiveData<String> = preferencesDataSource.defaultStatus
         val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
+        val detailedPostings: LiveData<Boolean> = preferencesDataSource.detailedPostings
         val postingWidth: LiveData<Int> = preferencesDataSource.postingWidth
 
         fun storeFileUri(uri: Uri) = preferencesDataSource.setFileUri(uri)
@@ -32,6 +33,11 @@ class PreferencesViewModel
 
         fun storeCurrencyBeforeAmount(enable: Boolean) =
             preferencesDataSource.setCurrencyBeforeAmount(
+                enable,
+            )
+
+        fun storeDetailedPostings(enable: Boolean) =
+            preferencesDataSource.setDetailedPostings(
                 enable,
             )
 
