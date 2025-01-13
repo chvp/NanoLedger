@@ -44,6 +44,7 @@ val postingSplitRegex = Regex("[ \\t]{2,}")
 fun extractPosting(line: String): Posting? {
     // the three components of a posting
     var account: String? = null
+    var status: String? = null
     var amount: Amount? = null
     var note: String? = null
 
@@ -59,13 +60,19 @@ fun extractPosting(line: String): Posting? {
         val components = stripped.split(postingSplitRegex, limit = 2)
         account = components[0]
 
+        // parse the status inside account
+        if (account.startsWith('*') || account.startsWith('!')) {
+            status = account[0].toString()
+            account = account.drop(1).trim()
+        }
+
         // if we have more than the account, is the amount of the posting, parse it
         if (components.size > 1) {
             amount = extractAmount(components[1].trim())
         }
     }
 
-    return Posting(account, amount, note)
+    return Posting(account, status, amount, note)
 }
 
 val assertionRegex = Regex("=.*$")
