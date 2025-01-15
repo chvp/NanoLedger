@@ -292,7 +292,7 @@ abstract class TransactionFormViewModel
 
         fun setPostingStatus(
             index: Int,
-            newStatus: String?
+            newStatus: String?,
         ) {
             val result = ArrayList(postings.value!!)
             result[index] = Posting(result[index].account, newStatus, result[index].amount, result[index].note)

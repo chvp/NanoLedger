@@ -6,23 +6,17 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.focusGroup
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -138,7 +132,11 @@ fun TransactionForm(
                 verticalAlignment = Alignment.Bottom,
             ) {
                 DateSelector(viewModel, Modifier.weight(0.3f).padding(start = 4.dp, end = 2.dp).fillMaxWidth())
-                StatusSelector(viewModel.status.value ?: "", Modifier.weight(0.12f).padding(horizontal = 2.dp).fillMaxWidth(), onClick = { viewModel.setStatus(it) })
+                StatusSelector(
+                    viewModel.status.value ?: "",
+                    Modifier.weight(0.12f).padding(horizontal = 2.dp).fillMaxWidth(),
+                    onClick = { viewModel.setStatus(it) },
+                )
                 PayeeSelector(viewModel, Modifier.weight(0.58f).padding(start = 2.dp, end = 4.dp).fillMaxWidth())
             }
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
@@ -285,12 +283,14 @@ fun PostingRow(
     viewModel: TransactionFormViewModel,
 ) {
     val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState()
-    // for some reason, the rows starts focused
-    var focusedRow by remember { mutableStateOf(true) }
+    var focusedRow by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier.fillMaxSize().focusGroup().onFocusChanged {
-            focusedRow = !focusedRow
-        }
+        modifier =
+            Modifier.fillMaxSize()
+                .focusGroup()
+                .onFocusChanged({
+                    focusedRow = it.isFocused
+                }),
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp)) {
             AccountSelector(
@@ -324,7 +324,6 @@ fun PostingRow(
             PostingDetailsRow(index, posting, viewModel, Modifier.padding(16.dp))
         }
     }
-
 }
 
 @Composable
@@ -332,11 +331,10 @@ fun PostingDetailsRow(
     index: Int,
     posting: Posting,
     viewModel: TransactionFormViewModel,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
-
     Row(
-        modifier = modifier
+        modifier = modifier,
     ) {
         StatusSelector(posting.status ?: "", modifier = Modifier.weight(0.10f).padding(horizontal = 2.dp).fillMaxWidth(), onClick = {
             viewModel.setPostingStatus(index, it)
@@ -352,7 +350,6 @@ fun NoteField(
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
 ) {
-
     val startNoteRegex = Regex("[ \\t]*;[ \\t]?")
     // save the note start in order to use the correct syntax in the ledger file
     // when saving the note.
@@ -380,13 +377,12 @@ fun NoteField(
         singleLine = true,
         modifier = modifier,
         colors =
-        ExposedDropdownMenuDefaults.textFieldColors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-        )
+            ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            ),
     )
 }
-
 
 @Composable
 fun CurrencyField(
