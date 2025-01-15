@@ -147,7 +147,11 @@ fun TransactionForm(
             }
             val postings by viewModel.postings.observeAsState()
             postings?.forEachIndexed { i, posting ->
-                PostingRow(i, posting, posting.isEmpty(), viewModel)
+                // show notes in detailed mode, in basic postings it would be weird
+                // to have an empty row in the middle
+                if (!posting.isNote() || viewModel.detailedPostings.value!!) {
+                    PostingRow(i, posting, posting.isEmpty(), viewModel)
+                }
             }
         }
     }
