@@ -254,7 +254,7 @@ class PreferencesActivity() : ComponentActivity() {
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             Setting(
-                                stringResource(R.string.currency_amount_order),
+                                stringResource(R.string.posting_details),
                                 postingsInfoMap[detailedPostings ?: true] ?: stringResource(
                                     R.string.basic_postings,
                                 ),
@@ -273,7 +273,7 @@ class PreferencesActivity() : ComponentActivity() {
                                             expandedDetailedPostings = false
                                         },
                                         contentPadding =
-                                        ExposedDropdownMenuDefaults.ItemContentPadding,
+                                            ExposedDropdownMenuDefaults.ItemContentPadding,
                                     )
                                 }
                             }
