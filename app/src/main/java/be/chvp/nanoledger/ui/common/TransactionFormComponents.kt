@@ -353,13 +353,13 @@ fun NoteField(
     modifier: Modifier = Modifier,
 ) {
 
-    val startNoteRegex = Regex("[ \\t]*;[ \\t]*")
+    val startNoteRegex = Regex("[ \\t]*;[ \\t]?")
     // save the note start in order to use the correct syntax in the ledger file
     // when saving the note.
     val noteStart = startNoteRegex.find(posting.note ?: " ; ")!!.value
 
-    // for the dialog, remove the note start and trim the result
-    val noteText = (posting.note ?: "").replace(noteStart, "").trim()
+    // for the note text, remove the note start
+    val noteText = (posting.note ?: "").replace(noteStart, "")
 
     TextField(
         value = noteText,
@@ -370,7 +370,8 @@ fun NoteField(
             // if the result trimmed is not empty, construct the full note,
             // else pass a null note as we are deleting the value
             if (trimmedNote != "") {
-                finalNote = noteStart + trimmedNote
+                // here do not use the trimmed version, as it will not allow writing spaces
+                finalNote = noteStart + it
             }
 
             viewModel.setPostingNote(index, finalNote)
