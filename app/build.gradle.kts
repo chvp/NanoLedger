@@ -49,6 +49,7 @@ android {
             arrayOf(
                 "AndroidGradlePluginVersion",
                 "GradleDependency",
+                "HighAppVersionCode",
                 "NewerVersionAvailable",
                 "ObsoleteLintCustomCheck",
                 "OldTargetApi",
