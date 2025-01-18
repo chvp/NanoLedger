@@ -1,11 +1,12 @@
 [versions]
 activity = "1.11.0"
 agp = "8.13.0"
+androidx-test-rules = "1.6.1"
+androidx-test-runner = "1.6.2"
 androidx-test-ext-junit = "1.3.0"
 appcompat = "1.7.1"
 compose-bom = "2025.10.00"
 core-ktx = "1.17.0"
-espresso-core = "3.7.0"
 hilt = "2.57.2"
 junit = "4.13.2"
 kotlin = "2.2.20"
@@ -17,6 +18,8 @@ material = "1.13.0"
 [libraries]
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-runner" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test-rules" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -28,7 +31,6 @@ compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
