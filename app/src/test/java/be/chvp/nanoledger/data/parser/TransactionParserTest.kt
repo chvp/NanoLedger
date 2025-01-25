@@ -205,6 +205,30 @@ class TransactionParserTest {
     }
 
     @Test
+    fun canParsePostingStatus() {
+        val transactions =
+            extractTransactions(
+                """
+                |2023-09-08 * Shop | Groceries
+                |    ; Note for the transaction
+                |    ! assets:checking                                         -2.19 EUR
+                |    * assets:cash                                             -3.00 EUR
+                |    expenses:groceries
+                """.trimMargin().lines(),
+            )
+
+        assertEquals("assets:checking", transactions[0].postings[1].account,)
+        assertEquals("!", transactions[0].postings[1].status)
+
+        assertEquals("assets:cash", transactions[0].postings[2].account,)
+        assertEquals("*", transactions[0].postings[2].status)
+
+        assertEquals("expenses:groceries", transactions[0].postings[3].account)
+        assertEquals(null, transactions[0].postings[3].status)
+
+    }
+
+    @Test
     fun canParseAmountWithNoCurrency() {
         val amountString = "1,000.00"
 
