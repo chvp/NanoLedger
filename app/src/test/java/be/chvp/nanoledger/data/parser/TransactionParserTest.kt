@@ -217,15 +217,14 @@ class TransactionParserTest {
                 """.trimMargin().lines(),
             )
 
-        assertEquals("assets:checking", transactions[0].postings[1].account,)
+        assertEquals("assets:checking", transactions[0].postings[1].account)
         assertEquals("!", transactions[0].postings[1].status)
 
-        assertEquals("assets:cash", transactions[0].postings[2].account,)
+        assertEquals("assets:cash", transactions[0].postings[2].account)
         assertEquals("*", transactions[0].postings[2].status)
 
         assertEquals("expenses:groceries", transactions[0].postings[3].account)
         assertEquals(null, transactions[0].postings[3].status)
-
     }
 
     @Test
