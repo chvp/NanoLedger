@@ -12,6 +12,7 @@ const val DECIMAL_SEPARATOR_KEY = "decimal_separator"
 const val DEFAULT_CURRENCY_KEY = "default_currency"
 const val DEFAULT_STATUS_KEY = "default_status"
 const val CURRENCY_BEFORE_AMOUNT_KEY = "currency_before_amount"
+const val DETAILED_POSTINGS = "detailed_postings"
 const val POSTING_WIDTH_KEY = "posting_width"
 
 class PreferencesDataSource
@@ -87,6 +88,24 @@ class PreferencesDataSource
             sharedPreferences.edit().putBoolean(
                 CURRENCY_BEFORE_AMOUNT_KEY,
                 currencyBeforeAmount,
+            ).apply()
+
+        val detailedPostings: LiveData<Boolean> =
+            sharedPreferences.booleanLiveData(
+                DETAILED_POSTINGS,
+                true,
+            )
+
+        fun getDetailedPostings(): Boolean =
+            sharedPreferences.getBoolean(
+                DETAILED_POSTINGS,
+                true,
+            )
+
+        fun setDetailedPostings(detailedPostings: Boolean) =
+            sharedPreferences.edit().putBoolean(
+                DETAILED_POSTINGS,
+                detailedPostings,
             ).apply()
 
         val postingWidth: LiveData<Int> = sharedPreferences.intLiveData(POSTING_WIDTH_KEY, 72).map { it!! }
