@@ -2,6 +2,8 @@ package be.chvp.nanoledger.data
 
 import android.content.Context
 import android.net.Uri
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,15 +29,11 @@ class PreferencesDataSource
 
         private val fileUriData = sharedPreferences.stringLiveData(FILE_URI_KEY)
 
-        val fileUri: LiveData<Uri?> = fileUriData.map { it?.let { Uri.parse(it) } }
+        val fileUri: LiveData<Uri?> = fileUriData.map { it?.let { it.toUri() } }
 
-        fun getFileUri(): Uri? = sharedPreferences.getString(FILE_URI_KEY, null)?.let { Uri.parse(it) }
+        fun getFileUri(): Uri? = sharedPreferences.getString(FILE_URI_KEY, null)?.let { it.toUri() }
 
-        fun setFileUri(fileUri: Uri?) =
-            sharedPreferences.edit().putString(
-                FILE_URI_KEY,
-                fileUri?.toString(),
-            ).apply()
+        fun setFileUri(fileUri: Uri?) = sharedPreferences.edit { putString(FILE_URI_KEY, fileUri?.toString()) }
 
         val defaultCurrency: LiveData<String> =
             sharedPreferences.stringLiveData(
@@ -46,10 +44,12 @@ class PreferencesDataSource
         fun getDefaultCurrency(): String = sharedPreferences.getString(DEFAULT_CURRENCY_KEY, "€")!!
 
         fun setDefaultCurrency(currency: String) =
-            sharedPreferences.edit().putString(
-                DEFAULT_CURRENCY_KEY,
-                currency,
-            ).apply()
+            sharedPreferences.edit {
+                putString(
+                    DEFAULT_CURRENCY_KEY,
+                    currency,
+                )
+            }
 
         val defaultStatus: LiveData<String> =
             sharedPreferences.stringLiveData(
@@ -60,16 +60,18 @@ class PreferencesDataSource
         fun getDefaultStatus(): String = sharedPreferences.getString(DEFAULT_STATUS_KEY, " ")!!
 
         fun setDefaultStatus(status: String) =
-            sharedPreferences.edit().putString(
-                DEFAULT_STATUS_KEY,
-                status,
-            ).apply()
+            sharedPreferences.edit {
+                putString(
+                    DEFAULT_STATUS_KEY,
+                    status,
+                )
+            }
 
         val decimalSeparator: LiveData<String> = sharedPreferences.stringLiveData(DECIMAL_SEPARATOR_KEY, ".").map { it!! }
 
         fun getDecimalSeparator(): String = sharedPreferences.getString(DECIMAL_SEPARATOR_KEY, ".")!!
 
-        fun setDecimalSeparator(separator: String) = sharedPreferences.edit().putString(DECIMAL_SEPARATOR_KEY, separator).apply()
+        fun setDecimalSeparator(separator: String) = sharedPreferences.edit { putString(DECIMAL_SEPARATOR_KEY, separator) }
 
         val currencyBeforeAmount: LiveData<Boolean> =
             sharedPreferences.booleanLiveData(
@@ -84,14 +86,16 @@ class PreferencesDataSource
             )
 
         fun setCurrencyBeforeAmount(currencyBeforeAmount: Boolean) =
-            sharedPreferences.edit().putBoolean(
-                CURRENCY_BEFORE_AMOUNT_KEY,
-                currencyBeforeAmount,
-            ).apply()
+            sharedPreferences.edit {
+                putBoolean(
+                    CURRENCY_BEFORE_AMOUNT_KEY,
+                    currencyBeforeAmount,
+                )
+            }
 
         val postingWidth: LiveData<Int> = sharedPreferences.intLiveData(POSTING_WIDTH_KEY, 72).map { it!! }
 
         fun getPostingWidth(): Int = sharedPreferences.getInt(POSTING_WIDTH_KEY, 72)!!
 
-        fun setPostingWidth(width: Int) = sharedPreferences.edit().putInt(POSTING_WIDTH_KEY, width).apply()
+        fun setPostingWidth(width: Int) = sharedPreferences.edit { putInt(POSTING_WIDTH_KEY, width) }
     }
