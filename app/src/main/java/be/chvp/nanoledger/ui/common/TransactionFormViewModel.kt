@@ -174,7 +174,7 @@ abstract class TransactionFormViewModel
                     transaction.append(
                         "    ${account}${note}\n",
                     )
-                } else if (currency  == "") {
+                } else if (currency == "") {
                     transaction.append(
                         "    $account  $spaces$quantity$note\n",
                     )
