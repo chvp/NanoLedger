@@ -176,7 +176,7 @@ abstract class TransactionFormViewModel
                     )
                 } else if (currency == "") {
                     transaction.append(
-                        "    $account  $spaces$quantity$note\n",
+                        "    $account  $spaces $quantity$note\n",
                     )
                 } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
                     transaction.append(
