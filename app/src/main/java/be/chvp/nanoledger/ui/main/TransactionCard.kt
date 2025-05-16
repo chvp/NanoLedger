@@ -77,9 +77,10 @@ fun TransactionCard(
                             )
                         }
                     } else {
+                        val fullAccount = "${p.status ?: ""} ${p.account}".trim()
                         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                "  ${p.account}",
+                                "  $fullAccount",
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                                 overflow = TextOverflow.Ellipsis,
