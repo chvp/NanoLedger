@@ -17,6 +17,7 @@ import java.math.BigDecimal
 import java.text.ParsePosition
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.TimeZone
 
 val dateFormat = SimpleDateFormat("yyyy-MM-dd")
 
@@ -203,7 +204,7 @@ abstract class TransactionFormViewModel
         }
 
         fun setDate(dateMillis: Long) {
-            _date.value = Date(dateMillis)
+            _date.value = Date(dateMillis - TimeZone.getDefault().getOffset(dateMillis))
         }
 
         fun setDate(newDate: Date) {
