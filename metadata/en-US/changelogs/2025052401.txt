@@ -1,0 +1,2 @@
+* Don't emit trailing space when currency is empty.
+* When changing the date of a transaction, this could be set incorrectly if the device is set to a time zone with a negative offset. This has been fixed.
