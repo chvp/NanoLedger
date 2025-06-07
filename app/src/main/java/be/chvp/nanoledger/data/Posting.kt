@@ -4,11 +4,12 @@ data class Amount(val quantity: String, val currency: String, val original: Stri
 
 data class Posting(
     val account: String?,
+    val status: String?,
     val amount: Amount?,
     val note: String?,
 ) {
     // secondary constructor for empty Posting
-    constructor(currency: String) : this(null, Amount("", currency, ""), null) {}
+    constructor(currency: String) : this(null, null, Amount("", currency, ""), null) {}
 
     fun contains(query: String) = account?.contains(query, ignoreCase = true) ?: note?.contains(query, ignoreCase = true) ?: false
 
