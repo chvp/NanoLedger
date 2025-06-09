@@ -8,8 +8,6 @@ updates:
     time: "08:00"
     timezone: Europe/Brussels
   open-pull-requests-limit: 10
-  reviewers:
-  - chvp
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
@@ -18,5 +16,3 @@ updates:
     time: "08:00"
     timezone: Europe/Brussels
   open-pull-requests-limit: 10
-  reviewers:
-  - chvp
