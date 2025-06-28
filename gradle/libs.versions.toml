@@ -1,6 +1,6 @@
 [versions]
 activity = "1.10.1"
-agp = "8.10.1"
+agp = "8.11.0"
 androidx-test-ext-junit = "1.2.1"
 appcompat = "1.7.1"
 compose-bom = "2025.06.01"
