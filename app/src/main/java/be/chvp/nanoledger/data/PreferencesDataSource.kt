@@ -19,7 +19,7 @@ const val POSTING_WIDTH_KEY = "posting_width"
 class PreferencesDataSource
     @Inject
     constructor(
-        @ApplicationContext private val context: Context,
+        @param:ApplicationContext private val context: Context,
     ) {
         private val sharedPreferences =
             context.getSharedPreferences(
@@ -36,10 +36,11 @@ class PreferencesDataSource
         fun setFileUri(fileUri: Uri?) = sharedPreferences.edit { putString(FILE_URI_KEY, fileUri?.toString()) }
 
         val defaultCurrency: LiveData<String> =
-            sharedPreferences.stringLiveData(
-                DEFAULT_CURRENCY_KEY,
-                "€",
-            ).map { it!! }
+            sharedPreferences
+                .stringLiveData(
+                    DEFAULT_CURRENCY_KEY,
+                    "€",
+                ).map { it!! }
 
         fun getDefaultCurrency(): String = sharedPreferences.getString(DEFAULT_CURRENCY_KEY, "€")!!
 
@@ -52,10 +53,11 @@ class PreferencesDataSource
             }
 
         val defaultStatus: LiveData<String> =
-            sharedPreferences.stringLiveData(
-                DEFAULT_STATUS_KEY,
-                " ",
-            ).map { it!! }
+            sharedPreferences
+                .stringLiveData(
+                    DEFAULT_STATUS_KEY,
+                    " ",
+                ).map { it!! }
 
         fun getDefaultStatus(): String = sharedPreferences.getString(DEFAULT_STATUS_KEY, " ")!!
 

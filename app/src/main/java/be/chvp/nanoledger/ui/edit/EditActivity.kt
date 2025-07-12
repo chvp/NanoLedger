@@ -44,7 +44,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class EditActivity() : ComponentActivity() {
+class EditActivity : ComponentActivity() {
     private val editViewModel: EditViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

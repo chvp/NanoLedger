@@ -96,11 +96,12 @@ fun TransactionForm(
     LaunchedEffect(latestMismatch) {
         val error = latestMismatch?.get()
         if (error != null) {
-            Toast.makeText(
-                context,
-                mismatchMessage,
-                Toast.LENGTH_LONG,
-            ).show()
+            Toast
+                .makeText(
+                    context,
+                    mismatchMessage,
+                    Toast.LENGTH_LONG,
+                ).show()
         }
     }
 
@@ -496,6 +497,4 @@ fun LooseDropdown(
 fun shouldShowDropdown(
     options: List<String>,
     currentValue: String,
-): Boolean {
-    return options.size > 1 || (options.size == 1 && options[0] != currentValue)
-}
+): Boolean = options.size > 1 || (options.size == 1 && options[0] != currentValue)

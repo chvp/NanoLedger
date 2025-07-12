@@ -77,17 +77,17 @@ abstract class TransactionFormViewModel
                     .map { it.quantity }
                     .map {
                         val cleaned =
-                            it.replace(
-                                Regex("[^-0-9${preferencesDataSource.getDecimalSeparator()}]"),
-                                "",
-                            ).replace(preferencesDataSource.getDecimalSeparator(), ".")
+                            it
+                                .replace(
+                                    Regex("[^-0-9${preferencesDataSource.getDecimalSeparator()}]"),
+                                    "",
+                                ).replace(preferencesDataSource.getDecimalSeparator(), ".")
                         try {
                             BigDecimal(cleaned)
                         } catch (e: NumberFormatException) {
                             BigDecimal.ZERO
                         }
-                    }
-                    .fold(BigDecimal.ZERO) { l, r -> l + r }
+                    }.fold(BigDecimal.ZERO) { l, r -> l + r }
                     .let { it.negate() }
                     .let {
                         if (it == BigDecimal.ZERO.setScale(it.scale())) {
@@ -113,16 +113,23 @@ abstract class TransactionFormViewModel
                         }
                         // If there is an unbalanced amount, and there are no postings with an empty amount, it's invalid
                         if (unbalancedAmount != "" &&
-                            postings.dropLast(1).filter {
-                                !it.isNote()
-                            }.all {
-                                it.amount?.quantity ?: "" != ""
-                            }
+                            postings
+                                .dropLast(1)
+                                .filter {
+                                    !it.isNote()
+                                }.all {
+                                    it.amount?.quantity ?: "" != ""
+                                }
                         ) {
                             return@map false
                         }
                         // If there are multiple postings with an empty amount, it's invalid
-                        if (postings.dropLast(1).filter { !it.isNote() }.filter { it.amount?.quantity ?: "" == "" }.size > 1) {
+                        if (postings
+                                .dropLast(1)
+                                .filter { !it.isNote() }
+                                .filter { it.amount?.quantity ?: "" == "" }
+                                .size > 1
+                        ) {
                             return@map false
                         }
                         return@map true
