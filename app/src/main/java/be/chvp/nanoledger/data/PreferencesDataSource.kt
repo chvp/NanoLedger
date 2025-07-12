@@ -19,7 +19,7 @@ const val POSTING_WIDTH_KEY = "posting_width"
 class PreferencesDataSource
     @Inject
     constructor(
-        @ApplicationContext private val context: Context,
+        @param:ApplicationContext private val context: Context,
     ) {
         private val sharedPreferences =
             context.getSharedPreferences(
