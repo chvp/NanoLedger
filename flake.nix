@@ -18,7 +18,7 @@
           buildToolsVersions = [ buildToolsVersion ];
           platformVersions = [ "35" ];
         };
-        fhsEnv = pkgs.buildFHSUserEnv {
+        fhsEnv = pkgs.buildFHSEnv {
           name = "android-sdk-env";
           targetPkgs = pkgs: (with pkgs; [ glibc ]);
           profile = ''
