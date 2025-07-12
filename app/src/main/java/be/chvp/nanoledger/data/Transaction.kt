@@ -9,10 +9,10 @@ data class Transaction(
     val note: String?,
     val postings: List<Posting>,
 ) {
-    fun contains(query: String) =
-        payee.contains(query, ignoreCase = true) ||
-            (note?.contains(query, ignoreCase = true) ?: false) ||
-            postings.any {
-                it.contains(query)
-            }
+    fun contains(query: String): Boolean {
+        if (payee.contains(query, ignoreCase = true)) return true
+        if (note?.contains(query, ignoreCase = true) ?: false) return true
+        if (postings.any { it.contains(query) }) return true
+        return false
+    }
 }
