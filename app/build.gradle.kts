@@ -51,6 +51,7 @@ android {
                 "AndroidGradlePluginVersion",
                 "GradleDependency",
                 "HighAppVersionCode",
+                "MemberExtensionConflict",
                 "NewerVersionAvailable",
                 "ObsoleteLintCustomCheck",
                 "OldTargetApi",
