@@ -65,7 +65,8 @@ class LedgerRepository
                 if (!matches(fileUri)) {
                     onMismatch()
                 } else {
-                    context.contentResolver.openOutputStream(fileUri, "wt")
+                    context.contentResolver
+                        .openOutputStream(fileUri, "wt")
                         ?.let { OutputStreamWriter(it) }
                         ?.use {
                             fileContents.value!!.forEachIndexed { i, line ->
@@ -100,7 +101,8 @@ class LedgerRepository
                 if (!matches(fileUri)) {
                     onMismatch()
                 } else {
-                    context.contentResolver.openOutputStream(fileUri, "wt")
+                    context.contentResolver
+                        .openOutputStream(fileUri, "wt")
                         ?.let { OutputStreamWriter(it) }
                         ?.use {
                             fileContents.value!!.forEachIndexed { i, line ->
@@ -142,7 +144,8 @@ class LedgerRepository
                 if (!matches(fileUri)) {
                     onMismatch()
                 } else {
-                    context.contentResolver.openOutputStream(fileUri, "wt")
+                    context.contentResolver
+                        .openOutputStream(fileUri, "wt")
                         ?.let { OutputStreamWriter(it) }
                         ?.use {
                             fileContents.value!!.forEach { line ->

@@ -74,7 +74,13 @@ val quantityAtStartRegex = Regex("^(-? *[0-9][0-9,.]*)(.*)")
 val quantityAtEndRegex = Regex("(-? *[0-9][0-9,.]*)$")
 
 fun extractAmount(string: String): Amount {
-    val stripped = string.trim().replace(assertionRegex, "").trim().replace(costRegex, "").trim()
+    val stripped =
+        string
+            .trim()
+            .replace(assertionRegex, "")
+            .trim()
+            .replace(costRegex, "")
+            .trim()
 
     if (stripped.length == 0) {
         return Amount("", "", string)

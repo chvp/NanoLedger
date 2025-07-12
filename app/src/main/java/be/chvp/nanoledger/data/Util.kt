@@ -6,7 +6,8 @@ import androidx.lifecycle.LiveData
 abstract class SharedPreferenceLiveData<T>(
     protected val sharedPrefs: SharedPreferences,
     private val key: String,
-) : LiveData<T>(), SharedPreferences.OnSharedPreferenceChangeListener {
+) : LiveData<T>(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
     abstract fun getValueFromPreferences(key: String): T?
 
     override fun onActive() {
@@ -34,8 +35,7 @@ class SharedPreferenceStringLiveData(
     sharedPrefs: SharedPreferences,
     key: String,
     private val default: String?,
-) :
-    SharedPreferenceLiveData<String?>(sharedPrefs, key) {
+) : SharedPreferenceLiveData<String?>(sharedPrefs, key) {
     init {
         value = this.getValueFromPreferences(key)
     }
@@ -47,16 +47,13 @@ class SharedPreferenceStringLiveData(
 fun SharedPreferences.stringLiveData(
     key: String,
     default: String? = null,
-): SharedPreferenceLiveData<String?> {
-    return SharedPreferenceStringLiveData(this, key, default)
-}
+): SharedPreferenceLiveData<String?> = SharedPreferenceStringLiveData(this, key, default)
 
 class SharedPreferenceBooleanLiveData(
     sharedPrefs: SharedPreferences,
     key: String,
     private val default: Boolean,
-) :
-    SharedPreferenceLiveData<Boolean>(sharedPrefs, key) {
+) : SharedPreferenceLiveData<Boolean>(sharedPrefs, key) {
     init {
         value = this.getValueFromPreferences(key)
     }
@@ -68,16 +65,13 @@ class SharedPreferenceBooleanLiveData(
 fun SharedPreferences.booleanLiveData(
     key: String,
     default: Boolean = false,
-): SharedPreferenceLiveData<Boolean> {
-    return SharedPreferenceBooleanLiveData(this, key, default)
-}
+): SharedPreferenceLiveData<Boolean> = SharedPreferenceBooleanLiveData(this, key, default)
 
 class SharedPreferenceIntLiveData(
     sharedPrefs: SharedPreferences,
     key: String,
     private val default: Int,
-) :
-    SharedPreferenceLiveData<Int>(sharedPrefs, key) {
+) : SharedPreferenceLiveData<Int>(sharedPrefs, key) {
     init {
         value = this.getValueFromPreferences(key)
     }
@@ -88,6 +82,4 @@ class SharedPreferenceIntLiveData(
 fun SharedPreferences.intLiveData(
     key: String,
     default: Int = 0,
-): SharedPreferenceLiveData<Int> {
-    return SharedPreferenceIntLiveData(this, key, default)
-}
+): SharedPreferenceLiveData<Int> = SharedPreferenceIntLiveData(this, key, default)

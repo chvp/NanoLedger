@@ -44,7 +44,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AddActivity() : ComponentActivity() {
+class AddActivity : ComponentActivity() {
     private val addViewModel: AddViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

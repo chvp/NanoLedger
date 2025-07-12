@@ -84,11 +84,12 @@ class MainActivity : ComponentActivity() {
                 val error = latestReadError?.get()
                 if (error != null) {
                     Log.e("be.chvp.nanoledger", "Exception while reading file", error)
-                    Toast.makeText(
-                        context,
-                        readErrorMessage,
-                        Toast.LENGTH_LONG,
-                    ).show()
+                    Toast
+                        .makeText(
+                            context,
+                            readErrorMessage,
+                            Toast.LENGTH_LONG,
+                        ).show()
                 }
             }
 
@@ -98,11 +99,12 @@ class MainActivity : ComponentActivity() {
                 val error = latestWriteError?.get()
                 if (error != null) {
                     Log.e("be.chvp.nanoledger", "Exception while writing file", error)
-                    Toast.makeText(
-                        context,
-                        writeErrorMessage,
-                        Toast.LENGTH_LONG,
-                    ).show()
+                    Toast
+                        .makeText(
+                            context,
+                            writeErrorMessage,
+                            Toast.LENGTH_LONG,
+                        ).show()
                 }
             }
 
@@ -111,11 +113,12 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(latestMismatch) {
                 val error = latestMismatch?.get()
                 if (error != null) {
-                    Toast.makeText(
-                        context,
-                        mismatchMessage,
-                        Toast.LENGTH_LONG,
-                    ).show()
+                    Toast
+                        .makeText(
+                            context,
+                            mismatchMessage,
+                            Toast.LENGTH_LONG,
+                        ).show()
                 }
             }
 
@@ -175,13 +178,15 @@ class MainActivity : ComponentActivity() {
                                     ),
                                 textAlign = TextAlign.Center,
                                 modifier =
-                                    Modifier.align(Alignment.CenterHorizontally).padding(
-                                        horizontal = 16.dp,
-                                    ).clickable {
-                                        startActivity(
-                                            Intent(this@MainActivity, PreferencesActivity::class.java),
-                                        )
-                                    },
+                                    Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .padding(
+                                            horizontal = 16.dp,
+                                        ).clickable {
+                                            startActivity(
+                                                Intent(this@MainActivity, PreferencesActivity::class.java),
+                                            )
+                                        },
                             )
                         }
                     }

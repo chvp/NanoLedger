@@ -52,7 +52,7 @@ import be.chvp.nanoledger.ui.theme.NanoLedgerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PreferencesActivity() : ComponentActivity() {
+class PreferencesActivity : ComponentActivity() {
     private val preferencesViewModel: PreferencesViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
