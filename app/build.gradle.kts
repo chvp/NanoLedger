@@ -11,12 +11,12 @@ plugins {
 
 android {
     namespace = "be.chvp.nanoledger"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "be.chvp.nanoledger"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 2025052401
         versionName = "1.1.1"
 

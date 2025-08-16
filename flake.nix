@@ -13,10 +13,10 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; config = { android_sdk.accept_license = true; allowUnfree = true; }; overlays = [ devshell.overlays.default ]; };
-        buildToolsVersion = "35.0.0";
+        buildToolsVersion = "36.0.0";
         composed = pkgs.androidenv.composeAndroidPackages {
-          buildToolsVersions = [ buildToolsVersion ];
-          platformVersions = [ "35" ];
+          buildToolsVersions = [ "35.0.0" buildToolsVersion ];
+          platformVersions = [ "36" ];
         };
         fhsEnv = pkgs.buildFHSEnv {
           name = "android-sdk-env";
