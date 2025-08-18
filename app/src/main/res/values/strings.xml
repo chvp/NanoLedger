@@ -12,6 +12,9 @@
     <string name="currency_amount_order">Order of currency and amount</string>
     <string name="currency_order_after">Currency after amount</string>
     <string name="currency_order_before">Currency before amount</string>
+    <string name="currency_amount_spacing">Spacing between currency and amount</string>
+    <string name="currency_amount_spacing_on">Spacing enabled</string>
+    <string name="currency_amount_spacing_off">Spacing disabled</string>
     <string name="date">Date</string>
     <string name="decimal_separator">Decimal separator</string>
     <string name="default_currency">Default currency</string>

@@ -15,6 +15,7 @@ const val DEFAULT_CURRENCY_KEY = "default_currency"
 const val DEFAULT_STATUS_KEY = "default_status"
 const val CURRENCY_BEFORE_AMOUNT_KEY = "currency_before_amount"
 const val POSTING_WIDTH_KEY = "posting_width"
+const val SPACING_BETWEEN_CURRENCY_AND_AMOUNT_KEY = "spacing_between_currency_and_amount"
 
 class PreferencesDataSource
     @Inject
@@ -100,4 +101,15 @@ class PreferencesDataSource
         fun getPostingWidth(): Int = sharedPreferences.getInt(POSTING_WIDTH_KEY, 72)!!
 
         fun setPostingWidth(width: Int) = sharedPreferences.edit { putInt(POSTING_WIDTH_KEY, width) }
+
+        val spacingBetweenCurrencyAndAmount: LiveData<Boolean> =
+            sharedPreferences.booleanLiveData(
+                SPACING_BETWEEN_CURRENCY_AND_AMOUNT_KEY,
+                true,
+            )
+
+        fun getCurrencyAmountSpacing(): Boolean = sharedPreferences.getBoolean(SPACING_BETWEEN_CURRENCY_AND_AMOUNT_KEY, true)
+
+        fun setCurrencyAmountSpacing(spacing: Boolean) =
+            sharedPreferences.edit { putBoolean(SPACING_BETWEEN_CURRENCY_AND_AMOUNT_KEY, spacing) }
     }

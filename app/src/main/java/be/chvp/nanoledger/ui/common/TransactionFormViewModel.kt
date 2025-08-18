@@ -171,7 +171,8 @@ abstract class TransactionFormViewModel
                 val quantity = posting.amount?.quantity ?: ""
                 val note = posting.note ?: ""
 
-                val usedLength = 7 + account.length + currency.length + quantity.length
+                val spacer = if (preferencesDataSource.getCurrencyAmountSpacing()) " " else ""
+                val usedLength = 6 + account.length + currency.length + quantity.length + spacer.length
 
                 val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
                 val spaces = " ".repeat(maxOf(0, numberOfSpaces))
@@ -188,11 +189,11 @@ abstract class TransactionFormViewModel
                     )
                 } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
                     transaction.append(
-                        "    $account  $spaces$currency $quantity$note\n",
+                        "    $account  $spaces$currency$spacer$quantity$note\n",
                     )
                 } else {
                     transaction.append(
-                        "    $account  $spaces$quantity $currency$note\n",
+                        "    $account  $spaces$quantity$spacer$currency$note\n",
                     )
                 }
             }
