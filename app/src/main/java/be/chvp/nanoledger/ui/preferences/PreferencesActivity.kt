@@ -80,6 +80,11 @@ class PreferencesActivity : ComponentActivity() {
                     true to stringResource(R.string.currency_order_before),
                     false to stringResource(R.string.currency_order_after),
                 )
+            val currencySpacingMap =
+                mapOf(
+                    true to stringResource(R.string.currency_amount_spacing_on),
+                    false to stringResource(R.string.currency_amount_spacing_off),
+                )
             val separatorMap =
                 mapOf(
                     "." to stringResource(R.string.separator_point),
@@ -232,6 +237,39 @@ class PreferencesActivity : ComponentActivity() {
                                         onClick = {
                                             preferencesViewModel.storeCurrencyBeforeAmount(it.key)
                                             expandedCurrency = false
+                                        },
+                                        contentPadding =
+                                            ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    )
+                                }
+                            }
+                        }
+                        HorizontalDivider()
+                        val currencyAmountSpacing by preferencesViewModel.spacingBetweenCurrencyAndAmount.observeAsState()
+                        var expandedCurrencySpacing by rememberSaveable { mutableStateOf(false) }
+                        ExposedDropdownMenuBox(
+                            expanded = expandedCurrencySpacing,
+                            onExpandedChange = { expandedCurrencySpacing = !expandedCurrencySpacing },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Setting(
+                                stringResource(R.string.currency_amount_spacing),
+                                currencySpacingMap[currencyAmountSpacing ?: true] ?: stringResource(
+                                    R.string.currency_amount_spacing_on,
+                                ),
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+                            ) { expandedCurrencySpacing = true }
+                            ExposedDropdownMenu(
+                                expanded = expandedCurrencySpacing,
+                                onDismissRequest = { expandedCurrencySpacing = false },
+                                modifier = Modifier.exposedDropdownSize(true),
+                            ) {
+                                currencySpacingMap.forEach {
+                                    DropdownMenuItem(
+                                        text = { Text(it.value) },
+                                        onClick = {
+                                            preferencesViewModel.storeCurrencyAmountSpacing(it.key)
+                                            expandedCurrencySpacing = false
                                         },
                                         contentPadding =
                                             ExposedDropdownMenuDefaults.ItemContentPadding,

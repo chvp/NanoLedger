@@ -21,6 +21,7 @@ class PreferencesViewModel
         val defaultStatus: LiveData<String> = preferencesDataSource.defaultStatus
         val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
         val postingWidth: LiveData<Int> = preferencesDataSource.postingWidth
+        val spacingBetweenCurrencyAndAmount: LiveData<Boolean> = preferencesDataSource.spacingBetweenCurrencyAndAmount
 
         fun storeFileUri(uri: Uri) = preferencesDataSource.setFileUri(uri)
 
@@ -36,4 +37,6 @@ class PreferencesViewModel
             )
 
         fun storePostingWidth(width: Int) = preferencesDataSource.setPostingWidth(width)
+
+        fun storeCurrencyAmountSpacing(spacing: Boolean) = preferencesDataSource.setCurrencyAmountSpacing(spacing)
     }
