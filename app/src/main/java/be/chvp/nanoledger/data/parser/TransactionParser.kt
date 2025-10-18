@@ -5,7 +5,7 @@ import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.Transaction
 
 val datePart = "((\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2}(=(\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2})?)"
-val headerRegex = Regex("^$datePart[ \t]*(\\*|!)?([^|]*)(\\|(.*))?$")
+val headerRegex = Regex("^$datePart[ \t]*(\\*|!)?([ \t]*\\(([^)]*)\\)[ \t]*)?([^|]*)(\\|(.*))?$")
 val postingRegex = Regex("^[ \t]+\\S.*$")
 
 fun extractTransactions(lines: List<String>): List<Transaction> {
@@ -20,8 +20,9 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
             val groups = match.groups
             val date = groups[1]!!.value
             val status = groups[5]?.value
-            val payee = groups[6]!!.value.trim()
-            val note = groups[8]?.value?.trim()
+            val code = groups[7]?.value?.trim()
+            val payee = groups[8]!!.value.trim()
+            val note = groups[10]?.value?.trim()
 
             val postings = ArrayList<Posting>()
             while (i < lines.size && postingRegex.find(lines[i]) != null) {
@@ -32,7 +33,7 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
                 }
                 i += 1
             }
-            result.add(Transaction(firstLine, lastLine, date, status, payee, note, postings))
+            result.add(Transaction(firstLine, lastLine, date, status, code, payee, note, postings))
         }
     }
     return result
