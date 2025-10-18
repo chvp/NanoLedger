@@ -45,6 +45,9 @@ abstract class TransactionFormViewModel
         private val _status = MutableLiveData<String>(preferencesDataSource.getDefaultStatus())
         val status: LiveData<String> = _status
 
+        private val _code = MutableLiveData<String>("")
+        val code: LiveData<String> = _code
+
         private val _payee = MutableLiveData<String>("")
         val payee: LiveData<String> = _payee
         val possiblePayees: LiveData<List<String>> =
@@ -159,6 +162,9 @@ abstract class TransactionFormViewModel
             if (status.value!! != " ") {
                 transaction.append(" ${status.value}")
             }
+            if (code.value!! != "") {
+                transaction.append(" (${code.value})")
+            }
             transaction.append(" ${payee.value}")
             if (note.value!! != "") {
                 transaction.append(" | ${note.value}")
@@ -207,6 +213,7 @@ abstract class TransactionFormViewModel
             setDate(transaction.date)
             setStatus(transaction.status ?: "")
             setPayee(transaction.payee)
+            setCode(transaction.code ?: "")
             setNote(transaction.note ?: "")
             setPostings(transaction.postings)
         }
@@ -232,6 +239,10 @@ abstract class TransactionFormViewModel
 
         fun setPayee(newPayee: String) {
             _payee.value = newPayee
+        }
+
+        fun setCode(newCode: String) {
+            _code.value = newCode
         }
 
         fun setNote(newNote: String) {
