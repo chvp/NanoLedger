@@ -1,0 +1,2 @@
+Add basic support for hledger's code field. They can't be edited, but are parsed separately from the payee and survive edits of transactions.
+Add setting to add spacing between the currency and the amount in a posting. This setting is on by default, preserving the previous behaviour. (Contributed by @AJua on GitHub, thanks!)
