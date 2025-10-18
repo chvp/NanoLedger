@@ -50,12 +50,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.data.Posting
 import kotlinx.coroutines.launch
 
-val TRANSACTION_INDEX_KEY = "transaction_index"
+const val TRANSACTION_INDEX_KEY = "transaction_index"
 
 @Composable
 fun TransactionForm(
@@ -180,7 +179,7 @@ fun DateSelector(
             },
     )
     if (dateDialogOpen) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date?.getTime())
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date?.time)
         DatePickerDialog(
             onDismissRequest = { dateDialogOpen = false },
             confirmButton = {
