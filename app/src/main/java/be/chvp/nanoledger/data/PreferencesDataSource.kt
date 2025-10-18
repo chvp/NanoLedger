@@ -30,9 +30,9 @@ class PreferencesDataSource
 
         private val fileUriData = sharedPreferences.stringLiveData(FILE_URI_KEY)
 
-        val fileUri: LiveData<Uri?> = fileUriData.map { it?.let { it.toUri() } }
+        val fileUri: LiveData<Uri?> = fileUriData.map { it?.toUri() }
 
-        fun getFileUri(): Uri? = sharedPreferences.getString(FILE_URI_KEY, null)?.let { it.toUri() }
+        fun getFileUri(): Uri? = sharedPreferences.getString(FILE_URI_KEY, null)?.toUri()
 
         fun setFileUri(fileUri: Uri?) = sharedPreferences.edit { putString(FILE_URI_KEY, fileUri?.toString()) }
 
@@ -96,9 +96,9 @@ class PreferencesDataSource
                 )
             }
 
-        val postingWidth: LiveData<Int> = sharedPreferences.intLiveData(POSTING_WIDTH_KEY, 72).map { it!! }
+        val postingWidth: LiveData<Int> = sharedPreferences.intLiveData(POSTING_WIDTH_KEY, 72).map { it }
 
-        fun getPostingWidth(): Int = sharedPreferences.getInt(POSTING_WIDTH_KEY, 72)!!
+        fun getPostingWidth(): Int = sharedPreferences.getInt(POSTING_WIDTH_KEY, 72)
 
         fun setPostingWidth(width: Int) = sharedPreferences.edit { putInt(POSTING_WIDTH_KEY, width) }
 

@@ -10,12 +10,10 @@ appcompat = "1.7.1"
 compose-bom = "2025.10.00"
 core-ktx = "1.17.0"
 hilt = "2.57.2"
-junit = "4.13.2"
 kotlin = "2.2.20"
 ksp = "2.2.20-2.0.4"
 ktlint = "13.1.0"
 lifecycle = "2.9.4"
-material = "1.13.0"
 
 [libraries]
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
@@ -37,12 +35,10 @@ compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-mani
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
 lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
