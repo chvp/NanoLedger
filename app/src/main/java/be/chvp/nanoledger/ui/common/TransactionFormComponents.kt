@@ -20,11 +20,11 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -215,7 +215,7 @@ fun StatusSelector(
             value = (status ?: ""),
             onValueChange = {},
             readOnly = true,
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
             colors =
                 ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -402,7 +402,7 @@ fun OutlinedLooseDropdown(
             singleLine = true,
             label = content,
             modifier =
-                Modifier.menuAnchor(MenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
+                Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
                     if (!it.hasFocus) {
                         expanded = false
                     }
@@ -460,7 +460,7 @@ fun LooseDropdown(
             },
             singleLine = true,
             modifier =
-                Modifier.menuAnchor(MenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
+                Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
                     if (!it.hasFocus) {
                         expanded = false
                     }

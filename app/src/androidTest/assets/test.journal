@@ -1,0 +1,63 @@
+2023-07-01 * Employer | Payment
+    assets:checking account                                    € 1000.00
+    income:work                                               € -1000.00
+
+2023-07-01 * Grocery store | Apples
+    assets:checking account                                      € -5.00
+    expenses:food:apples                                          € 5.00
+
+2023-07-02 * Landlord | Rent
+    assets:checking account                                    € -500.00
+    expenses:rent                                               € 500.00
+
+2023-07-02 * Restaurant | Dinner with friend
+    assets:checking account                                     € -50.00
+    assets:receivable:friend                                     € 25.00
+    expenses:food:restaurant                                     € 25.00
+
+2023-07-04 * Friend | Reconciliation
+    assets:cash                                                  € 25.00
+    assets:receivable:friend                                    € -25.00
+
+2023-08-01 * Employer | Payment
+    assets:checking account                                    € 1000.00
+    income:work                                               € -1000.00
+
+2023-08-01 * Grocery store | Apples
+    assets:checking account                                      € -5.00
+    expenses:food:apples                                          € 5.00
+
+2023-08-02 * Landlord | Rent
+    assets:checking account                                    € -500.00
+    expenses:rent                                               € 500.00
+
+2023-08-02 * Restaurant | Dinner with friend
+    assets:checking account                                     € -50.00
+    assets:receivable:friend                                     € 25.00
+    expenses:food:restaurant                                     € 25.00
+
+2023-08-04 * Friend | Reconciliation
+    assets:cash                                                  € 25.00
+    assets:receivable:friend                                    € -25.00
+
+2023-09-01 * Employer | Payment
+    assets:checking account                                    € 1000.00
+    income:work                                               € -1000.00
+
+2023-09-01 * Grocery store | Apples
+    assets:checking account                                      € -5.00
+    expenses:food:apples                                          € 5.00
+
+2023-09-02 * Landlord | Rent
+    assets:checking account                                    € -500.00
+    expenses:rent                                               € 500.00
+
+2023-09-02 * Restaurant | Dinner with friend
+    assets:checking account                                     € -50.00
+    assets:receivable:friend                                     € 25.00
+    expenses:food:restaurant                                     € 25.00
+
+2023-09-04 * Friend | Reconciliation
+    assets:cash                                                  € 25.00
+    assets:receivable:friend                                    € -25.00
+

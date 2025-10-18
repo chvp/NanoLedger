@@ -21,13 +21,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -157,7 +157,7 @@ class PreferencesActivity : ComponentActivity() {
                                 statusMap[defaultStatus ?: " "] ?: stringResource(
                                     R.string.status_unmarked,
                                 ),
-                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
                             ) { expandedStatus = true }
                             ExposedDropdownMenu(
                                 expanded = expandedStatus,
@@ -190,7 +190,7 @@ class PreferencesActivity : ComponentActivity() {
                                 separatorMap[decimalSeparator ?: "."] ?: stringResource(
                                     R.string.separator_point,
                                 ),
-                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
                             ) { expandedSeparator = true }
                             ExposedDropdownMenu(
                                 expanded = expandedSeparator,
@@ -224,7 +224,7 @@ class PreferencesActivity : ComponentActivity() {
                                 currencyOrderMap[currencyBeforeAmount ?: true] ?: stringResource(
                                     R.string.currency_order_before,
                                 ),
-                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
                             ) { expandedCurrency = true }
                             ExposedDropdownMenu(
                                 expanded = expandedCurrency,
@@ -257,7 +257,7 @@ class PreferencesActivity : ComponentActivity() {
                                 currencySpacingMap[currencyAmountSpacing ?: true] ?: stringResource(
                                     R.string.currency_amount_spacing_on,
                                 ),
-                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryEditable),
+                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
                             ) { expandedCurrencySpacing = true }
                             ExposedDropdownMenu(
                                 expanded = expandedCurrencySpacing,
