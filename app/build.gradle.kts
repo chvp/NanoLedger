@@ -21,12 +21,17 @@ android {
         versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
         vectorDrawables {
             useSupportLibrary = true
         }
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            resValue("string", "app_name", "NanoLedger (Debug)")
+        }
         release {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -34,16 +39,24 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        animationsDisabled = true
+    }
+
     kotlin {
         compilerOptions {
             optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
+
     lint {
         quiet = true
         disable.addAll(
@@ -64,10 +77,12 @@ android {
         textReport = true
         explainIssues = !project.hasProperty("isCI")
     }
+
     buildFeatures {
         compose = true
         viewBinding = true
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -107,5 +122,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ui.automator)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestUtil(libs.androidx.test.orchestrator)
     debugImplementation(libs.compose.ui.test.manifest)
 }
