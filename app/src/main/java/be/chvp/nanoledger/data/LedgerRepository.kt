@@ -18,27 +18,26 @@ class LedgerRepository
     @Inject
     constructor(
         private val context: Application,
-        private val preferencesDataSource: PreferencesDataSource,
     ) {
         private val _fileContents = MutableLiveData<List<String>>(emptyList())
         val fileContents: LiveData<List<String>> = _fileContents
         private val _transactions = MutableLiveData<List<Transaction>>(emptyList())
         val transactions: LiveData<List<Transaction>> = _transactions
         val accounts: LiveData<Set<String>> =
-            transactions.map {
+            transactions.map { txs ->
                 val result = HashSet<String>()
-                it.forEach { result.addAll(it.postings.mapNotNull { it.account }) }
+                txs.forEach { tx -> result.addAll(tx.postings.mapNotNull { p -> p.account }) }
                 result
             }
-        val payees: LiveData<Set<String>> = transactions.map { HashSet(it.map { it.payee }) }
+        val payees: LiveData<Set<String>> = transactions.map { txs -> HashSet(txs.map { tx -> tx.payee }) }
         val notes: LiveData<Set<String>> =
-            transactions.map {
+            transactions.map { txs ->
                 HashSet(
-                    it.map { it.note }.filter { it != null }.map { it!! },
+                    txs.map { tx -> tx.note }.filter { note -> note != null }.map { note -> note!! },
                 )
             }
 
-        suspend fun matches(fileUri: Uri): Boolean {
+        fun matches(fileUri: Uri): Boolean {
             val result = ArrayList<String>()
             fileUri
                 .let { context.contentResolver.openInputStream(it) }
@@ -50,7 +49,7 @@ class LedgerRepository
                         line = reader.readLine()
                     }
                 }
-            return result.equals(fileContents.value)
+            return result == fileContents.value
         }
 
         suspend fun deleteTransaction(

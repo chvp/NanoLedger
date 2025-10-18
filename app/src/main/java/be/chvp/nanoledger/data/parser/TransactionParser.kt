@@ -4,8 +4,8 @@ import be.chvp.nanoledger.data.Amount
 import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.Transaction
 
-val datePart = "((\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2}(=(\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2})?)"
-val headerRegex = Regex("^$datePart[ \t]*(\\*|!)?([ \t]*\\(([^)]*)\\)[ \t]*)?([^|]*)(\\|(.*))?$")
+const val datePart = "((\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2}(=(\\d{4}[-/.])?\\d{1,2}[-/.]\\d{1,2})?)"
+val headerRegex = Regex("^$datePart[ \t]*([*!])?([ \t]*\\(([^)]*)\\)[ \t]*)?([^|]*)(\\|(.*))?$")
 val postingRegex = Regex("^[ \t]+\\S.*$")
 
 fun extractTransactions(lines: List<String>): List<Transaction> {
@@ -83,7 +83,7 @@ fun extractAmount(string: String): Amount {
             .replace(costRegex, "")
             .trim()
 
-    if (stripped.length == 0) {
+    if (stripped.isEmpty()) {
         return Amount("", "", string)
     }
 

@@ -13,6 +13,4 @@ open class Event<out T>(
         handled = true
         return content
     }
-
-    fun peek(): T = content
 }
