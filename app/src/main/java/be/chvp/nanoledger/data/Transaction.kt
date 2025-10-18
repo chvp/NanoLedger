@@ -5,6 +5,7 @@ data class Transaction(
     val lastLine: Int,
     val date: String,
     val status: String?,
+    val code: String?,
     val payee: String,
     val note: String?,
     val postings: List<Posting>,

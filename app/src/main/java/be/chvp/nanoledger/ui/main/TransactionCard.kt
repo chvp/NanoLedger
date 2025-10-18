@@ -23,6 +23,7 @@ import be.chvp.nanoledger.data.Transaction
 fun transactionHeader(t: Transaction): String {
     var res = t.date
     if (t.status != null) res += " ${t.status}"
+    if (t.code != null) res += " (${t.code})"
     res += " ${t.payee}"
     if (t.note != null) res += " | ${t.note}"
     return res

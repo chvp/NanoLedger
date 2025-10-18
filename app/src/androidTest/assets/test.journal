@@ -52,7 +52,7 @@
     assets:checking account                                    € -500.00
     expenses:rent                                               € 500.00
 
-2023-09-02 * Restaurant | Dinner with friend
+2023-09-02 * (123) Restaurant | Dinner with friend
     assets:checking account                                     € -50.00
     assets:receivable:friend                                     € 25.00
     expenses:food:restaurant                                     € 25.00
@@ -60,4 +60,3 @@
 2023-09-04 * Friend | Reconciliation
     assets:cash                                                  € 25.00
     assets:receivable:friend                                    € -25.00
-
