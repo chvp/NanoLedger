@@ -61,7 +61,7 @@ class PreferencesActivity : ComponentActivity() {
         val openFile =
             registerForActivityResult(OpenDocument()) { uri: Uri? ->
                 if (uri != null) {
-                    getContentResolver().takePersistableUriPermission(
+                    contentResolver.takePersistableUriPermission(
                         uri,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
                     )

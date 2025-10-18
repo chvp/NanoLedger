@@ -24,13 +24,13 @@ class MainViewModel
         private val preferencesDataSource: PreferencesDataSource,
         private val ledgerRepository: LedgerRepository,
     ) : AndroidViewModel(application) {
-        private val _isRefreshing = MutableLiveData<Boolean>(false)
+        private val _isRefreshing = MutableLiveData(false)
         val isRefreshing: LiveData<Boolean> = _isRefreshing
 
-        private val _searching = MutableLiveData<Boolean>(false)
+        private val _searching = MutableLiveData(false)
         val searching: LiveData<Boolean> = _searching
 
-        private val _query = MutableLiveData<String>("")
+        private val _query = MutableLiveData("")
         val query: LiveData<String> = _query
 
         val fileUri = preferencesDataSource.fileUri

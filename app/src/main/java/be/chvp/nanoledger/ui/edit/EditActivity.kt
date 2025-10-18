@@ -30,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -51,11 +50,11 @@ class EditActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        if (!getIntent().hasExtra(TRANSACTION_INDEX_KEY)) {
+        if (!intent.hasExtra(TRANSACTION_INDEX_KEY)) {
             Log.e("be.chvp.nanoledger", "Edit started without transaction index")
             finish()
         }
-        val transactionIndex = getIntent().getIntExtra(TRANSACTION_INDEX_KEY, 0)
+        val transactionIndex = intent.getIntExtra(TRANSACTION_INDEX_KEY, 0)
         editViewModel.loadTransactionFromIndex(transactionIndex)
 
         setContent {

@@ -432,6 +432,7 @@ class TransactionParserTest {
         assertEquals("", amount.currency)
     }
 
+    @Test
     fun doesNotCrashOnInvalidAmount() {
         val amountString = "abc"
 
