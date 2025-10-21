@@ -1,0 +1,1 @@
+Downgrade Android Gradle Plugin to fix compatibility with F-Droid build server
