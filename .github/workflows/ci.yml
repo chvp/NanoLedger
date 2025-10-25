@@ -101,7 +101,7 @@ jobs:
         echo "${{ secrets.KEYSTORE_PASSWORD }}" | $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign --ks keystore.jks --out app-release.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
         $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner verify app-release.apk
     - name: Archive production APK
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       if: env.KEYSTORE_FILE
       env:
         KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
