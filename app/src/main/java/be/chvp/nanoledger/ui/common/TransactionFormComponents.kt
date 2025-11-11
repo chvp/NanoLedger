@@ -357,7 +357,7 @@ fun AmountField(
                 )
             }
         },
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         modifier = modifier,
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
     )
