@@ -12,7 +12,7 @@ core-ktx = "1.17.0"
 hilt = "2.57.2"
 kotlin = "2.2.21"
 ksp = "2.3.2"
-ktlint = "13.1.0"
+ktlint = "14.0.1"
 lifecycle = "2.9.4"
 
 [libraries]
