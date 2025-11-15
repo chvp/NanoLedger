@@ -1,0 +1,1 @@
+Fix the keyboard on Samsung devices not showing a minus sign, contributed by Alejandro García Montoro (agarciamontoro on GitHub), thanks!
