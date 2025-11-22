@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "be.chvp.nanoledger"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 2025111501
         versionName = "1.2.2"
