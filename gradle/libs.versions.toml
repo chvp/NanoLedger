@@ -1,5 +1,5 @@
 [versions]
-activity = "1.12.1"
+activity = "1.12.2"
 agp = "8.13.2"
 androidx-test-ext-junit = "1.3.0"
 androidx-test-rules = "1.7.0"
