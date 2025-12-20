@@ -12,6 +12,7 @@ plugins {
 android {
     namespace = "be.chvp.nanoledger"
     compileSdk = 36
+    compileSdkVersion = "android-36.1"
 
     defaultConfig {
         applicationId = "be.chvp.nanoledger"
@@ -115,6 +116,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.viewmodel.ktx)
     ksp(libs.hilt.compiler)
+    ksp(libs.kotlin.metadata.jvm)
     testImplementation(kotlin("test"))
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
