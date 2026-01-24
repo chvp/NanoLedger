@@ -29,7 +29,6 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "NanoLedger (Debug)")
         }
         release {
             proguardFiles(
@@ -123,5 +122,5 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestUtil(libs.androidx.test.orchestrator)
-    debugImplementation(libs.compose.ui.test.manifest)
+    androidTestImplementation(libs.compose.ui.test.manifest)
 }
