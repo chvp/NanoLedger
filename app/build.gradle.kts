@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -12,7 +11,6 @@ plugins {
 android {
     namespace = "be.chvp.nanoledger"
     compileSdk = 36
-    compileSdkVersion = "android-36.1"
 
     defaultConfig {
         applicationId = "be.chvp.nanoledger"
