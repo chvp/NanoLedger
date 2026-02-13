@@ -48,11 +48,11 @@ fun extractPosting(line: String): Posting {
     var cost: Cost? = null
     var assertion: Amount? = null
     var assertionCost: Cost? = null
-    var note: String? = null
+    var comment: String? = null
 
     val commentMatch = COMMENT_REGEX.find(line)
     if (commentMatch != null) {
-        note = commentMatch.value.trim().trimStart(';').trim()
+        comment = commentMatch.value.trim().trimStart(';').trim()
     }
 
     val stripped = line.replace(COMMENT_REGEX, "").trim()
@@ -78,7 +78,7 @@ fun extractPosting(line: String): Posting {
         }
     }
 
-    return Posting(account, amount, cost, assertion, assertionCost, note)
+    return Posting(account, amount, cost, assertion, assertionCost, comment)
 }
 
 val QUANTITY_AT_START_REGEX = Regex("^(-? *[0-9][0-9,.]*)(.*)")

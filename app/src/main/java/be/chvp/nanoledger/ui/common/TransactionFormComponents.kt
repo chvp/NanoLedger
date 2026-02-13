@@ -143,7 +143,7 @@ fun TransactionForm(
             val postings by viewModel.postings.observeAsState()
             postings?.forEachIndexed { i, posting ->
                 // do not show notes rows in the UI
-                if (!posting.isNote() || i == postings!!.size - 1) {
+                if (!posting.isComment() || i == postings!!.size - 1) {
                     PostingRow(i, posting, posting.isEmpty(), viewModel)
                 }
             }

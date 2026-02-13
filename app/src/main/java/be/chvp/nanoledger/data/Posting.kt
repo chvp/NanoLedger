@@ -8,9 +8,9 @@ data class Amount(
     fun contains(query: String) = original.contains(query, ignoreCase = true)
 }
 
-enum class CostType {
-    UNIT,
-    TOTAL,
+enum class CostType(val repr: String) {
+    UNIT("@"),
+    TOTAL("@@"),
 }
 
 data class Cost(
@@ -26,14 +26,14 @@ data class Posting(
     val cost: Cost?,
     val assertion: Amount?,
     val assertionCost: Cost?,
-    val note: String?,
+    val comment: String?,
 ) {
     // secondary constructor for empty Posting
     constructor(currency: String) : this(null, Amount("", currency, ""), null, null, null, null)
 
     fun contains(query: String): Boolean {
         if (account?.contains(query, ignoreCase = true) ?: false) { return true }
-        if (note?.contains(query, ignoreCase = true) ?: false) { return true }
+        if (comment?.contains(query, ignoreCase = true) ?: false) { return true }
         if (amount?.contains(query) ?: false) { return true }
         if (cost?.contains(query) ?: false) { return true }
         if (assertion?.contains(query) ?: false) { return true }
@@ -42,7 +42,33 @@ data class Posting(
         return false
     }
 
-    fun isNote() = account == null && amount == null && note != ""
+    fun isComment(): Boolean {
+        if (account != null) { return false }
+        if (amount != null) { return false }
+        if (cost != null) { return false }
+        if (assertion != null) { return false }
+        if (assertionCost != null) { return false }
+
+        return comment != null
+    }
+
+    fun fullAmountString(): String {
+        var result = ""
+        result += amount?.original ?: ""
+        if (cost != null) {
+            result += " ${cost.type.repr} ${cost.amount.original}"
+        }
+        if (assertion != null) {
+            result += " = ${assertion.original}"
+        }
+        if (assertionCost != null) {
+            result += " ${assertionCost.type.repr} ${assertionCost.amount.original}"
+        }
+        if (comment != null) {
+            result += " ; $comment"
+        }
+        return result.trim()
+    }
 
     fun isEmpty(): Boolean {
         if ((account ?: "") != "") { return false }
@@ -50,7 +76,7 @@ data class Posting(
         if ((cost?.amount?.quantity ?: "") != "") { return false }
         if ((assertion?.quantity ?: "") != "") { return false }
         if ((assertionCost?.amount?.quantity ?: "") != "") { return false }
-        if ((note ?: "") != "") { return false }
+        if ((comment ?: "") != "") { return false }
 
         return true
     }
