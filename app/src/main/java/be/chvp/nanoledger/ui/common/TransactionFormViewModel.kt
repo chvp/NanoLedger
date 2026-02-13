@@ -74,7 +74,7 @@ abstract class TransactionFormViewModel(
     val unbalancedAmount: LiveData<String> =
         postings.map { ps ->
             ps
-                .filter { p -> !p.isVirtual() && !p.isNote() }
+                .filter { p -> !p.isVirtual() && !p.isComment() }
                 .mapNotNull { p -> p.amount }
                 .map { p -> p.quantity }
                 .map { quantity ->
@@ -107,7 +107,7 @@ abstract class TransactionFormViewModel(
         payee.switchMap { payee ->
             postings.switchMap { postings ->
                 unbalancedAmount.map { unbalancedAmount ->
-                    if (postings.filter { !it.isVirtual() && !it.isNote() }.size < 2) {
+                    if (postings.filter { !it.isVirtual() && !it.isComment() }.size < 2) {
                         return@map false
                     }
                     if (payee == "") {
@@ -118,7 +118,7 @@ abstract class TransactionFormViewModel(
                         postings
                             .dropLast(1)
                             .filter {
-                                !it.isNote()
+                                !it.isComment()
                             }.all {
                                 (it.amount?.quantity ?: "") != ""
                             }
@@ -128,7 +128,7 @@ abstract class TransactionFormViewModel(
                     // If there are multiple postings with an empty amount, it's invalid
                     if (postings
                             .dropLast(1)
-                            .filter { !it.isNote() }
+                            .filter { !it.isComment() }
                             .filter { (it.amount?.quantity ?: "") == "" }
                             .size > 1
                     ) {
@@ -174,7 +174,7 @@ abstract class TransactionFormViewModel(
             val account = posting.account ?: ""
             val currency = posting.amount?.currency ?: ""
             val quantity = posting.amount?.quantity ?: ""
-            val note = posting.note ?: ""
+            val note = posting.comment ?: ""
 
             val spacer = if (preferencesDataSource.getCurrencyAmountSpacing()) " " else ""
             val usedLength = 6 + account.length + currency.length + quantity.length + spacer.length
@@ -182,7 +182,7 @@ abstract class TransactionFormViewModel(
             val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
             val spaces = " ".repeat(maxOf(0, numberOfSpaces))
 
-            if (posting.isNote()) {
+            if (posting.isComment()) {
                 transaction.append("${note}\n")
             } else if (quantity == "") {
                 transaction.append(
@@ -257,7 +257,7 @@ abstract class TransactionFormViewModel(
         newAccount: String,
     ) {
         val result = ArrayList(postings.value!!)
-        result[index] = Posting(newAccount, result[index].amount, null, null, null, result[index].note)
+        result[index] = Posting(newAccount, result[index].amount, null, null, null, result[index].comment)
         _postings.value = filterPostings(result)
     }
 
@@ -275,7 +275,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(quantity, newCurrency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, null, null, null, result[index].note)
+        result[index] = Posting(result[index].account, newAmount, null, null, null, result[index].comment)
         _postings.value = filterPostings(result)
     }
 
@@ -292,7 +292,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(newAmountString, currency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, null, null, null, result[index].note)
+        result[index] = Posting(result[index].account, newAmount, null, null, null, result[index].comment)
         _postings.value = filterPostings(result)
     }
 

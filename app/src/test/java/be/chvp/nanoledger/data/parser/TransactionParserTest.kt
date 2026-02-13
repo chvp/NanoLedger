@@ -192,11 +192,11 @@ class TransactionParserTest {
                 """.trimMargin().lines(),
             )
 
-        assertEquals("Note for the transaction", transactions[0].postings[0].note)
-        assertEquals("Payee:Test", transactions[0].postings[1].note)
-        assertEquals(null, transactions[0].postings[2].note)
-        assertEquals("another note", transactions[0].postings[3].note)
-        assertEquals("Payee: Another", transactions[0].postings[4].note)
+        assertEquals("Note for the transaction", transactions[0].postings[0].comment)
+        assertEquals("Payee:Test", transactions[0].postings[1].comment)
+        assertEquals(null, transactions[0].postings[2].comment)
+        assertEquals("another note", transactions[0].postings[3].comment)
+        assertEquals("Payee: Another", transactions[0].postings[4].comment)
     }
 
     @Test
@@ -211,8 +211,8 @@ class TransactionParserTest {
                 """.trimMargin().lines(),
             )
 
-        assertEquals("Note for the transaction", transactions[0].postings[0].note)
-        assertTrue(transactions[0].postings[0].isNote())
+        assertEquals("Note for the transaction", transactions[0].postings[0].comment)
+        assertTrue(transactions[0].postings[0].isComment())
         assertFalse(transactions[0].postings[0].isEmpty())
     }
 
@@ -228,7 +228,7 @@ class TransactionParserTest {
                 """.trimMargin().lines(),
             )
 
-        assertEquals("Casual note", transactions[0].postings[2].note)
+        assertEquals("Casual note", transactions[0].postings[2].comment)
         assertEquals(null, transactions[0].postings[2].amount)
         assertEquals("expenses:groceries", transactions[0].postings[2].account)
     }
@@ -248,7 +248,7 @@ class TransactionParserTest {
         assertEquals(null, posting.cost)
         assertEquals(null, posting.assertion)
         assertEquals(null, posting.assertionCost)
-        assertEquals(null, posting.note)
+        assertEquals(null, posting.comment)
     }
 
     @Test
@@ -410,7 +410,7 @@ class TransactionParserTest {
 
         assertEquals(null, posting.cost)
         assertEquals(null, posting.assertionCost)
-        assertEquals(null, posting.note)
+        assertEquals(null, posting.comment)
     }
 
     @Test
@@ -432,7 +432,7 @@ class TransactionParserTest {
 
         assertEquals(null, posting.assertion)
         assertEquals(null, posting.assertionCost)
-        assertEquals(null, posting.note)
+        assertEquals(null, posting.comment)
     }
 
     @Test
@@ -454,7 +454,7 @@ class TransactionParserTest {
 
         assertEquals(null, posting.cost)
         assertEquals(null, posting.assertionCost)
-        assertEquals(null, posting.note)
+        assertEquals(null, posting.comment)
     }
 
     @Test
@@ -472,7 +472,7 @@ class TransactionParserTest {
         assertEquals(null, posting.amount)
         assertEquals(null, posting.cost)
         assertEquals(null, posting.assertionCost)
-        assertEquals(null, posting.note)
+        assertEquals(null, posting.comment)
     }
 
     @Test
@@ -504,7 +504,7 @@ class TransactionParserTest {
         assertEquals("10", assertionCost.amount.quantity)
         assertEquals("USD", assertionCost.amount.currency)
 
-        assertEquals("and even a comment", posting.note)
+        assertEquals("and even a comment", posting.comment)
     }
 
     @Test

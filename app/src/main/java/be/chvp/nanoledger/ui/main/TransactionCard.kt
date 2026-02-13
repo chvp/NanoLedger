@@ -64,11 +64,10 @@ fun TransactionCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 for (p in transaction.postings) {
-                    if (p.isNote()) {
-                        val trimmedNote = p.note!!.trim()
+                    if (p.isComment()) {
                         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                "  $trimmedNote",
+                                "  ; ${p.comment!!}",
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                                 overflow = TextOverflow.Ellipsis,
@@ -85,7 +84,7 @@ fun TransactionCard(
                                 modifier = Modifier.weight(1f),
                             )
                             Text(
-                                p.amount?.original ?: "",
+                                p.fullAmountString(),
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                                 modifier = Modifier.padding(start = 2.dp),
