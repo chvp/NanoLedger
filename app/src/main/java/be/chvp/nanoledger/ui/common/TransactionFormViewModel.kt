@@ -257,7 +257,7 @@ abstract class TransactionFormViewModel(
         newAccount: String,
     ) {
         val result = ArrayList(postings.value!!)
-        result[index] = Posting(newAccount, result[index].amount, result[index].note)
+        result[index] = Posting(newAccount, result[index].amount, null, null, null, result[index].note)
         _postings.value = filterPostings(result)
     }
 
@@ -275,7 +275,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(quantity, newCurrency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, result[index].note)
+        result[index] = Posting(result[index].account, newAmount, null, null, null, result[index].note)
         _postings.value = filterPostings(result)
     }
 
@@ -292,7 +292,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(newAmountString, currency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, result[index].note)
+        result[index] = Posting(result[index].account, newAmount, null, null, null, result[index].note)
         _postings.value = filterPostings(result)
     }
 
