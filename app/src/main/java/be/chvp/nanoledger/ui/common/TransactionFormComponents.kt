@@ -130,22 +130,20 @@ fun TransactionForm(
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 2.dp),
                 verticalAlignment = Alignment.Bottom,
             ) {
-                DateSelector(viewModel, Modifier.weight(0.3f).padding(start = 4.dp, end = 2.dp).fillMaxWidth())
-                StatusSelector(viewModel, Modifier.weight(0.12f).padding(horizontal = 2.dp).fillMaxWidth())
-                PayeeSelector(viewModel, Modifier.weight(0.58f).padding(start = 2.dp, end = 4.dp).fillMaxWidth())
+                DateSelector(viewModel, Modifier.weight(0.4f).padding(start = 4.dp, end = 2.dp).fillMaxWidth())
+                StatusSelector(viewModel, Modifier.weight(0.15f).padding(horizontal = 2.dp).fillMaxWidth())
+                CodeField(viewModel, Modifier.weight(0.45f).padding(start = 2.dp, end = 4.dp).fillMaxWidth())
             }
             Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
+                PayeeSelector(viewModel, Modifier.weight(0.4f).padding(start = 4.dp, end = 2.dp).fillMaxWidth())
                 NoteSelector(
                     viewModel,
-                    Modifier.weight(1f).padding(horizontal = 4.dp).fillMaxWidth(),
+                    Modifier.weight(0.6f).padding(start = 2.dp, end = 4.dp).fillMaxWidth(),
                 )
             }
             val postings by viewModel.postings.observeAsState()
             postings?.forEachIndexed { i, posting ->
-                // do not show notes rows in the UI
-                if (!posting.isComment() || i == postings!!.size - 1) {
-                    PostingRow(i, posting, posting.isEmpty(), viewModel)
-                }
+                PostingRow(i, posting, posting.isEmpty(), viewModel)
             }
         }
     }
@@ -239,6 +237,20 @@ fun StatusSelector(
             }
         }
     }
+}
+
+@Composable
+fun CodeField(
+    viewModel: TransactionFormViewModel,
+    modifier: Modifier = Modifier,
+) {
+    val code by viewModel.code.observeAsState()
+    OutlinedTextField(
+        (code ?: ""),
+        { viewModel.setCode(it) },
+        modifier,
+        label  = { Text(stringResource(R.string.code)) }
+    )
 }
 
 @Composable

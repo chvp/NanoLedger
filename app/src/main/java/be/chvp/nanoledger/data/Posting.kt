@@ -1,33 +1,5 @@
 package be.chvp.nanoledger.data
 
-data class Amount(
-    val quantity: String,
-    val currency: String,
-    val original: String,
-) {
-    fun contains(query: String) = original.contains(query, ignoreCase = true)
-    fun format(currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean): String {
-        val spacer = if (currencyAmountSpacing) " " else ""
-        val result = if (currencyBeforeAmount) "$currency$spacer$quantity" else "$quantity$spacer$currency"
-        return result.trim()
-    }
-}
-
-enum class CostType(val repr: String) {
-    UNIT("@"),
-    TOTAL("@@"),
-}
-
-data class Cost(
-    val amount: Amount,
-    val type: CostType,
-) {
-    fun contains(query: String) = amount.contains(query)
-    fun format(currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean): String {
-        return "${type.repr} ${amount.format(currencyBeforeAmount, currencyAmountSpacing)}"
-    }
-}
-
 data class Posting(
     val account: String?,
     val amount: Amount?,
