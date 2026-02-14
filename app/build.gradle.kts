@@ -16,8 +16,8 @@ android {
         applicationId = "be.chvp.nanoledger"
         minSdk = 23
         targetSdk = 36
-        versionCode = 2025111501
-        versionName = "1.2.2"
+        versionCode = 2026021401
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"

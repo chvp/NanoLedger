@@ -1,0 +1,1 @@
+Searching will now also match the amounts in transactions
