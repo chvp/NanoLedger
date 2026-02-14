@@ -73,7 +73,7 @@ data class Posting(
             result += " ${assertionCost.type.repr} ${assertionCost.amount.original}"
         }
         if (comment != null) {
-            result += " ; $comment"
+            result += "  ; $comment"
         }
         return result.trim()
     }
@@ -100,7 +100,7 @@ data class Posting(
         }
         var result = "    ${account ?: ""}$spaces$fullAmountString"
         if ((comment ?: "") != "") {
-            result += " ; $comment"
+            result += "  ; $comment"
         }
         return result
 

@@ -64,8 +64,12 @@ fun TransactionCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 for (p in transaction.postings) {
-                    if (p.isComment()) {
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        if (p.isComment()) {
+
                             Text(
                                 "  ; ${p.comment!!}",
                                 softWrap = false,
@@ -73,9 +77,7 @@ fun TransactionCard(
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.weight(1f),
                             )
-                        }
-                    } else {
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                        } else {
                             Text(
                                 "  ${p.account}",
                                 softWrap = false,
