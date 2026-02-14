@@ -6,6 +6,11 @@ data class Amount(
     val original: String,
 ) {
     fun contains(query: String) = original.contains(query, ignoreCase = true)
+    fun format(currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean): String {
+        val spacer = if (currencyAmountSpacing) " " else ""
+        val result = if (currencyBeforeAmount) "$currency$spacer$quantity" else "$quantity$spacer$currency"
+        return result.trim()
+    }
 }
 
 enum class CostType(val repr: String) {
@@ -18,6 +23,9 @@ data class Cost(
     val type: CostType,
 ) {
     fun contains(query: String) = amount.contains(query)
+    fun format(currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean): String {
+        return "${type.repr} ${amount.format(currencyBeforeAmount, currencyAmountSpacing)}"
+    }
 }
 
 data class Posting(
@@ -52,7 +60,7 @@ data class Posting(
         return comment != null
     }
 
-    fun fullAmountString(): String {
+    fun fullAmountDisplayString(): String {
         var result = ""
         result += amount?.original ?: ""
         if (cost != null) {
@@ -70,6 +78,34 @@ data class Posting(
         return result.trim()
     }
 
+    fun format(width: Int, currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean): String {
+        var fullAmountString = ""
+        if ((amount?.quantity ?: "") != "") {
+            fullAmountString += amount!!.format(currencyBeforeAmount, currencyAmountSpacing)
+        }
+        if ((cost?.amount?.quantity ?: "") != "") {
+            fullAmountString += ' ' + cost!!.format(currencyBeforeAmount, currencyAmountSpacing)
+        }
+        if ((assertion?.quantity ?: "") != "") {
+            fullAmountString += " = " + assertion!!.format(currencyBeforeAmount, currencyAmountSpacing)
+        }
+        if ((assertionCost?.amount?.quantity ?: "") != "") {
+            fullAmountString += ' ' + assertionCost!!.format(currencyBeforeAmount, currencyAmountSpacing)
+        }
+        fullAmountString = fullAmountString.trim()
+        val fillWidth = (width - fullAmountString.length - (account ?: "").length - 4).coerceAtLeast(2)
+        val spaces = " ".repeat(fillWidth)
+        if (isComment()) {
+            return "    ; $comment"
+        }
+        var result = "    ${account ?: ""}$spaces$fullAmountString"
+        if ((comment ?: "") != "") {
+            result += " ; $comment"
+        }
+        return result
+
+    }
+
     fun isEmpty(): Boolean {
         if ((account ?: "") != "") { return false }
         if ((amount?.quantity ?: "") != "") { return false }
@@ -82,4 +118,7 @@ data class Posting(
     }
 
     fun isVirtual() = account?.let { it.startsWith("(") && it.endsWith(")") } ?: false
+
+    fun withAccount(account: String?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+    fun withAmount(amount: Amount?) = Posting(account, amount, cost, assertion, assertionCost, comment)
 }
