@@ -211,12 +211,12 @@ abstract class TransactionFormViewModel(
         _status.value = newStatus
     }
 
-    fun setPayee(newPayee: String) {
-        _payee.value = newPayee
-    }
-
     fun setCode(newCode: String) {
         _code.value = newCode
+    }
+
+    fun setPayee(newPayee: String) {
+        _payee.value = newPayee
     }
 
     fun setNote(newNote: String) {

@@ -7,6 +7,7 @@
     <string name="cancel">Cancel</string>
     <string name="change_default_currency">Change default currency</string>
     <string name="change_posting_width">Change posting width</string>
+    <string name="code">Code</string>
     <string name="copy">Copy</string>
     <string name="copy_and_edit">Copy and edit</string>
     <string name="currency_amount_order">Order of currency and amount</string>
