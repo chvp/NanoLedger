@@ -84,7 +84,7 @@ fun TransactionCard(
                                 modifier = Modifier.weight(1f),
                             )
                             Text(
-                                p.fullAmountString(),
+                                p.fullAmountDisplayString(),
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                                 modifier = Modifier.padding(start = 2.dp),

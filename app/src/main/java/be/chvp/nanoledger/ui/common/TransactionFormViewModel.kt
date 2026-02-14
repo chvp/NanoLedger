@@ -171,36 +171,11 @@ abstract class TransactionFormViewModel(
         transaction.append('\n')
         // Drop last element, it should always be an empty posting (and the only empty posting)
         for (posting in postings.value!!.dropLast(1)) {
-            val account = posting.account ?: ""
-            val currency = posting.amount?.currency ?: ""
-            val quantity = posting.amount?.quantity ?: ""
-            val note = posting.comment ?: ""
-
-            val spacer = if (preferencesDataSource.getCurrencyAmountSpacing()) " " else ""
-            val usedLength = 6 + account.length + currency.length + quantity.length + spacer.length
-
-            val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
-            val spaces = " ".repeat(maxOf(0, numberOfSpaces))
-
-            if (posting.isComment()) {
-                transaction.append("${note}\n")
-            } else if (quantity == "") {
-                transaction.append(
-                    "    ${account}${note}\n",
-                )
-            } else if (currency == "") {
-                transaction.append(
-                    "    $account  $spaces $quantity$note\n",
-                )
-            } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
-                transaction.append(
-                    "    $account  $spaces$currency$spacer$quantity$note\n",
-                )
-            } else {
-                transaction.append(
-                    "    $account  $spaces$quantity$spacer$currency$note\n",
-                )
-            }
+            val width = preferencesDataSource.getPostingWidth()
+            val currencyBeforeAmount = preferencesDataSource.getCurrencyBeforeAmount()
+            val currencyAmountSpacing = preferencesDataSource.getCurrencyAmountSpacing()
+            val formatted = posting.format(width, currencyBeforeAmount, currencyAmountSpacing)
+            transaction.append("$formatted\n")
         }
         transaction.append('\n')
         return transaction.toString()
@@ -257,7 +232,7 @@ abstract class TransactionFormViewModel(
         newAccount: String,
     ) {
         val result = ArrayList(postings.value!!)
-        result[index] = Posting(newAccount, result[index].amount, null, null, null, result[index].comment)
+        result[index] = result[index].withAccount(newAccount)
         _postings.value = filterPostings(result)
     }
 
@@ -275,7 +250,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(quantity, newCurrency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, null, null, null, result[index].comment)
+        result[index] = result[index].withAmount(newAmount)
         _postings.value = filterPostings(result)
     }
 
@@ -292,7 +267,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(newAmountString, currency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, null, null, null, result[index].comment)
+        result[index] = result[index].withAmount(newAmount)
         _postings.value = filterPostings(result)
     }
 
