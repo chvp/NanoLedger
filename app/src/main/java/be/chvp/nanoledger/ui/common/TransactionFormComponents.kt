@@ -27,6 +27,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -148,6 +149,7 @@ fun TransactionForm(
                 }
                 val postings by viewModel.postings.observeAsState()
                 postings?.forEachIndexed { i, posting ->
+                    HorizontalDivider(Modifier.fillMaxWidth().padding(vertical = 4.dp))
                     PostingRow(i, posting, posting.isEmpty(), viewModel)
                 }
             }
