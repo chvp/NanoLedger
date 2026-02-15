@@ -93,4 +93,8 @@ data class Posting(
 
     fun withAccount(account: String?) = Posting(account, amount, cost, assertion, assertionCost, comment)
     fun withAmount(amount: Amount?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+    fun withCost(cost: Cost?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+    fun withAssertion(assertion: Amount?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+    fun withAssertionCost(assertionCost: Cost?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+    fun withComment(comment: String?) = Posting(account, amount, cost, assertion, assertionCost, comment)
 }

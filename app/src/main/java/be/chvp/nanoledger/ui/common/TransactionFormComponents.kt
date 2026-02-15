@@ -36,7 +36,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +58,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import be.chvp.nanoledger.R
+import be.chvp.nanoledger.data.CostType
 import be.chvp.nanoledger.data.Posting
 import kotlinx.coroutines.launch
 
@@ -307,83 +307,220 @@ fun PostingRow(
     showAmountHint: Boolean,
     viewModel: TransactionFormViewModel,
 ) {
-    val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState()
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp)) {
-        AccountSelector(
-            index = index,
-            value = posting.account ?: "",
-            viewModel,
-            modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
-        )
-        if (currencyBeforeAmount ?: true) {
-            CurrencyField(index, posting, viewModel, Modifier.weight(0.95f).padding(horizontal = 2.dp))
-            AmountField(
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp), verticalAlignment = Alignment.Bottom) {
+        if (posting.isComment()) {
+            CommentField(
+                posting.comment ?: "",
                 index,
-                posting,
-                showAmountHint,
                 viewModel,
-                Modifier.weight(1.25f).padding(horizontal = 2.dp),
+                modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
             )
         } else {
+            AccountSelector(
+                index = index,
+                value = posting.account ?: "",
+                viewModel,
+                modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
+            )
+        }
+    }
+    FlowRow(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp),
+        itemVerticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        CurrencyAndAmountFields(
+            viewModel,
+            posting.amount?.currency ?: "",
+            posting.amount?.quantity ?: "",
+            showAmountHint,
+            Modifier.weight(1.0f),
+            saveCurrency = { viewModel.setCurrency(index, it) },
+            saveAmount = { viewModel.setAmount(index, it) },
+        )
+        CostTypeSelector(posting.cost?.type ?: CostType.UNIT) { viewModel.setCostType(index, it) }
+        CurrencyAndAmountFields(
+            viewModel,
+            posting.cost?.amount?.currency ?: "",
+            posting.cost?.amount?.quantity ?: "",
+            false,
+            Modifier.weight(1.0f),
+            saveCurrency = { viewModel.setCostCurrency(index, it) },
+            saveAmount = { viewModel.setCostAmount(index, it) },
+        )
+        Text("=")
+        CurrencyAndAmountFields(
+            viewModel,
+            posting.assertion?.currency ?: "",
+            posting.assertion?.quantity ?: "",
+            false,
+            Modifier.weight(1.0f),
+            saveCurrency = { viewModel.setAssertionCurrency(index, it) },
+            saveAmount = { viewModel.setAssertionAmount(index, it) },
+        )
+        CostTypeSelector(posting.assertionCost?.type ?: CostType.UNIT) { viewModel.setAssertionCostType(index, it) }
+        CurrencyAndAmountFields(
+            viewModel,
+            posting.assertionCost?.amount?.currency ?: "",
+            posting.assertionCost?.amount?.quantity ?: "",
+            false,
+            Modifier.weight(1.0f),
+            saveCurrency = { viewModel.setAssertionCostCurrency(index, it) },
+            saveAmount = { viewModel.setAssertionCostAmount(index, it) },
+        )
+        if (!posting.isComment()) {
+            CommentField(posting.comment ?: "", index, viewModel, Modifier.fillMaxWidth().padding(horizontal = 2.dp))
+        }
+    }
+}
+
+@Composable
+fun CommentField(
+    comment: String,
+    index: Int,
+    viewModel: TransactionFormViewModel,
+    modifier: Modifier,
+) {
+    OutlinedTextField(
+        comment,
+        onValueChange = { viewModel.setComment(index, it) },
+        singleLine = true,
+        label = { Text(stringResource(R.string.comment)) },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun CostTypeSelector(
+    costType: CostType,
+    save: (newCostType: CostType) -> Unit
+) {
+    val options = listOf(CostType.UNIT, CostType.TOTAL)
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    with(LocalDensity.current) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.width((5 * 16).sp.toDp())
+        ) {
+            OutlinedTextField(
+                value = costType.repr,
+                onValueChange = {},
+                readOnly = true,
+                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                colors =
+                    ExposedDropdownMenuDefaults.textFieldColors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.exposedDropdownSize(true),
+            ) {
+                options.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it.repr) },
+                        onClick = {
+                            save(it)
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CurrencyAndAmountFields(
+    viewModel: TransactionFormViewModel,
+    currency: String,
+    quantity: String,
+    showAmountHint: Boolean,
+    modifier: Modifier,
+    saveCurrency: (newCurrencyString: String) -> Unit, saveAmount: (newAmountString: String) -> Unit
+) {
+    val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState()
+
+    with(LocalDensity.current) {
+        Row(modifier = modifier.width((20 * 16).sp.toDp()), verticalAlignment = Alignment.Bottom) {
+            if (currencyBeforeAmount ?: true) {
+                CurrencyField(currency, Modifier.padding(horizontal = 2.dp)) { saveCurrency(it) }
+            }
+
             AmountField(
-                index,
-                posting,
+                quantity,
                 showAmountHint,
                 viewModel,
-                Modifier.weight(1.25f).padding(horizontal = 2.dp),
-            )
-            CurrencyField(index, posting, viewModel, Modifier.weight(0.95f).padding(horizontal = 2.dp))
+                Modifier.weight(1f).padding(horizontal = 2.dp),
+            ) {
+                saveAmount(it)
+            }
+
+            if (!(currencyBeforeAmount ?: true)) {
+                CurrencyField(currency, Modifier.padding(horizontal = 2.dp)) {
+                    saveCurrency(it)
+                }
+            }
         }
     }
 }
 
 @Composable
 fun CurrencyField(
-    index: Int,
-    posting: Posting,
-    viewModel: TransactionFormViewModel,
+    currency: String,
     modifier: Modifier = Modifier,
+    save: (newCurrencyString: String) -> Unit,
 ) {
-    TextField(
-        value = posting.amount?.currency ?: "",
-        onValueChange = { viewModel.setCurrency(index, it) },
-        singleLine = true,
-        modifier = modifier,
-        colors =
-            ExposedDropdownMenuDefaults.textFieldColors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            ),
-        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-    )
+    with(LocalDensity.current) {
+        OutlinedTextField(
+            value = currency,
+            onValueChange = { save(it) },
+            singleLine = true,
+            modifier = modifier.width((6 * 16).sp.toDp()),
+            colors =
+                ExposedDropdownMenuDefaults.textFieldColors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                ),
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+        )
+    }
 }
 
 @Composable
 fun AmountField(
-    index: Int,
-    posting: Posting,
+    quantity: String,
     showAmountHint: Boolean,
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
+    save: (newAmountString: String) -> Unit,
 ) {
     val unbalancedAmount by viewModel.unbalancedAmount.observeAsState()
-    TextField(
-        value = posting.amount?.quantity ?: "",
-        onValueChange = { viewModel.setAmount(index, it) },
+    OutlinedTextField(
+        value = quantity,
+        onValueChange = { save(it) },
         singleLine = true,
         colors =
             ExposedDropdownMenuDefaults.textFieldColors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
             ),
-        placeholder = {
-            if (showAmountHint && unbalancedAmount != null) {
+        label = {
+            if (showAmountHint && (unbalancedAmount ?: "") != "") {
                 Text(
                     unbalancedAmount!!,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
                 )
+            } else {
+                Text(stringResource(R.string.amount))
             }
         },
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -401,7 +538,9 @@ fun AccountSelector(
 ) {
     val options by viewModel.accounts.observeAsState()
     val filteredOptions = options?.filter { it.contains(value, ignoreCase = true) } ?: emptyList()
-    LooseDropdown(filteredOptions, value, { viewModel.setAccount(index, it) }, modifier)
+    OutlinedLooseDropdown(filteredOptions, value, { viewModel.setAccount(index, it) }, modifier) {
+        Text(stringResource(R.string.account))
+    }
 }
 
 @Composable
@@ -435,65 +574,6 @@ fun OutlinedLooseDropdown(
                         expanded = false
                     }
                 },
-            colors =
-                ExposedDropdownMenuDefaults.textFieldColors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                ),
-        )
-        if (shouldShowDropdown(options, value)) {
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.exposedDropdownSize(true),
-            ) {
-                options.forEach {
-                    DropdownMenuItem(
-                        text = { Text(it) },
-                        onClick = {
-                            onValueChange(it)
-                            focusManager.clearFocus()
-                            expanded = false
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun LooseDropdown(
-    options: List<String>,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    content: (@Composable () -> Unit)? = null,
-) {
-    val focusManager = LocalFocusManager.current
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier,
-    ) {
-        TextField(
-            value = value,
-            onValueChange = {
-                if (it.length > value.length) {
-                    expanded = true
-                }
-                onValueChange(it)
-            },
-            singleLine = true,
-            modifier =
-                Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
-                    if (!it.hasFocus) {
-                        expanded = false
-                    }
-                },
-            label = content,
             colors =
                 ExposedDropdownMenuDefaults.textFieldColors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,

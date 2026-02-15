@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import be.chvp.nanoledger.data.Amount
+import be.chvp.nanoledger.data.Cost
+import be.chvp.nanoledger.data.CostType
 import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.PreferencesDataSource
@@ -160,7 +162,16 @@ abstract class TransactionFormViewModel(
         val currencyBeforeAmount = preferencesDataSource.getCurrencyBeforeAmount()
         val currencyAmountSpacing = preferencesDataSource.getCurrencyAmountSpacing()
 
-        val transaction = Transaction(0, 0, dateFormat.format(date.value!!), status.value, code.value, payee.value!!, note.value, postings.value!!.dropLast(1))
+        val transaction = Transaction(
+            0,
+            0,
+            dateFormat.format(date.value!!),
+            status.value,
+            code.value,
+            payee.value!!,
+            note.value,
+            postings.value!!.dropLast(1)
+        )
         return transaction.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing)
     }
 
@@ -251,6 +262,109 @@ abstract class TransactionFormViewModel(
         }
 
         result[index] = result[index].withAmount(newAmount)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setCostType(
+        index: Int,
+        newCostType: CostType,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val quantity = result[index].cost?.amount?.quantity ?: ""
+        val currency = result[index].cost?.amount?.currency ?: ""
+        val newCost = Cost(Amount(quantity, currency, ""), newCostType)
+        result[index] = result[index].withCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setCostCurrency(
+        index: Int,
+        newCostCurrency: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val costType = result[index].cost?.type ?: CostType.UNIT
+        val quantity = result[index].cost?.amount?.quantity ?: ""
+        val newCost = Cost(Amount(quantity, newCostCurrency, ""), costType)
+        result[index] = result[index].withCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setCostAmount(
+        index: Int,
+        newCostAmount: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val costType = result[index].cost?.type ?: CostType.UNIT
+        val currency = result[index].cost?.amount?.currency ?: ""
+        val newCost = Cost(Amount(newCostAmount, currency, ""), costType)
+        result[index] = result[index].withCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionCurrency(
+        index: Int,
+        newCurrency: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+
+        val quantity = result[index].assertion?.quantity ?: ""
+        val newAssertion = Amount(quantity, newCurrency, "")
+
+        result[index] = result[index].withAssertion(newAssertion)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionAmount(
+        index: Int,
+        newAmountString: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val currency = result[index].assertion?.currency ?: ""
+        val newAmount = Amount(newAmountString, currency, "")
+
+        result[index] = result[index].withAssertion(newAmount)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionCostType(
+        index: Int,
+        newCostType: CostType,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val quantity = result[index].assertionCost?.amount?.quantity ?: ""
+        val currency = result[index].assertionCost?.amount?.currency ?: ""
+        val newCost = Cost(Amount(quantity, currency, ""), newCostType)
+        result[index] = result[index].withAssertionCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionCostCurrency(
+        index: Int,
+        newCostCurrency: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val costType = result[index].assertionCost?.type ?: CostType.UNIT
+        val quantity = result[index].assertionCost?.amount?.quantity ?: ""
+        val newCost = Cost(Amount(quantity, newCostCurrency, ""), costType)
+        result[index] = result[index].withAssertionCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionCostAmount(
+        index: Int,
+        newCostAmount: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val costType = result[index].assertionCost?.type ?: CostType.UNIT
+        val currency = result[index].assertionCost?.amount?.currency ?: ""
+        val newCost = Cost(Amount(newCostAmount, currency, ""), costType)
+        result[index] = result[index].withAssertionCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setComment(index: Int, newComment: String?) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withComment(newComment)
         _postings.value = filterPostings(result)
     }
 
