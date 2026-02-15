@@ -41,27 +41,27 @@ abstract class TransactionFormViewModel(
     val date: LiveData<Date> = _date
     val formattedDate: LiveData<String> = _date.map { dateFormat.format(it) }
 
-    private val _status = MutableLiveData(preferencesDataSource.getDefaultStatus())
-    val status: LiveData<String> = _status
+    private val _status = MutableLiveData<String?>(preferencesDataSource.getDefaultStatus())
+    val status: LiveData<String?> = _status
 
-    private val _code = MutableLiveData("")
-    val code: LiveData<String> = _code
+    private val _code = MutableLiveData<String?>("")
+    val code: LiveData<String?> = _code
 
-    private val _payee = MutableLiveData("")
-    val payee: LiveData<String> = _payee
+    private val _payee = MutableLiveData<String?>("")
+    val payee: LiveData<String?> = _payee
     val possiblePayees: LiveData<List<String>> =
         ledgerRepository.payees.switchMap { payees ->
             payee.map { search ->
-                payees.filter { it.contains(search, ignoreCase = true) }.sorted()
+                payees.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted()
             }
         }
 
-    private val _note = MutableLiveData("")
-    val note: LiveData<String> = _note
+    private val _note = MutableLiveData<String?>("")
+    val note: LiveData<String?> = _note
     val possibleNotes: LiveData<List<String>> =
         ledgerRepository.notes.switchMap { notes ->
             note.map { search ->
-                notes.filter { it.contains(search, ignoreCase = true) }.sorted()
+                notes.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted()
             }
         }
 
@@ -156,39 +156,22 @@ abstract class TransactionFormViewModel(
     val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
 
     protected fun toTransactionString(): String {
-        val transaction = StringBuilder()
-        transaction.append(dateFormat.format(date.value!!))
-        if (status.value!! != " ") {
-            transaction.append(" ${status.value}")
-        }
-        if (code.value!! != "") {
-            transaction.append(" (${code.value})")
-        }
-        transaction.append(" ${payee.value}")
-        if (note.value!! != "") {
-            transaction.append(" | ${note.value}")
-        }
-        transaction.append('\n')
-        // Drop last element, it should always be an empty posting (and the only empty posting)
-        for (posting in postings.value!!.dropLast(1)) {
-            val width = preferencesDataSource.getPostingWidth()
-            val currencyBeforeAmount = preferencesDataSource.getCurrencyBeforeAmount()
-            val currencyAmountSpacing = preferencesDataSource.getCurrencyAmountSpacing()
-            val formatted = posting.format(width, currencyBeforeAmount, currencyAmountSpacing)
-            transaction.append("$formatted\n")
-        }
-        transaction.append('\n')
-        return transaction.toString()
+        val postingWidth = preferencesDataSource.getPostingWidth()
+        val currencyBeforeAmount = preferencesDataSource.getCurrencyBeforeAmount()
+        val currencyAmountSpacing = preferencesDataSource.getCurrencyAmountSpacing()
+
+        val transaction = Transaction(0, 0, dateFormat.format(date.value!!), status.value, code.value, payee.value!!, note.value, postings.value!!.dropLast(1))
+        return transaction.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing)
     }
 
     abstract fun save(onFinish: suspend () -> Unit)
 
     fun setFromTransaction(transaction: Transaction) {
         setDate(transaction.date)
-        setStatus(transaction.status ?: "")
+        setStatus(transaction.status)
         setPayee(transaction.payee)
-        setCode(transaction.code ?: "")
-        setNote(transaction.note ?: "")
+        setCode(transaction.code)
+        setNote(transaction.note)
         setPostings(transaction.postings)
     }
 
@@ -207,19 +190,19 @@ abstract class TransactionFormViewModel(
         }
     }
 
-    fun setStatus(newStatus: String) {
+    fun setStatus(newStatus: String?) {
         _status.value = newStatus
     }
 
-    fun setCode(newCode: String) {
+    fun setCode(newCode: String?) {
         _code.value = newCode
     }
 
-    fun setPayee(newPayee: String) {
+    fun setPayee(newPayee: String?) {
         _payee.value = newPayee
     }
 
-    fun setNote(newNote: String) {
+    fun setNote(newNote: String?) {
         _note.value = newNote
     }
 

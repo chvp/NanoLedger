@@ -29,7 +29,12 @@ class LedgerRepository
                 txs.forEach { tx -> result.addAll(tx.postings.mapNotNull { p -> p.account }) }
                 result
             }
-        val payees: LiveData<Set<String>> = transactions.map { txs -> HashSet(txs.map { tx -> tx.payee }) }
+        val payees: LiveData<Set<String>> =
+            transactions.map { txs ->
+                HashSet(
+                    txs.map { tx -> tx.payee }.filter { payee -> payee != null }.map { payee -> payee!! }
+                )
+            }
         val notes: LiveData<Set<String>> =
             transactions.map { txs ->
                 HashSet(

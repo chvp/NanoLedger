@@ -23,8 +23,13 @@ fun extractTransactions(lines: List<String>): List<Transaction> {
             val date = groups[1]!!.value
             val status = groups[5]?.value
             val code = groups[7]?.value?.trim()
-            val payee = groups[8]!!.value.trim()
-            val note = groups[10]?.value?.trim()
+            var payee: String? = groups[8]!!.value.trim()
+            var note = groups[10]?.value?.trim()
+
+            if (note == null) {
+                note = payee
+                payee = null
+            }
 
             val postings = ArrayList<Posting>()
             while (i < lines.size && POSTING_REGEX.find(lines[i]) != null) {

@@ -36,11 +36,11 @@ class TransactionParserTest {
     }
 
     @Test
-    fun canParseSimpleTransactionNoNote() {
+    fun canParseSimpleTransactionNoPayee() {
         val result =
             extractTransactions(
                 """
-                |2023-08-31 * Payee
+                |2023-08-31 * Note
                 |    assets            € -5.00
                 |    expenses    € 5.00
                 """.trimMargin().lines(),
@@ -53,8 +53,8 @@ class TransactionParserTest {
         assertEquals(2, transaction.lastLine)
         assertEquals("2023-08-31", transaction.date)
         assertEquals("*", transaction.status)
-        assertEquals("Payee", transaction.payee)
-        assertEquals(null, transaction.note)
+        assertEquals(null, transaction.payee)
+        assertEquals("Note", transaction.note)
         assertEquals(2, transaction.postings.size)
         assertEquals("assets", transaction.postings[0].account)
         assertEquals("€ -5.00", transaction.postings[0].amount?.original)
