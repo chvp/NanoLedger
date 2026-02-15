@@ -11,10 +11,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,13 +44,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -56,6 +62,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.chvp.nanoledger.R
@@ -126,6 +133,10 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(fileUri) {
                 mainViewModel.refresh()
             }
+
+            var fabHeight by remember { mutableIntStateOf(0) }
+            val fabOffsetDp = with(LocalDensity.current) { fabHeight.toDp() + 16.dp }
+
             NanoLedgerTheme {
                 Scaffold(
                     topBar = {
@@ -139,11 +150,14 @@ class MainActivity : ComponentActivity() {
                     },
                     floatingActionButton = {
                         if (fileUri != null) {
-                            FloatingActionButton(onClick = {
-                                startActivity(
-                                    Intent(this, AddActivity::class.java),
-                                )
-                            }) {
+                            FloatingActionButton(
+                                onClick = {
+                                    startActivity(
+                                        Intent(this, AddActivity::class.java),
+                                    )
+                                },
+                                modifier = Modifier.onGloballyPositioned { fabHeight = it.size.height },
+                            ) {
                                 Icon(
                                     Icons.Default.Add,
                                     contentDescription = stringResource(R.string.add),
@@ -154,7 +168,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.imePadding(),
                 ) { contentPadding ->
                     if (fileUri != null) {
-                        MainContent(contentPadding)
+                        MainContent(contentPadding, fabOffsetDp)
                     } else {
                         Column(
                             modifier = Modifier.fillMaxSize().padding(contentPadding),
@@ -199,6 +213,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainContent(
     contentPadding: PaddingValues,
+    bottomOffset: Dp,
     mainViewModel: MainViewModel = viewModel(),
 ) {
     val context = LocalContext.current
@@ -225,6 +240,9 @@ fun MainContent(
                             if (it == transactions!!.size - 1) 8.dp else 4.dp,
                         ),
                     )
+                }
+                item {
+                    Box(Modifier.height(bottomOffset).fillMaxWidth())
                 }
             }
         } else {

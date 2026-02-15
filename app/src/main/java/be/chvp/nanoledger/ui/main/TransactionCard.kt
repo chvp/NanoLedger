@@ -18,15 +18,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import be.chvp.nanoledger.data.Transaction
 
-fun transactionHeader(t: Transaction): String {
-    var res = t.date
-    if (t.status != null) res += " ${t.status}"
-    if (t.code != null) res += " (${t.code})"
-    res += " ${t.payee}"
-    if (t.note != null) res += " | ${t.note}"
-    return res
-}
-
 @Composable
 fun TransactionCard(
     transaction: Transaction,
@@ -58,25 +49,26 @@ fun TransactionCard(
         Box(modifier = Modifier.clickable { onClick() }) {
             Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                 Text(
-                    transactionHeader(transaction),
+                    transaction.header(),
                     softWrap = false,
                     style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                     overflow = TextOverflow.Ellipsis,
                 )
                 for (p in transaction.postings) {
-                    if (p.isNote()) {
-                        val trimmedNote = p.note!!.trim()
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        if (p.isComment()) {
+
                             Text(
-                                "  $trimmedNote",
+                                "  ; ${p.comment!!}",
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.weight(1f),
                             )
-                        }
-                    } else {
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                        } else {
                             Text(
                                 "  ${p.account}",
                                 softWrap = false,
@@ -85,7 +77,7 @@ fun TransactionCard(
                                 modifier = Modifier.weight(1f),
                             )
                             Text(
-                                p.amount?.original ?: "",
+                                p.fullAmountDisplayString(),
                                 softWrap = false,
                                 style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                                 modifier = Modifier.padding(start = 2.dp),

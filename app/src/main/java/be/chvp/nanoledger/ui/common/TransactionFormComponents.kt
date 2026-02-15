@@ -5,13 +5,17 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +27,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -45,11 +50,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import be.chvp.nanoledger.R
 import be.chvp.nanoledger.data.Posting
 import kotlinx.coroutines.launch
@@ -60,6 +68,7 @@ const val TRANSACTION_INDEX_KEY = "transaction_index"
 fun TransactionForm(
     viewModel: TransactionFormViewModel,
     contentPadding: PaddingValues,
+    bottomOffset: Dp,
     snackbarHostState: SnackbarHostState,
 ) {
     val context = LocalContext.current
@@ -111,7 +120,6 @@ fun TransactionForm(
                 confirmButton = {
                     TextButton(onClick = {
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-
                         val clip: ClipData = ClipData.newPlainText("simple text", errorDialogMessage)
                         clipboard.setPrimaryClip(clip)
                     }) { Text(stringResource(R.string.copy)) }
@@ -124,29 +132,28 @@ fun TransactionForm(
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize().padding(vertical = 2.dp).verticalScroll(rememberScrollState()),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 2.dp),
-                verticalAlignment = Alignment.Bottom,
-            ) {
-                DateSelector(viewModel, Modifier.weight(0.3f).padding(start = 4.dp, end = 2.dp).fillMaxWidth())
-                StatusSelector(viewModel, Modifier.weight(0.12f).padding(horizontal = 2.dp).fillMaxWidth())
-                PayeeSelector(viewModel, Modifier.weight(0.58f).padding(start = 2.dp, end = 4.dp).fillMaxWidth())
-            }
-            Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
-                NoteSelector(
-                    viewModel,
-                    Modifier.weight(1f).padding(horizontal = 4.dp).fillMaxWidth(),
-                )
-            }
-            val postings by viewModel.postings.observeAsState()
-            postings?.forEachIndexed { i, posting ->
-                // do not show notes rows in the UI
-                if (!posting.isNote() || i == postings!!.size - 1) {
+            with(LocalDensity.current) {
+                FlowRow(
+                    modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    itemVerticalAlignment = Alignment.Bottom
+                ) {
+                    DateSelector(viewModel, Modifier.weight(0.4f).width((12 * 16).sp.toDp()))
+                    StatusSelector(viewModel, Modifier.width((3 * 16).sp.toDp()))
+                    CodeField(viewModel, Modifier.weight(0.45f).width((15 * 16).sp.toDp()))
+                    PayeeSelector(viewModel, Modifier.weight(0.8f).width((20 * 16).sp.toDp()))
+                    NoteSelector(viewModel, Modifier.weight(1.2f).width((20 * 16).sp.toDp()))
+                }
+                val postings by viewModel.postings.observeAsState()
+                postings?.forEachIndexed { i, posting ->
+                    HorizontalDivider(Modifier.fillMaxWidth().padding(vertical = 4.dp))
                     PostingRow(i, posting, posting.isEmpty(), viewModel)
                 }
             }
+            Box(Modifier.height(bottomOffset).fillMaxWidth())
         }
     }
 }
@@ -205,39 +212,57 @@ fun StatusSelector(
     val status by viewModel.status.observeAsState()
     val options = listOf(" ", "!", "*")
     var expanded by rememberSaveable { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier,
-    ) {
-        OutlinedTextField(
-            value = (status ?: ""),
-            onValueChange = {},
-            readOnly = true,
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
-            colors =
-                ExposedDropdownMenuDefaults.textFieldColors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                ),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-        )
-        DropdownMenu(
+    if (status != null) {
+        ExposedDropdownMenuBox(
             expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.exposedDropdownSize(true),
+            onExpandedChange = { expanded = !expanded },
+            modifier = modifier,
         ) {
-            options.forEach {
-                DropdownMenuItem(
-                    text = { Text(it) },
-                    onClick = {
-                        viewModel.setStatus(it)
-                        expanded = false
-                    },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                )
+            OutlinedTextField(
+                value = (status ?: ""),
+                onValueChange = {},
+                readOnly = true,
+                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                colors =
+                    ExposedDropdownMenuDefaults.textFieldColors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.exposedDropdownSize(true),
+            ) {
+                options.forEach {
+                    DropdownMenuItem(
+                        text = { Text(it) },
+                        onClick = {
+                            viewModel.setStatus(it)
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+fun CodeField(
+    viewModel: TransactionFormViewModel,
+    modifier: Modifier = Modifier,
+) {
+    val code by viewModel.code.observeAsState()
+    if (code != null) {
+        OutlinedTextField(
+            (code ?: ""),
+            { viewModel.setCode(it) },
+            modifier,
+            label = { Text(stringResource(R.string.code)) }
+        )
     }
 }
 
@@ -248,12 +273,14 @@ fun PayeeSelector(
 ) {
     val payee by viewModel.payee.observeAsState()
     val options by viewModel.possiblePayees.observeAsState()
-    OutlinedLooseDropdown(
-        options ?: emptyList(),
-        payee ?: "",
-        { viewModel.setPayee(it) },
-        modifier,
-    ) { Text(stringResource(R.string.payee)) }
+    if (payee != null) {
+        OutlinedLooseDropdown(
+            options ?: emptyList(),
+            payee ?: "",
+            { viewModel.setPayee(it) },
+            modifier,
+        ) { Text(stringResource(R.string.payee)) }
+    }
 }
 
 @Composable
@@ -263,12 +290,14 @@ fun NoteSelector(
 ) {
     val note by viewModel.note.observeAsState()
     val options by viewModel.possibleNotes.observeAsState()
-    OutlinedLooseDropdown(
-        options ?: emptyList(),
-        note ?: "",
-        { viewModel.setNote(it) },
-        modifier,
-    ) { Text(stringResource(R.string.note)) }
+    if (note != null) {
+        OutlinedLooseDropdown(
+            options ?: emptyList(),
+            note ?: "",
+            { viewModel.setNote(it) },
+            modifier,
+        ) { Text(stringResource(R.string.note)) }
+    }
 }
 
 @Composable

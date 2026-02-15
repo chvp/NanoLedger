@@ -41,27 +41,27 @@ abstract class TransactionFormViewModel(
     val date: LiveData<Date> = _date
     val formattedDate: LiveData<String> = _date.map { dateFormat.format(it) }
 
-    private val _status = MutableLiveData(preferencesDataSource.getDefaultStatus())
-    val status: LiveData<String> = _status
+    private val _status = MutableLiveData<String?>(preferencesDataSource.getDefaultStatus())
+    val status: LiveData<String?> = _status
 
-    private val _code = MutableLiveData("")
-    val code: LiveData<String> = _code
+    private val _code = MutableLiveData<String?>("")
+    val code: LiveData<String?> = _code
 
-    private val _payee = MutableLiveData("")
-    val payee: LiveData<String> = _payee
+    private val _payee = MutableLiveData<String?>("")
+    val payee: LiveData<String?> = _payee
     val possiblePayees: LiveData<List<String>> =
         ledgerRepository.payees.switchMap { payees ->
             payee.map { search ->
-                payees.filter { it.contains(search, ignoreCase = true) }.sorted()
+                payees.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted()
             }
         }
 
-    private val _note = MutableLiveData("")
-    val note: LiveData<String> = _note
+    private val _note = MutableLiveData<String?>("")
+    val note: LiveData<String?> = _note
     val possibleNotes: LiveData<List<String>> =
         ledgerRepository.notes.switchMap { notes ->
             note.map { search ->
-                notes.filter { it.contains(search, ignoreCase = true) }.sorted()
+                notes.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted()
             }
         }
 
@@ -74,7 +74,7 @@ abstract class TransactionFormViewModel(
     val unbalancedAmount: LiveData<String> =
         postings.map { ps ->
             ps
-                .filter { p -> !p.isVirtual() && !p.isNote() }
+                .filter { p -> !p.isVirtual() && !p.isComment() }
                 .mapNotNull { p -> p.amount }
                 .map { p -> p.quantity }
                 .map { quantity ->
@@ -107,7 +107,7 @@ abstract class TransactionFormViewModel(
         payee.switchMap { payee ->
             postings.switchMap { postings ->
                 unbalancedAmount.map { unbalancedAmount ->
-                    if (postings.filter { !it.isVirtual() && !it.isNote() }.size < 2) {
+                    if (postings.filter { !it.isVirtual() && !it.isComment() }.size < 2) {
                         return@map false
                     }
                     if (payee == "") {
@@ -118,7 +118,7 @@ abstract class TransactionFormViewModel(
                         postings
                             .dropLast(1)
                             .filter {
-                                !it.isNote()
+                                !it.isComment()
                             }.all {
                                 (it.amount?.quantity ?: "") != ""
                             }
@@ -128,7 +128,7 @@ abstract class TransactionFormViewModel(
                     // If there are multiple postings with an empty amount, it's invalid
                     if (postings
                             .dropLast(1)
-                            .filter { !it.isNote() }
+                            .filter { !it.isComment() }
                             .filter { (it.amount?.quantity ?: "") == "" }
                             .size > 1
                     ) {
@@ -156,64 +156,22 @@ abstract class TransactionFormViewModel(
     val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
 
     protected fun toTransactionString(): String {
-        val transaction = StringBuilder()
-        transaction.append(dateFormat.format(date.value!!))
-        if (status.value!! != " ") {
-            transaction.append(" ${status.value}")
-        }
-        if (code.value!! != "") {
-            transaction.append(" (${code.value})")
-        }
-        transaction.append(" ${payee.value}")
-        if (note.value!! != "") {
-            transaction.append(" | ${note.value}")
-        }
-        transaction.append('\n')
-        // Drop last element, it should always be an empty posting (and the only empty posting)
-        for (posting in postings.value!!.dropLast(1)) {
-            val account = posting.account ?: ""
-            val currency = posting.amount?.currency ?: ""
-            val quantity = posting.amount?.quantity ?: ""
-            val note = posting.note ?: ""
+        val postingWidth = preferencesDataSource.getPostingWidth()
+        val currencyBeforeAmount = preferencesDataSource.getCurrencyBeforeAmount()
+        val currencyAmountSpacing = preferencesDataSource.getCurrencyAmountSpacing()
 
-            val spacer = if (preferencesDataSource.getCurrencyAmountSpacing()) " " else ""
-            val usedLength = 6 + account.length + currency.length + quantity.length + spacer.length
-
-            val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
-            val spaces = " ".repeat(maxOf(0, numberOfSpaces))
-
-            if (posting.isNote()) {
-                transaction.append("${note}\n")
-            } else if (quantity == "") {
-                transaction.append(
-                    "    ${account}${note}\n",
-                )
-            } else if (currency == "") {
-                transaction.append(
-                    "    $account  $spaces $quantity$note\n",
-                )
-            } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
-                transaction.append(
-                    "    $account  $spaces$currency$spacer$quantity$note\n",
-                )
-            } else {
-                transaction.append(
-                    "    $account  $spaces$quantity$spacer$currency$note\n",
-                )
-            }
-        }
-        transaction.append('\n')
-        return transaction.toString()
+        val transaction = Transaction(0, 0, dateFormat.format(date.value!!), status.value, code.value, payee.value!!, note.value, postings.value!!.dropLast(1))
+        return transaction.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing)
     }
 
     abstract fun save(onFinish: suspend () -> Unit)
 
     fun setFromTransaction(transaction: Transaction) {
         setDate(transaction.date)
-        setStatus(transaction.status ?: "")
+        setStatus(transaction.status)
         setPayee(transaction.payee)
-        setCode(transaction.code ?: "")
-        setNote(transaction.note ?: "")
+        setCode(transaction.code)
+        setNote(transaction.note)
         setPostings(transaction.postings)
     }
 
@@ -232,19 +190,19 @@ abstract class TransactionFormViewModel(
         }
     }
 
-    fun setStatus(newStatus: String) {
+    fun setStatus(newStatus: String?) {
         _status.value = newStatus
     }
 
-    fun setPayee(newPayee: String) {
-        _payee.value = newPayee
-    }
-
-    fun setCode(newCode: String) {
+    fun setCode(newCode: String?) {
         _code.value = newCode
     }
 
-    fun setNote(newNote: String) {
+    fun setPayee(newPayee: String?) {
+        _payee.value = newPayee
+    }
+
+    fun setNote(newNote: String?) {
         _note.value = newNote
     }
 
@@ -257,7 +215,7 @@ abstract class TransactionFormViewModel(
         newAccount: String,
     ) {
         val result = ArrayList(postings.value!!)
-        result[index] = Posting(newAccount, result[index].amount, result[index].note)
+        result[index] = result[index].withAccount(newAccount)
         _postings.value = filterPostings(result)
     }
 
@@ -275,7 +233,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(quantity, newCurrency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, result[index].note)
+        result[index] = result[index].withAmount(newAmount)
         _postings.value = filterPostings(result)
     }
 
@@ -292,7 +250,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(newAmountString, currency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, result[index].note)
+        result[index] = result[index].withAmount(newAmount)
         _postings.value = filterPostings(result)
     }
 
