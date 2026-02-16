@@ -329,54 +329,62 @@ fun PostingRow(
                     viewModel,
                     modifier = Modifier.fillMaxWidth(),
                 )
-            }
-            CurrencyAndAmountFields(
-                viewModel,
-                posting.amount?.currency ?: "",
-                posting.amount?.quantity ?: "",
-                showAmountHint,
-                Modifier.weight(1.0f),
-                saveCurrency = { viewModel.setCurrency(index, it) },
-                saveAmount = { viewModel.setAmount(index, it) },
-            )
-            Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
-                CostTypeSelector(posting.cost?.type ?: CostType.UNIT) { viewModel.setCostType(index, it) }
-                CurrencyAndAmountFields(
-                    viewModel,
-                    posting.cost?.amount?.currency ?: "",
-                    posting.cost?.amount?.quantity ?: "",
-                    false,
-                    Modifier.weight(1.0f).padding(start = 4.dp),
-                    saveCurrency = { viewModel.setCostCurrency(index, it) },
-                    saveAmount = { viewModel.setCostAmount(index, it) },
-                )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
-                Text("=", modifier = Modifier.padding(horizontal = 4.dp))
-                CurrencyAndAmountFields(
-                    viewModel,
-                    posting.assertion?.currency ?: "",
-                    posting.assertion?.quantity ?: "",
-                    false,
-                    Modifier.weight(1.0f).padding(start = 4.dp),
-                    saveCurrency = { viewModel.setAssertionCurrency(index, it) },
-                    saveAmount = { viewModel.setAssertionAmount(index, it) },
-                )
-            }
-            Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
-                CostTypeSelector(posting.assertionCost?.type ?: CostType.UNIT) { viewModel.setAssertionCostType(index, it) }
-                CurrencyAndAmountFields(
-                    viewModel,
-                    posting.assertionCost?.amount?.currency ?: "",
-                    posting.assertionCost?.amount?.quantity ?: "",
-                    false,
-                    Modifier.weight(1.0f).padding(start = 4.dp),
-                    saveCurrency = { viewModel.setAssertionCostCurrency(index, it) },
-                    saveAmount = { viewModel.setAssertionCostAmount(index, it) },
-                )
-            }
-            if (!posting.isComment()) {
-                CommentField(posting.comment ?: "", index, viewModel, Modifier.fillMaxWidth())
+                if (posting.amount != null) {
+                    CurrencyAndAmountFields(
+                        viewModel,
+                        posting.amount?.currency ?: "",
+                        posting.amount?.quantity ?: "",
+                        showAmountHint,
+                        Modifier.weight(1.0f),
+                        saveCurrency = { viewModel.setCurrency(index, it) },
+                        saveAmount = { viewModel.setAmount(index, it) },
+                    )
+                    if (posting.cost != null) {
+                        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
+                            CostTypeSelector(posting.cost?.type ?: CostType.UNIT) { viewModel.setCostType(index, it) }
+                            CurrencyAndAmountFields(
+                                viewModel,
+                                posting.cost?.amount?.currency ?: "",
+                                posting.cost?.amount?.quantity ?: "",
+                                false,
+                                Modifier.weight(1.0f).padding(start = 4.dp),
+                                saveCurrency = { viewModel.setCostCurrency(index, it) },
+                                saveAmount = { viewModel.setCostAmount(index, it) },
+                            )
+                        }
+                    }
+                }
+                if (posting.assertion != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
+                        Text("=", modifier = Modifier.padding(horizontal = 4.dp))
+                        CurrencyAndAmountFields(
+                            viewModel,
+                            posting.assertion?.currency ?: "",
+                            posting.assertion?.quantity ?: "",
+                            false,
+                            Modifier.weight(1.0f).padding(start = 4.dp),
+                            saveCurrency = { viewModel.setAssertionCurrency(index, it) },
+                            saveAmount = { viewModel.setAssertionAmount(index, it) },
+                        )
+                    }
+                    if (posting.assertionCost != null) {
+                        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
+                            CostTypeSelector(posting.assertionCost?.type ?: CostType.UNIT) { viewModel.setAssertionCostType(index, it) }
+                            CurrencyAndAmountFields(
+                                viewModel,
+                                posting.assertionCost?.amount?.currency ?: "",
+                                posting.assertionCost?.amount?.quantity ?: "",
+                                false,
+                                Modifier.weight(1.0f).padding(start = 4.dp),
+                                saveCurrency = { viewModel.setAssertionCostCurrency(index, it) },
+                                saveAmount = { viewModel.setAssertionCostAmount(index, it) },
+                            )
+                        }
+                    }
+                }
+                if (posting.comment != null) {
+                    CommentField(posting.comment ?: "", index, viewModel, Modifier.fillMaxWidth())
+                }
             }
         }
     }
