@@ -54,6 +54,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -137,15 +138,15 @@ fun TransactionForm(
             with(LocalDensity.current) {
                 FlowRow(
                     modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(2.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     itemVerticalAlignment = Alignment.Bottom
                 ) {
-                    DateSelector(viewModel, Modifier.weight(0.4f).width((12 * 16).sp.toDp()))
+                    DateSelector(viewModel, Modifier.weight(0.25f).width((8 * 16).sp.toDp()))
                     StatusSelector(viewModel, Modifier.width((3 * 16).sp.toDp()))
-                    CodeField(viewModel, Modifier.weight(0.45f).width((15 * 16).sp.toDp()))
-                    PayeeSelector(viewModel, Modifier.weight(0.8f).width((20 * 16).sp.toDp()))
-                    NoteSelector(viewModel, Modifier.weight(1.2f).width((20 * 16).sp.toDp()))
+                    CodeField(viewModel, Modifier.weight(0.5f).width((16 * 16).sp.toDp()))
+                    PayeeSelector(viewModel, Modifier.weight(0.5f).width((16 * 16).sp.toDp()))
+                    NoteSelector(viewModel, Modifier.weight(0.75f).width((16 * 16).sp.toDp()))
                 }
                 val postings by viewModel.postings.observeAsState()
                 postings?.forEachIndexed { i, posting ->
@@ -172,7 +173,7 @@ fun DateSelector(
         readOnly = true,
         singleLine = true,
         onValueChange = {},
-        label = { Text(stringResource(R.string.date)) },
+        label = { Text(stringResource(R.string.date), maxLines = 1, overflow = TextOverflow.Ellipsis) },
         colors =
             ExposedDropdownMenuDefaults.textFieldColors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -261,7 +262,7 @@ fun CodeField(
             (code ?: ""),
             { viewModel.setCode(it) },
             modifier,
-            label = { Text(stringResource(R.string.code)) }
+            label = { Text(stringResource(R.string.code), maxLines = 1, overflow = TextOverflow.Ellipsis) }
         )
     }
 }
@@ -279,7 +280,7 @@ fun PayeeSelector(
             payee ?: "",
             { viewModel.setPayee(it) },
             modifier,
-        ) { Text(stringResource(R.string.payee)) }
+        ) { Text(stringResource(R.string.payee), maxLines = 1, overflow = TextOverflow.Ellipsis) }
     }
 }
 
@@ -296,7 +297,7 @@ fun NoteSelector(
             note ?: "",
             { viewModel.setNote(it) },
             modifier,
-        ) { Text(stringResource(R.string.note)) }
+        ) { Text(stringResource(R.string.note), maxLines = 1, overflow = TextOverflow.Ellipsis) }
     }
 }
 
@@ -307,70 +308,76 @@ fun PostingRow(
     showAmountHint: Boolean,
     viewModel: TransactionFormViewModel,
 ) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp), verticalAlignment = Alignment.Bottom) {
-        if (posting.isComment()) {
-            CommentField(
-                posting.comment ?: "",
-                index,
-                viewModel,
-                modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
-            )
-        } else {
-            AccountSelector(
-                index = index,
-                value = posting.account ?: "",
-                viewModel,
-                modifier = Modifier.weight(2.2f).padding(horizontal = 2.dp),
-            )
-        }
-    }
     FlowRow(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 2.dp),
+        modifier = Modifier.fillMaxWidth().padding(4.dp),
         itemVerticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        CurrencyAndAmountFields(
-            viewModel,
-            posting.amount?.currency ?: "",
-            posting.amount?.quantity ?: "",
-            showAmountHint,
-            Modifier.weight(1.0f),
-            saveCurrency = { viewModel.setCurrency(index, it) },
-            saveAmount = { viewModel.setAmount(index, it) },
-        )
-        CostTypeSelector(posting.cost?.type ?: CostType.UNIT) { viewModel.setCostType(index, it) }
-        CurrencyAndAmountFields(
-            viewModel,
-            posting.cost?.amount?.currency ?: "",
-            posting.cost?.amount?.quantity ?: "",
-            false,
-            Modifier.weight(1.0f),
-            saveCurrency = { viewModel.setCostCurrency(index, it) },
-            saveAmount = { viewModel.setCostAmount(index, it) },
-        )
-        Text("=")
-        CurrencyAndAmountFields(
-            viewModel,
-            posting.assertion?.currency ?: "",
-            posting.assertion?.quantity ?: "",
-            false,
-            Modifier.weight(1.0f),
-            saveCurrency = { viewModel.setAssertionCurrency(index, it) },
-            saveAmount = { viewModel.setAssertionAmount(index, it) },
-        )
-        CostTypeSelector(posting.assertionCost?.type ?: CostType.UNIT) { viewModel.setAssertionCostType(index, it) }
-        CurrencyAndAmountFields(
-            viewModel,
-            posting.assertionCost?.amount?.currency ?: "",
-            posting.assertionCost?.amount?.quantity ?: "",
-            false,
-            Modifier.weight(1.0f),
-            saveCurrency = { viewModel.setAssertionCostCurrency(index, it) },
-            saveAmount = { viewModel.setAssertionCostAmount(index, it) },
-        )
-        if (!posting.isComment()) {
-            CommentField(posting.comment ?: "", index, viewModel, Modifier.fillMaxWidth().padding(horizontal = 2.dp))
+        with(LocalDensity.current) {
+            if (posting.isComment()) {
+                CommentField(
+                    posting.comment ?: "",
+                    index,
+                    viewModel,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            } else {
+                AccountSelector(
+                    index = index,
+                    value = posting.account ?: "",
+                    viewModel,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            CurrencyAndAmountFields(
+                viewModel,
+                posting.amount?.currency ?: "",
+                posting.amount?.quantity ?: "",
+                showAmountHint,
+                Modifier.weight(1.0f),
+                saveCurrency = { viewModel.setCurrency(index, it) },
+                saveAmount = { viewModel.setAmount(index, it) },
+            )
+            Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
+                CostTypeSelector(posting.cost?.type ?: CostType.UNIT) { viewModel.setCostType(index, it) }
+                CurrencyAndAmountFields(
+                    viewModel,
+                    posting.cost?.amount?.currency ?: "",
+                    posting.cost?.amount?.quantity ?: "",
+                    false,
+                    Modifier.weight(1.0f).padding(start = 4.dp),
+                    saveCurrency = { viewModel.setCostCurrency(index, it) },
+                    saveAmount = { viewModel.setCostAmount(index, it) },
+                )
+            }
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
+                Text("=", modifier = Modifier.padding(horizontal = 4.dp))
+                CurrencyAndAmountFields(
+                    viewModel,
+                    posting.assertion?.currency ?: "",
+                    posting.assertion?.quantity ?: "",
+                    false,
+                    Modifier.weight(1.0f).padding(start = 4.dp),
+                    saveCurrency = { viewModel.setAssertionCurrency(index, it) },
+                    saveAmount = { viewModel.setAssertionAmount(index, it) },
+                )
+            }
+            Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
+                CostTypeSelector(posting.assertionCost?.type ?: CostType.UNIT) { viewModel.setAssertionCostType(index, it) }
+                CurrencyAndAmountFields(
+                    viewModel,
+                    posting.assertionCost?.amount?.currency ?: "",
+                    posting.assertionCost?.amount?.quantity ?: "",
+                    false,
+                    Modifier.weight(1.0f).padding(start = 4.dp),
+                    saveCurrency = { viewModel.setAssertionCostCurrency(index, it) },
+                    saveAmount = { viewModel.setAssertionCostAmount(index, it) },
+                )
+            }
+            if (!posting.isComment()) {
+                CommentField(posting.comment ?: "", index, viewModel, Modifier.fillMaxWidth())
+            }
         }
     }
 }
@@ -386,7 +393,7 @@ fun CommentField(
         comment,
         onValueChange = { viewModel.setComment(index, it) },
         singleLine = true,
-        label = { Text(stringResource(R.string.comment)) },
+        label = { Text(stringResource(R.string.comment), maxLines = 1, overflow = TextOverflow.Ellipsis) },
         modifier = modifier
     )
 }
@@ -448,22 +455,17 @@ fun CurrencyAndAmountFields(
     val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState()
 
     with(LocalDensity.current) {
-        Row(modifier = modifier.width((20 * 16).sp.toDp()), verticalAlignment = Alignment.Bottom) {
+        Row(modifier = modifier.width((15 * 16).sp.toDp()), verticalAlignment = Alignment.Bottom) {
             if (currencyBeforeAmount ?: true) {
-                CurrencyField(currency, Modifier.padding(horizontal = 2.dp)) { saveCurrency(it) }
+                CurrencyField(currency, Modifier.padding(end = 4.dp)) { saveCurrency(it) }
             }
 
-            AmountField(
-                quantity,
-                showAmountHint,
-                viewModel,
-                Modifier.weight(1f).padding(horizontal = 2.dp),
-            ) {
+            AmountField(quantity, showAmountHint, viewModel, Modifier.weight(1f)) {
                 saveAmount(it)
             }
 
             if (!(currencyBeforeAmount ?: true)) {
-                CurrencyField(currency, Modifier.padding(horizontal = 2.dp)) {
+                CurrencyField(currency, Modifier.padding(start = 4.dp)) {
                     saveCurrency(it)
                 }
             }
@@ -518,9 +520,10 @@ fun AmountField(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             } else {
-                Text(stringResource(R.string.amount))
+                Text(stringResource(R.string.amount), maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         },
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -539,7 +542,7 @@ fun AccountSelector(
     val options by viewModel.accounts.observeAsState()
     val filteredOptions = options?.filter { it.contains(value, ignoreCase = true) } ?: emptyList()
     OutlinedLooseDropdown(filteredOptions, value, { viewModel.setAccount(index, it) }, modifier) {
-        Text(stringResource(R.string.account))
+        Text(stringResource(R.string.account), maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
