@@ -19,6 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -28,6 +31,8 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -42,6 +47,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -114,7 +120,9 @@ fun TransactionForm(
         }
     }
 
-    Box(modifier = Modifier.padding(contentPadding).fillMaxSize()) {
+    Box(modifier = Modifier
+        .padding(contentPadding)
+        .fillMaxSize()) {
         if (openErrorDialog) {
             AlertDialog(
                 onDismissRequest = { openErrorDialog = false },
@@ -133,7 +141,10 @@ fun TransactionForm(
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(vertical = 2.dp).verticalScroll(rememberScrollState()),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 2.dp)
+                .verticalScroll(rememberScrollState()),
         ) {
             with(LocalDensity.current) {
                 FlowRow(
@@ -142,19 +153,31 @@ fun TransactionForm(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     itemVerticalAlignment = Alignment.Bottom
                 ) {
-                    DateSelector(viewModel, Modifier.weight(0.25f).width((8 * 16).sp.toDp()))
+                    DateSelector(viewModel, Modifier
+                        .weight(0.25f)
+                        .width((8 * 16).sp.toDp()))
                     StatusSelector(viewModel, Modifier.width((3 * 16).sp.toDp()))
-                    CodeField(viewModel, Modifier.weight(0.5f).width((16 * 16).sp.toDp()))
-                    PayeeSelector(viewModel, Modifier.weight(0.5f).width((16 * 16).sp.toDp()))
-                    NoteSelector(viewModel, Modifier.weight(0.75f).width((16 * 16).sp.toDp()))
+                    CodeField(viewModel, Modifier
+                        .weight(0.5f)
+                        .width((16 * 16).sp.toDp()))
+                    PayeeSelector(viewModel, Modifier
+                        .weight(0.5f)
+                        .width((16 * 16).sp.toDp()))
+                    NoteSelector(viewModel, Modifier
+                        .weight(0.75f)
+                        .width((16 * 16).sp.toDp()))
                 }
                 val postings by viewModel.postings.observeAsState()
                 postings?.forEachIndexed { i, posting ->
-                    HorizontalDivider(Modifier.fillMaxWidth().padding(vertical = 4.dp))
+                    HorizontalDivider(Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp))
                     PostingRow(i, posting, posting.isEmpty(), viewModel)
                 }
             }
-            Box(Modifier.height(bottomOffset).fillMaxWidth())
+            Box(Modifier
+                .height(bottomOffset)
+                .fillMaxWidth())
         }
     }
 }
@@ -309,83 +332,200 @@ fun PostingRow(
     viewModel: TransactionFormViewModel,
 ) {
     FlowRow(
-        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
         itemVerticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         with(LocalDensity.current) {
-            if (posting.isComment()) {
-                CommentField(
-                    posting.comment ?: "",
-                    index,
-                    viewModel,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            } else {
-                AccountSelector(
-                    index = index,
-                    value = posting.account ?: "",
-                    viewModel,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                if (posting.amount != null) {
-                    CurrencyAndAmountFields(
-                        viewModel,
-                        posting.amount?.currency ?: "",
-                        posting.amount?.quantity ?: "",
-                        showAmountHint,
-                        Modifier.weight(1.0f),
-                        saveCurrency = { viewModel.setCurrency(index, it) },
-                        saveAmount = { viewModel.setAmount(index, it) },
-                    )
-                    if (posting.cost != null) {
-                        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
-                            CostTypeSelector(posting.cost?.type ?: CostType.UNIT) { viewModel.setCostType(index, it) }
-                            CurrencyAndAmountFields(
-                                viewModel,
-                                posting.cost?.amount?.currency ?: "",
-                                posting.cost?.amount?.quantity ?: "",
-                                false,
-                                Modifier.weight(1.0f).padding(start = 4.dp),
-                                saveCurrency = { viewModel.setCostCurrency(index, it) },
-                                saveAmount = { viewModel.setCostAmount(index, it) },
-                            )
-                        }
-                    }
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                if (posting.isComment()) {
+                    CommentField(posting.comment ?: "", index, viewModel, Modifier.weight(1.0f))
+                } else {
+                    AccountSelector(index, posting.account ?: "", viewModel, Modifier.weight(1.0f))
                 }
-                if (posting.assertion != null) {
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
-                        Text("=", modifier = Modifier.padding(horizontal = 4.dp))
-                        CurrencyAndAmountFields(
-                            viewModel,
-                            posting.assertion?.currency ?: "",
-                            posting.assertion?.quantity ?: "",
-                            false,
-                            Modifier.weight(1.0f).padding(start = 4.dp),
-                            saveCurrency = { viewModel.setAssertionCurrency(index, it) },
-                            saveAmount = { viewModel.setAssertionAmount(index, it) },
-                        )
-                    }
-                    if (posting.assertionCost != null) {
-                        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.width((20 * 16).sp.toDp()).weight(1.0f)) {
-                            CostTypeSelector(posting.assertionCost?.type ?: CostType.UNIT) { viewModel.setAssertionCostType(index, it) }
-                            CurrencyAndAmountFields(
-                                viewModel,
-                                posting.assertionCost?.amount?.currency ?: "",
-                                posting.assertionCost?.amount?.quantity ?: "",
-                                false,
-                                Modifier.weight(1.0f).padding(start = 4.dp),
-                                saveCurrency = { viewModel.setAssertionCostCurrency(index, it) },
-                                saveAmount = { viewModel.setAssertionCostAmount(index, it) },
-                            )
-                        }
-                    }
-                }
-                if (posting.comment != null) {
-                    CommentField(posting.comment ?: "", index, viewModel, Modifier.fillMaxWidth())
+                FieldSelector(viewModel, index, posting)
+                IconButton(onClick = { viewModel.removePosting(index) }) {
+                    Icon(Icons.Default.RemoveCircleOutline, contentDescription = stringResource(R.string.remove_posting))
                 }
             }
+            if (posting.amount != null) {
+                CurrencyAndAmountFields(
+                    viewModel,
+                    posting.amount.currency,
+                    posting.amount.quantity,
+                    showAmountHint,
+                    Modifier.weight(1.0f),
+                    saveCurrency = { viewModel.setCurrency(index, it) },
+                    saveAmount = { viewModel.setAmount(index, it) },
+                )
+                if (posting.cost != null) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        modifier = Modifier
+                            .width((20 * 16).sp.toDp())
+                            .weight(1.0f)
+                    ) {
+                        CostTypeSelector(posting.cost.type) { viewModel.setCostType(index, it) }
+                        CurrencyAndAmountFields(
+                            viewModel,
+                            posting.cost.amount.currency,
+                            posting.cost.amount.quantity,
+                            false,
+                            Modifier
+                                .weight(1.0f)
+                                .padding(start = 4.dp),
+                            saveCurrency = { viewModel.setCostCurrency(index, it) },
+                            saveAmount = { viewModel.setCostAmount(index, it) },
+                        )
+                    }
+                }
+            }
+            if (posting.assertion != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .width((20 * 16).sp.toDp())
+                        .weight(1.0f)
+                ) {
+                    Text("=", modifier = Modifier.padding(horizontal = 4.dp))
+                    CurrencyAndAmountFields(
+                        viewModel,
+                        posting.assertion.currency,
+                        posting.assertion.quantity,
+                        false,
+                        Modifier
+                            .weight(1.0f)
+                            .padding(start = 4.dp),
+                        saveCurrency = { viewModel.setAssertionCurrency(index, it) },
+                        saveAmount = { viewModel.setAssertionAmount(index, it) },
+                    )
+                }
+                if (posting.assertionCost != null) {
+                    Row(
+                        verticalAlignment = Alignment.Bottom,
+                        modifier = Modifier
+                            .width((20 * 16).sp.toDp())
+                            .weight(1.0f)
+                    ) {
+                        CostTypeSelector(posting.assertionCost.type) {
+                            viewModel.setAssertionCostType(
+                                index,
+                                it
+                            )
+                        }
+                        CurrencyAndAmountFields(
+                            viewModel,
+                            posting.assertionCost.amount.currency,
+                            posting.assertionCost.amount.quantity,
+                            false,
+                            Modifier
+                                .weight(1.0f)
+                                .padding(start = 4.dp),
+                            saveCurrency = { viewModel.setAssertionCostCurrency(index, it) },
+                            saveAmount = { viewModel.setAssertionCostAmount(index, it) },
+                        )
+                    }
+                }
+            }
+            if (!posting.isComment() && posting.comment != null) {
+                CommentField(posting.comment, index, viewModel, Modifier.fillMaxWidth())
+            }
+        }
+    }
+}
+
+@Composable
+fun FieldSelector(viewModel: TransactionFormViewModel, index: Int, posting: Posting) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                Icons.Default.EditNote,
+                contentDescription = stringResource(R.string.change_fields)
+            )
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (!posting.isComment()) R.string.remove_account else R.string.add_account
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleAccount(index, posting.account == null)
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (posting.amount != null) R.string.remove_amount else R.string.add_amount
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleAmount(index, posting.amount == null)
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (posting.cost != null) R.string.remove_cost else R.string.add_cost
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleCost(index, posting.cost == null)
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (posting.assertion != null) R.string.remove_assertion else R.string.add_assertion
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleAssertion(index, posting.assertion == null)
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (posting.assertionCost != null) R.string.remove_assertion_cost else R.string.add_assertion_cost
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleAssertionCost(index, posting.assertionCost == null)
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (posting.comment != null) R.string.remove_comment else R.string.add_comment
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleComment(index, posting.comment == null)
+                    expanded = false
+                }
+            )
         }
     }
 }

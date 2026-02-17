@@ -368,6 +368,51 @@ abstract class TransactionFormViewModel(
         _postings.value = filterPostings(result)
     }
 
+    fun removePosting(index: Int) {
+        val result = ArrayList(postings.value!!)
+        result.removeAt(index)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleAccount(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withAccount(if(on) "" else null)
+        if (!on) {
+            result[index] = result[index].withAmount(null).withCost(null).withAssertion(null).withAssertionCost(null)
+        }
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleAmount(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withAmount(if(on) defaultAmount() else null)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleCost(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withCost(if(on) Cost( defaultAmount(), CostType.UNIT) else null)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleAssertion(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withAssertion(if(on) defaultAmount() else null)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleAssertionCost(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withAssertionCost(if(on) Cost( defaultAmount(), CostType.UNIT) else null)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleComment(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withComment(if(on) "" else null)
+        _postings.value = filterPostings(result)
+    }
+
     fun filterPostings(postings: List<Posting>): ArrayList<Posting> {
         val filteredResult = ArrayList<Posting>()
         for (posting in postings) {
@@ -379,4 +424,7 @@ abstract class TransactionFormViewModel(
         filteredResult.add(Posting(preferencesDataSource.getDefaultCurrency()))
         return filteredResult
     }
+
+    fun defaultAmount() = Amount("", preferencesDataSource.getDefaultCurrency(), "")
+
 }
