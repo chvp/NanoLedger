@@ -5,7 +5,7 @@ data class Cost(
     val type: CostType,
 ) {
     fun contains(query: String) = amount.contains(query)
-    fun format(currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean): String {
-        return "${type.repr} ${amount.format(currencyBeforeAmount, currencyAmountSpacing)}"
+    fun format(currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean, currencyEnabled: Boolean): String {
+        return "${type.repr} ${amount.format(currencyBeforeAmount, currencyAmountSpacing, currencyEnabled)}"
     }
 }

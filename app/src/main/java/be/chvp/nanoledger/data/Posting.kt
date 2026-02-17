@@ -50,19 +50,19 @@ data class Posting(
         return result.trim()
     }
 
-    fun format(width: Int, currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean): String {
+    fun format(width: Int, currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean, currencyEnabled: Boolean): String {
         var fullAmountString = ""
         if ((amount?.quantity ?: "") != "") {
-            fullAmountString += amount!!.format(currencyBeforeAmount, currencyAmountSpacing)
+            fullAmountString += amount!!.format(currencyBeforeAmount, currencyAmountSpacing, currencyEnabled)
         }
         if ((cost?.amount?.quantity ?: "") != "") {
-            fullAmountString += ' ' + cost!!.format(currencyBeforeAmount, currencyAmountSpacing)
+            fullAmountString += ' ' + cost!!.format(currencyBeforeAmount, currencyAmountSpacing, currencyEnabled)
         }
         if ((assertion?.quantity ?: "") != "") {
-            fullAmountString += " = " + assertion!!.format(currencyBeforeAmount, currencyAmountSpacing)
+            fullAmountString += " = " + assertion!!.format(currencyBeforeAmount, currencyAmountSpacing, currencyEnabled)
         }
         if ((assertionCost?.amount?.quantity ?: "") != "") {
-            fullAmountString += ' ' + assertionCost!!.format(currencyBeforeAmount, currencyAmountSpacing)
+            fullAmountString += ' ' + assertionCost!!.format(currencyBeforeAmount, currencyAmountSpacing, currencyEnabled)
         }
         fullAmountString = fullAmountString.trim()
         val fillWidth = (width - fullAmountString.length - (account ?: "").length - 4).coerceAtLeast(2)

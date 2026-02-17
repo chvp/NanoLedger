@@ -27,11 +27,11 @@ data class Transaction(
         return res.toString().trim()
     }
 
-    fun format(postingWidth: Int, currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean): String {
+    fun format(postingWidth: Int, currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean, currencyEnabled: Boolean): String {
         val result = StringBuilder()
         result.append("${header()}\n")
         for (posting in postings) {
-            result.append("${posting.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing)}\n")
+            result.append("${posting.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing, currencyEnabled)}\n")
         }
         result.append('\n')
         return result.toString()

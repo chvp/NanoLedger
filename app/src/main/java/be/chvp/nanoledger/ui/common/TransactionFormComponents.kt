@@ -183,6 +183,93 @@ fun TransactionForm(
 }
 
 @Composable
+fun FieldSelector(
+    viewModel: TransactionFormViewModel
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val status by viewModel.status.observeAsState()
+    val code by viewModel.code.observeAsState()
+    val payee by viewModel.payee.observeAsState()
+    val note by viewModel.note.observeAsState()
+    val currencyEnabled by viewModel.currencyEnabled.observeAsState(true)
+    Box {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                Icons.Default.EditNote,
+                contentDescription = stringResource(R.string.change_fields)
+            )
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (status != null) R.string.remove_status else R.string.add_status
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleStatus()
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (code != null) R.string.remove_code else R.string.add_code
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleCode()
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (payee != null) R.string.remove_payee else R.string.add_payee
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.togglePayee()
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (note != null) R.string.remove_note else R.string.add_note
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleNote()
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(
+                            if (currencyEnabled) R.string.remove_currency else R.string.add_currency
+                        )
+                    )
+                },
+                onClick = {
+                    viewModel.toggleCurrency()
+                    expanded = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
 fun DateSelector(
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
@@ -346,7 +433,7 @@ fun PostingRow(
                 } else {
                     AccountSelector(index, posting.account ?: "", viewModel, Modifier.weight(1.0f))
                 }
-                FieldSelector(viewModel, index, posting)
+                PostingFieldSelector(viewModel, index, posting)
                 IconButton(onClick = { viewModel.removePosting(index) }) {
                     Icon(Icons.Default.RemoveCircleOutline, contentDescription = stringResource(R.string.remove_posting))
                 }
@@ -438,7 +525,7 @@ fun PostingRow(
 }
 
 @Composable
-fun FieldSelector(viewModel: TransactionFormViewModel, index: Int, posting: Posting) {
+fun PostingFieldSelector(viewModel: TransactionFormViewModel, index: Int, posting: Posting) {
     var expanded by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { expanded = !expanded }) {
@@ -600,11 +687,12 @@ fun CurrencyAndAmountFields(
     modifier: Modifier,
     saveCurrency: (newCurrencyString: String) -> Unit, saveAmount: (newAmountString: String) -> Unit
 ) {
-    val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState()
+    val currencyEnabled by viewModel.currencyEnabled.observeAsState(true)
+    val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState(true)
 
     with(LocalDensity.current) {
         Row(modifier = modifier.width((15 * 16).sp.toDp()), verticalAlignment = Alignment.Bottom) {
-            if (currencyBeforeAmount ?: true) {
+            if (currencyEnabled && currencyBeforeAmount) {
                 CurrencyField(currency, Modifier.padding(end = 4.dp)) { saveCurrency(it) }
             }
 
@@ -612,7 +700,7 @@ fun CurrencyAndAmountFields(
                 saveAmount(it)
             }
 
-            if (!(currencyBeforeAmount ?: true)) {
+            if (currencyEnabled && !currencyBeforeAmount) {
                 CurrencyField(currency, Modifier.padding(start = 4.dp)) {
                     saveCurrency(it)
                 }

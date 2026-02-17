@@ -67,6 +67,9 @@ abstract class TransactionFormViewModel(
             }
         }
 
+    private val _currencyEnabled = MutableLiveData<Boolean>(true)
+    val currencyEnabled = _currencyEnabled
+
     private val _postings =
         MutableLiveData(
             listOf(Posting(preferencesDataSource.getDefaultCurrency())),
@@ -172,7 +175,7 @@ abstract class TransactionFormViewModel(
             note.value,
             postings.value!!.dropLast(1)
         )
-        return transaction.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing)
+        return transaction.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing, currencyEnabled.value ?: true)
     }
 
     abstract fun save(onFinish: suspend () -> Unit)
@@ -215,6 +218,26 @@ abstract class TransactionFormViewModel(
 
     fun setNote(newNote: String?) {
         _note.value = newNote
+    }
+
+    fun toggleStatus() {
+        _status.value = if (status.value == null) " " else null
+    }
+
+    fun toggleCode() {
+        _code.value = if (code.value == null) "" else null
+    }
+
+    fun togglePayee() {
+        _payee.value = if (payee.value == null) "" else null
+    }
+
+    fun toggleNote() {
+        _note.value = if (note.value == null) "" else null
+    }
+
+    fun toggleCurrency() {
+        _currencyEnabled.value = !currencyEnabled.value!!
     }
 
     fun setPostings(newPostings: List<Posting>) {

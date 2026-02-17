@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import be.chvp.nanoledger.R
+import be.chvp.nanoledger.ui.common.FieldSelector
 import be.chvp.nanoledger.ui.common.TRANSACTION_INDEX_KEY
 import be.chvp.nanoledger.ui.common.TransactionForm
 import be.chvp.nanoledger.ui.main.MainActivity
@@ -81,7 +82,7 @@ class EditActivity : ComponentActivity() {
 
             NanoLedgerTheme {
                 Scaffold(
-                    topBar = { Bar() },
+                    topBar = { Bar(editViewModel) },
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     floatingActionButton = {
                         FloatingActionButton(
@@ -130,7 +131,7 @@ class EditActivity : ComponentActivity() {
 }
 
 @Composable
-fun Bar() {
+fun Bar(viewModel: EditViewModel) {
     val context = LocalContext.current
     TopAppBar(
         title = { Text(stringResource(R.string.edit_transaction)) },
@@ -151,11 +152,13 @@ fun Bar() {
                 )
             }
         },
+        actions = { FieldSelector(viewModel) },
         colors =
             TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 titleContentColor = MaterialTheme.colorScheme.onPrimary,
                 navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
             ),
     )
 }
