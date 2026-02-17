@@ -187,6 +187,12 @@ abstract class TransactionFormViewModel(
         setCode(transaction.code)
         setNote(transaction.note)
         setPostings(transaction.postings)
+        _currencyEnabled.value = transaction.postings.map {
+            (it.amount?.currency ?: "") != ""
+                    || (it.cost?.amount?.currency ?: "") != ""
+                    || (it.assertion?.currency ?: "") != ""
+                    || (it.assertionCost?.amount?.currency ?: "") != ""
+        }.reduce { acc, bool -> acc || bool }
     }
 
     fun setDate(dateMillis: Long) {
