@@ -23,7 +23,7 @@ data class Transaction(
         if ((status ?: " ") != " ") res.append(" $status")
         if ((code ?: "") != "") res.append(" ($code)")
         res.append(' ')
-        res.append(listOf(payee, note).filter { s -> s != null }.joinToString(" | "))
+        res.append(listOf(payee, note).filter { s -> (s ?: "") != "" }.joinToString(" | "))
         return res.toString().trim()
     }
 

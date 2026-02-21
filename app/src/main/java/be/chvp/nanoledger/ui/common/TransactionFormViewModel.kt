@@ -49,7 +49,7 @@ abstract class TransactionFormViewModel(
     private val _code = MutableLiveData(if (preferencesDataSource.getTransactionCodePresentByDefault()) "" else null)
     val code: LiveData<String?> = _code
 
-    private val _payee = MutableLiveData<String?>(if (preferencesDataSource.getTransactionPayeePresentByDefault()) "" else null)
+    private val _payee = MutableLiveData(if (preferencesDataSource.getTransactionPayeePresentByDefault()) "" else null)
     val payee: LiveData<String?> = _payee
     val possiblePayees: LiveData<List<String>> =
         ledgerRepository.payees.switchMap { payees ->
@@ -58,7 +58,7 @@ abstract class TransactionFormViewModel(
             }
         }
 
-    private val _note = MutableLiveData<String?>(if (preferencesDataSource.getTransactionNotePresentByDefault()) "" else null)
+    private val _note = MutableLiveData(if (preferencesDataSource.getTransactionNotePresentByDefault()) "" else null)
     val note: LiveData<String?> = _note
     val possibleNotes: LiveData<List<String>> =
         ledgerRepository.notes.switchMap { notes ->
