@@ -1,0 +1,1 @@
+Beta release introducing a more advanced edit form for transactions
