@@ -11,7 +11,7 @@ compose-bom = "2026.02.00"
 core-ktx = "1.17.0"
 hilt = "2.59.1"
 kotlin = "2.3.10"
-ksp = "2.3.5"
+ksp = "2.3.6"
 ktlint = "14.0.1"
 lifecycle = "2.10.0"
 
