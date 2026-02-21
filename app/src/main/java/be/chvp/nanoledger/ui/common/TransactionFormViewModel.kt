@@ -75,8 +75,12 @@ abstract class TransactionFormViewModel(
     val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
     val unbalancedAmount: LiveData<String> =
         postings.map { ps ->
-            ps
-                .filter { p -> !p.isVirtual() && !p.isComment() }
+            val relevantPostings = ps.filter { p -> !p.isVirtual() && !p.isComment() }
+            if (relevantPostings.any { it.assertion != null && it.amount == null }) return@map ""
+            if (relevantPostings.any { it.cost != null }) return@map ""
+            if (relevantPostings.mapNotNull { p -> p.amount }.map { it.currency }.distinct().count() > 1) return@map ""
+
+            relevantPostings
                 .mapNotNull { p -> p.amount }
                 .map { p -> p.quantity }
                 .map { quantity ->
@@ -127,11 +131,11 @@ abstract class TransactionFormViewModel(
                     ) {
                         return@map false
                     }
-                    // If there are multiple postings with an empty amount, it's invalid
+                    // If there are multiple postings with an empty amount and no assertions, it's invalid
                     if (postings
                             .dropLast(1)
                             .filter { !it.isComment() }
-                            .filter { (it.amount?.quantity ?: "") == "" }
+                            .filter { (it.amount?.quantity ?: "") == "" && (it.assertion?.quantity ?: "") == "" }
                             .size > 1
                     ) {
                         return@map false
