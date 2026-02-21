@@ -1,0 +1,1 @@
+Beta release fixing some bugs related to empty payees and notes in transactions
