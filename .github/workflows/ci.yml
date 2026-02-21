@@ -22,7 +22,7 @@ jobs:
     - uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '21'
     - name: Setup Android problem matchers
       uses: jonasb/android-problem-matchers-action@v1
     - name: Test
@@ -40,7 +40,7 @@ jobs:
     - uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '21'
     - name: Enable KVM group perms
       run: |
         echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -67,7 +67,7 @@ jobs:
     - uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '21'
     - name: Setup Android problem matchers
       uses: jonasb/android-problem-matchers-action@v1
     - name: Lint
@@ -85,7 +85,7 @@ jobs:
     - uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '21'
     - name: Setup Android problem matchers
       uses: jonasb/android-problem-matchers-action@v1
     - name: Build
