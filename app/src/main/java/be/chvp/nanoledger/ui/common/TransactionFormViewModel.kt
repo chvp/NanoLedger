@@ -451,12 +451,11 @@ abstract class TransactionFormViewModel(
     fun filterPostings(postings: List<Posting>): ArrayList<Posting> {
         val filteredResult = ArrayList<Posting>()
         for (posting in postings) {
-            if (!posting.isEmpty()) {
-                filteredResult.add(posting)
-            }
+            filteredResult.add(posting)
         }
 
-        filteredResult.add(newPosting())
+        if (filteredResult.isNotEmpty() && filteredResult.last() != newPosting())
+            filteredResult.add(newPosting())
         return filteredResult
     }
 
