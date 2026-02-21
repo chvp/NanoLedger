@@ -43,13 +43,13 @@ abstract class TransactionFormViewModel(
     val date: LiveData<Date> = _date
     val formattedDate: LiveData<String> = _date.map { dateFormat.format(it) }
 
-    private val _status = MutableLiveData<String?>(preferencesDataSource.getDefaultStatus())
+    private val _status = MutableLiveData(if (preferencesDataSource.getTransactionStatusPresentByDefault()) preferencesDataSource.getDefaultStatus() else null)
     val status: LiveData<String?> = _status
 
-    private val _code = MutableLiveData<String?>("")
+    private val _code = MutableLiveData(if (preferencesDataSource.getTransactionCodePresentByDefault()) "" else null)
     val code: LiveData<String?> = _code
 
-    private val _payee = MutableLiveData<String?>("")
+    private val _payee = MutableLiveData<String?>(if (preferencesDataSource.getTransactionPayeePresentByDefault()) "" else null)
     val payee: LiveData<String?> = _payee
     val possiblePayees: LiveData<List<String>> =
         ledgerRepository.payees.switchMap { payees ->
@@ -58,7 +58,7 @@ abstract class TransactionFormViewModel(
             }
         }
 
-    private val _note = MutableLiveData<String?>("")
+    private val _note = MutableLiveData<String?>(if (preferencesDataSource.getTransactionNotePresentByDefault()) "" else null)
     val note: LiveData<String?> = _note
     val possibleNotes: LiveData<List<String>> =
         ledgerRepository.notes.switchMap { notes ->
@@ -67,13 +67,10 @@ abstract class TransactionFormViewModel(
             }
         }
 
-    private val _currencyEnabled = MutableLiveData<Boolean>(true)
+    private val _currencyEnabled = MutableLiveData<Boolean>(preferencesDataSource.getTransactionCurrenciesPresentByDefault())
     val currencyEnabled = _currencyEnabled
 
-    private val _postings =
-        MutableLiveData(
-            listOf(Posting(preferencesDataSource.getDefaultCurrency())),
-        )
+    private val _postings = MutableLiveData(listOf(newPosting()))
     val postings: LiveData<List<Posting>> = _postings
     val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
     val unbalancedAmount: LiveData<String> =
@@ -183,9 +180,18 @@ abstract class TransactionFormViewModel(
     fun setFromTransaction(transaction: Transaction) {
         setDate(transaction.date)
         setStatus(transaction.status)
-        setPayee(transaction.payee)
+        if (transaction.status == null && preferencesDataSource.getTransactionStatusPresentByDefault())
+            setStatus(" ")
         setCode(transaction.code)
+        setPayee(transaction.payee)
         setNote(transaction.note)
+        if (
+            (preferencesDataSource.getTransactionPayeePresentByDefault() && !preferencesDataSource.getTransactionNotePresentByDefault() && transaction.payee == null) ||
+            (preferencesDataSource.getTransactionNotePresentByDefault() && !preferencesDataSource.getTransactionPayeePresentByDefault() && transaction.note == null)
+        ) {
+            setPayee(transaction.note)
+            setNote(transaction.payee)
+        }
         setPostings(transaction.postings)
         _currencyEnabled.value = transaction.postings.map {
             (it.amount?.currency ?: "") != ""
@@ -450,10 +456,21 @@ abstract class TransactionFormViewModel(
             }
         }
 
-        filteredResult.add(Posting(preferencesDataSource.getDefaultCurrency()))
+        filteredResult.add(newPosting())
         return filteredResult
     }
 
     fun defaultAmount() = Amount("", preferencesDataSource.getDefaultCurrency(), "")
+
+    fun newPosting(): Posting {
+        return Posting(
+            "",
+            if (preferencesDataSource.getPostingAmountPresentByDefault()) defaultAmount() else null,
+            if (preferencesDataSource.getPostingCostPresentByDefault()) Cost(defaultAmount(), CostType.UNIT) else null,
+            if (preferencesDataSource.getPostingAssertionPresentByDefault()) defaultAmount() else null,
+            if (preferencesDataSource.getPostingAssertionCostPresentByDefault()) Cost(defaultAmount(), CostType.UNIT) else null,
+            if (preferencesDataSource.getPostingCommentPresentByDefault()) "" else null,
+        )
+    }
 
 }

@@ -8,9 +8,6 @@ data class Posting(
     val assertionCost: Cost?,
     val comment: String?,
 ) {
-    // secondary constructor for empty Posting
-    constructor(currency: String) : this(null, Amount("", currency, ""), null, null, null, null)
-
     fun contains(query: String): Boolean {
         if (account?.contains(query, ignoreCase = true) ?: false) { return true }
         if (comment?.contains(query, ignoreCase = true) ?: false) { return true }

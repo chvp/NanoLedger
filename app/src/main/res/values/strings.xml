@@ -16,6 +16,8 @@
     <string name="add_status">Add status</string>
     <string name="add_transaction">Add transaction</string>
     <string name="amount">Amount</string>
+    <string name="assertion">Assertion</string>
+    <string name="assertion_cost">Assertion cost</string>
     <string name="back">Back</string>
     <string name="cancel">Cancel</string>
     <string name="change_default_currency">Change default currency</string>
@@ -25,7 +27,9 @@
     <string name="comment">Comment</string>
     <string name="copy">Copy</string>
     <string name="copy_and_edit">Copy and edit</string>
+    <string name="cost">Cost</string>
     <string name="create_transaction">Add a transaction.</string>
+    <string name="currencies">Currencies</string>
     <string name="currency_amount_order">Order of currency and amount</string>
     <string name="currency_amount_spacing">Spacing between currency and amount</string>
     <string name="currency_amount_spacing_off">Spacing disabled</string>
@@ -35,7 +39,9 @@
     <string name="date">Date</string>
     <string name="decimal_separator">Decimal separator</string>
     <string name="default_currency">Default currency</string>
+    <string name="default_posting_fields">Default fields in new posting</string>
     <string name="default_status">Default status</string>
+    <string name="default_transaction_fields">Default fields in new transaction</string>
     <string name="delete">Delete</string>
     <string name="dismiss">Dismiss</string>
     <string name="edit">Edit</string>
@@ -73,6 +79,7 @@
     <string name="separator_point">Point (.)</string>
     <string name="settings">Settings</string>
     <string name="show">Show</string>
+    <string name="status">Status</string>
     <string name="status_cleared">Cleared (*)</string>
     <string name="status_pending">Pending (!)</string>
     <string name="status_unmarked">Unmarked</string>

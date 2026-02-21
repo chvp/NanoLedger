@@ -106,6 +106,135 @@ class PreferencesActivity : ComponentActivity() {
                             openFile.launch(arrayOf("*/*"))
                         }
                         HorizontalDivider()
+                        val transactionDefaultElements by preferencesViewModel.transactionDefaultElements.observeAsState(emptyList())
+                        var transactionDefaultElementsOpen by remember { mutableStateOf(false) }
+                        val status by preferencesViewModel.transactionStatusPresentByDefault.observeAsState(true)
+                        val code by preferencesViewModel.transactionCodePresentByDefault.observeAsState(true)
+                        val payee by preferencesViewModel.transactionPayeePresentByDefault.observeAsState(true)
+                        val note by preferencesViewModel.transactionNotePresentByDefault.observeAsState(true)
+                        val currencies by preferencesViewModel.transactionCurrenciesPresentByDefault.observeAsState(true)
+                        ExposedDropdownMenuBox(
+                            expanded = transactionDefaultElementsOpen,
+                            onExpandedChange = { transactionDefaultElementsOpen = !transactionDefaultElementsOpen },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Setting(
+                                stringResource(R.string.default_transaction_fields),
+                                transactionDefaultElements.map { stringResource(it) }.joinToString(", "),
+                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
+                            ) { transactionDefaultElementsOpen = true }
+                            ExposedDropdownMenu(
+                                expanded = transactionDefaultElementsOpen,
+                                onDismissRequest = { transactionDefaultElementsOpen = false },
+                                modifier = Modifier.exposedDropdownSize(true)
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (status) R.string.remove_status else R.string.add_status)) },
+                                    onClick = {
+                                        preferencesViewModel.storeTransactionStatusPresentByDefault(!status)
+                                        transactionDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (code) R.string.remove_code else R.string.add_code)) },
+                                    onClick = {
+                                        preferencesViewModel.storeTransactionCodePresentByDefault(!code)
+                                        transactionDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (payee) R.string.remove_payee else R.string.add_payee)) },
+                                    onClick = {
+                                        preferencesViewModel.storeTransactionPayeePresentByDefault(!payee)
+                                        transactionDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (note) R.string.remove_note else R.string.add_note)) },
+                                    onClick = {
+                                        preferencesViewModel.storeTransactionNotePresentByDefault(!note)
+                                        transactionDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (currencies) R.string.remove_currency else R.string.add_currency)) },
+                                    onClick = {
+                                        preferencesViewModel.storeTransactionCurrenciesPresentByDefault(!currencies)
+                                        transactionDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                            }
+                        }
+                        HorizontalDivider()
+                        val postingDefaultElements by preferencesViewModel.postingDefaultElements.observeAsState(emptyList())
+                        var postingDefaultElementsOpen by remember { mutableStateOf(false) }
+                        ExposedDropdownMenuBox(
+                            expanded = postingDefaultElementsOpen,
+                            onExpandedChange = { postingDefaultElementsOpen = !postingDefaultElementsOpen },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Setting(
+                                stringResource(R.string.default_posting_fields),
+                                postingDefaultElements.map { stringResource(it) }.joinToString(", ")
+                            ) { postingDefaultElementsOpen = true }
+                            ExposedDropdownMenu(
+                                expanded = postingDefaultElementsOpen,
+                                onDismissRequest = { postingDefaultElementsOpen = false },
+                                modifier = Modifier.exposedDropdownSize(true)
+                            ) {
+                                val amount by preferencesViewModel.postingAmountPresentByDefault.observeAsState(true)
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (amount) R.string.remove_amount else R.string.add_amount)) },
+                                    onClick = {
+                                        preferencesViewModel.storePostingAmountPresentByDefault(!amount)
+                                        postingDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                val cost by preferencesViewModel.postingCostPresentByDefault.observeAsState(true)
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (cost) R.string.remove_cost else R.string.add_cost)) },
+                                    onClick = {
+                                        preferencesViewModel.storePostingCostPresentByDefault(!cost)
+                                        postingDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                val assertion by preferencesViewModel.postingAssertionPresentByDefault.observeAsState(true)
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (assertion) R.string.remove_assertion else R.string.add_assertion)) },
+                                    onClick = {
+                                        preferencesViewModel.storePostingAssertionPresentByDefault(!assertion)
+                                        postingDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                val assertionCost by preferencesViewModel.postingAssertionCostPresentByDefault.observeAsState(true)
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (assertionCost) R.string.remove_assertion_cost else R.string.add_assertion_cost)) },
+                                    onClick = {
+                                        preferencesViewModel.storePostingAssertionCostPresentByDefault(!assertionCost)
+                                        postingDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                val comment by preferencesViewModel.postingCommentPresentByDefault.observeAsState(true)
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(if (comment) R.string.remove_comment else R.string.add_comment)) },
+                                    onClick = {
+                                        preferencesViewModel.storePostingCommentPresentByDefault(!comment)
+                                        postingDefaultElementsOpen = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                            }
+                        }
+                        HorizontalDivider()
                         val defaultCurrency by preferencesViewModel.defaultCurrency.observeAsState()
                         var newDefaultCurrency by remember { mutableStateOf(defaultCurrency ?: "") }
                         var defaultCurrencyOpen by remember { mutableStateOf(false) }
