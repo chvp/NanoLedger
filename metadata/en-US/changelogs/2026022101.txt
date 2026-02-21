@@ -1,0 +1,1 @@
+Upgrade Java used to build to Java 21 to hopefully fix F-droid release
