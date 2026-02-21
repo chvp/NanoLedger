@@ -28,12 +28,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import be.chvp.nanoledger.R
+import be.chvp.nanoledger.ui.common.FieldSelector
 import be.chvp.nanoledger.ui.common.TRANSACTION_INDEX_KEY
 import be.chvp.nanoledger.ui.common.TransactionForm
 import be.chvp.nanoledger.ui.main.MainActivity
@@ -68,9 +74,13 @@ class AddActivity : ComponentActivity() {
             val saving by addViewModel.saving.observeAsState()
             val valid by addViewModel.valid.observeAsState()
             val enabled = !(saving ?: true) && (valid ?: false)
+
+            var fabHeight by remember { mutableIntStateOf(0) }
+            val fabOffsetDp = with(LocalDensity.current) { fabHeight.toDp() + 16.dp }
+
             NanoLedgerTheme {
                 Scaffold(
-                    topBar = { Bar() },
+                    topBar = { Bar(addViewModel) },
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     floatingActionButton = {
                         FloatingActionButton(
@@ -94,6 +104,7 @@ class AddActivity : ComponentActivity() {
                                 } else {
                                     MaterialTheme.colorScheme.surface
                                 },
+                            modifier = Modifier.onGloballyPositioned { fabHeight = it.size.height },
                         ) {
                             if (saving ?: true) {
                                 CircularProgressIndicator(
@@ -110,7 +121,7 @@ class AddActivity : ComponentActivity() {
                     },
                     modifier = Modifier.imePadding(),
                 ) { contentPadding ->
-                    TransactionForm(addViewModel, contentPadding, snackbarHostState)
+                    TransactionForm(addViewModel, contentPadding, fabOffsetDp, snackbarHostState)
                 }
             }
         }
@@ -118,7 +129,7 @@ class AddActivity : ComponentActivity() {
 }
 
 @Composable
-fun Bar() {
+fun Bar(viewModel: AddViewModel) {
     val context = LocalContext.current
     TopAppBar(
         title = { Text(stringResource(R.string.add_transaction)) },
@@ -139,11 +150,13 @@ fun Bar() {
                 )
             }
         },
+        actions = { FieldSelector(viewModel) },
         colors =
             TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 titleContentColor = MaterialTheme.colorScheme.onPrimary,
                 navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
             ),
     )
 }

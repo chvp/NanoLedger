@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import be.chvp.nanoledger.data.Amount
+import be.chvp.nanoledger.data.Cost
+import be.chvp.nanoledger.data.CostType
 import be.chvp.nanoledger.data.LedgerRepository
 import be.chvp.nanoledger.data.Posting
 import be.chvp.nanoledger.data.PreferencesDataSource
@@ -41,40 +43,44 @@ abstract class TransactionFormViewModel(
     val date: LiveData<Date> = _date
     val formattedDate: LiveData<String> = _date.map { dateFormat.format(it) }
 
-    private val _status = MutableLiveData(preferencesDataSource.getDefaultStatus())
-    val status: LiveData<String> = _status
+    private val _status = MutableLiveData(if (preferencesDataSource.getTransactionStatusPresentByDefault()) preferencesDataSource.getDefaultStatus() else null)
+    val status: LiveData<String?> = _status
 
-    private val _code = MutableLiveData("")
-    val code: LiveData<String> = _code
+    private val _code = MutableLiveData(if (preferencesDataSource.getTransactionCodePresentByDefault()) "" else null)
+    val code: LiveData<String?> = _code
 
-    private val _payee = MutableLiveData("")
-    val payee: LiveData<String> = _payee
+    private val _payee = MutableLiveData<String?>(if (preferencesDataSource.getTransactionPayeePresentByDefault()) "" else null)
+    val payee: LiveData<String?> = _payee
     val possiblePayees: LiveData<List<String>> =
         ledgerRepository.payees.switchMap { payees ->
             payee.map { search ->
-                payees.filter { it.contains(search, ignoreCase = true) }.sorted()
+                payees.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted()
             }
         }
 
-    private val _note = MutableLiveData("")
-    val note: LiveData<String> = _note
+    private val _note = MutableLiveData<String?>(if (preferencesDataSource.getTransactionNotePresentByDefault()) "" else null)
+    val note: LiveData<String?> = _note
     val possibleNotes: LiveData<List<String>> =
         ledgerRepository.notes.switchMap { notes ->
             note.map { search ->
-                notes.filter { it.contains(search, ignoreCase = true) }.sorted()
+                notes.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted()
             }
         }
 
-    private val _postings =
-        MutableLiveData(
-            listOf(Posting(preferencesDataSource.getDefaultCurrency())),
-        )
+    private val _currencyEnabled = MutableLiveData<Boolean>(preferencesDataSource.getTransactionCurrenciesPresentByDefault())
+    val currencyEnabled = _currencyEnabled
+
+    private val _postings = MutableLiveData(listOf(newPosting()))
     val postings: LiveData<List<Posting>> = _postings
     val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
     val unbalancedAmount: LiveData<String> =
         postings.map { ps ->
-            ps
-                .filter { p -> !p.isVirtual() && !p.isNote() }
+            val relevantPostings = ps.filter { p -> !p.isVirtual() && !p.isComment() }
+            if (relevantPostings.any { it.assertion != null && it.amount == null }) return@map ""
+            if (relevantPostings.any { it.cost != null }) return@map ""
+            if (relevantPostings.mapNotNull { p -> p.amount }.map { it.currency }.distinct().count() > 1) return@map ""
+
+            relevantPostings
                 .mapNotNull { p -> p.amount }
                 .map { p -> p.quantity }
                 .map { quantity ->
@@ -107,7 +113,7 @@ abstract class TransactionFormViewModel(
         payee.switchMap { payee ->
             postings.switchMap { postings ->
                 unbalancedAmount.map { unbalancedAmount ->
-                    if (postings.filter { !it.isVirtual() && !it.isNote() }.size < 2) {
+                    if (postings.filter { !it.isVirtual() && !it.isComment() }.size < 2) {
                         return@map false
                     }
                     if (payee == "") {
@@ -118,18 +124,18 @@ abstract class TransactionFormViewModel(
                         postings
                             .dropLast(1)
                             .filter {
-                                !it.isNote()
+                                !it.isComment()
                             }.all {
                                 (it.amount?.quantity ?: "") != ""
                             }
                     ) {
                         return@map false
                     }
-                    // If there are multiple postings with an empty amount, it's invalid
+                    // If there are multiple postings with an empty amount and no assertions, it's invalid
                     if (postings
                             .dropLast(1)
-                            .filter { !it.isNote() }
-                            .filter { (it.amount?.quantity ?: "") == "" }
+                            .filter { !it.isComment() }
+                            .filter { (it.amount?.quantity ?: "") == "" && (it.assertion?.quantity ?: "") == "" }
                             .size > 1
                     ) {
                         return@map false
@@ -156,65 +162,47 @@ abstract class TransactionFormViewModel(
     val currencyBeforeAmount: LiveData<Boolean> = preferencesDataSource.currencyBeforeAmount
 
     protected fun toTransactionString(): String {
-        val transaction = StringBuilder()
-        transaction.append(dateFormat.format(date.value!!))
-        if (status.value!! != " ") {
-            transaction.append(" ${status.value}")
-        }
-        if (code.value!! != "") {
-            transaction.append(" (${code.value})")
-        }
-        transaction.append(" ${payee.value}")
-        if (note.value!! != "") {
-            transaction.append(" | ${note.value}")
-        }
-        transaction.append('\n')
-        // Drop last element, it should always be an empty posting (and the only empty posting)
-        for (posting in postings.value!!.dropLast(1)) {
-            val account = posting.account ?: ""
-            val currency = posting.amount?.currency ?: ""
-            val quantity = posting.amount?.quantity ?: ""
-            val note = posting.note ?: ""
+        val postingWidth = preferencesDataSource.getPostingWidth()
+        val currencyBeforeAmount = preferencesDataSource.getCurrencyBeforeAmount()
+        val currencyAmountSpacing = preferencesDataSource.getCurrencyAmountSpacing()
 
-            val spacer = if (preferencesDataSource.getCurrencyAmountSpacing()) " " else ""
-            val usedLength = 6 + account.length + currency.length + quantity.length + spacer.length
-
-            val numberOfSpaces = preferencesDataSource.getPostingWidth() - usedLength
-            val spaces = " ".repeat(maxOf(0, numberOfSpaces))
-
-            if (posting.isNote()) {
-                transaction.append("${note}\n")
-            } else if (quantity == "") {
-                transaction.append(
-                    "    ${account}${note}\n",
-                )
-            } else if (currency == "") {
-                transaction.append(
-                    "    $account  $spaces $quantity$note\n",
-                )
-            } else if (preferencesDataSource.getCurrencyBeforeAmount()) {
-                transaction.append(
-                    "    $account  $spaces$currency$spacer$quantity$note\n",
-                )
-            } else {
-                transaction.append(
-                    "    $account  $spaces$quantity$spacer$currency$note\n",
-                )
-            }
-        }
-        transaction.append('\n')
-        return transaction.toString()
+        val transaction = Transaction(
+            0,
+            0,
+            dateFormat.format(date.value!!),
+            status.value,
+            code.value,
+            payee.value!!,
+            note.value,
+            postings.value!!.dropLast(1)
+        )
+        return transaction.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing, currencyEnabled.value ?: true)
     }
 
     abstract fun save(onFinish: suspend () -> Unit)
 
     fun setFromTransaction(transaction: Transaction) {
         setDate(transaction.date)
-        setStatus(transaction.status ?: "")
+        setStatus(transaction.status)
+        if (transaction.status == null && preferencesDataSource.getTransactionStatusPresentByDefault())
+            setStatus(" ")
+        setCode(transaction.code)
         setPayee(transaction.payee)
-        setCode(transaction.code ?: "")
-        setNote(transaction.note ?: "")
+        setNote(transaction.note)
+        if (
+            (preferencesDataSource.getTransactionPayeePresentByDefault() && !preferencesDataSource.getTransactionNotePresentByDefault() && transaction.payee == null) ||
+            (preferencesDataSource.getTransactionNotePresentByDefault() && !preferencesDataSource.getTransactionPayeePresentByDefault() && transaction.note == null)
+        ) {
+            setPayee(transaction.note)
+            setNote(transaction.payee)
+        }
         setPostings(transaction.postings)
+        _currencyEnabled.value = transaction.postings.map {
+            (it.amount?.currency ?: "") != ""
+                    || (it.cost?.amount?.currency ?: "") != ""
+                    || (it.assertion?.currency ?: "") != ""
+                    || (it.assertionCost?.amount?.currency ?: "") != ""
+        }.reduce { acc, bool -> acc || bool }
     }
 
     fun setDate(dateMillis: Long) {
@@ -232,20 +220,40 @@ abstract class TransactionFormViewModel(
         }
     }
 
-    fun setStatus(newStatus: String) {
+    fun setStatus(newStatus: String?) {
         _status.value = newStatus
     }
 
-    fun setPayee(newPayee: String) {
-        _payee.value = newPayee
-    }
-
-    fun setCode(newCode: String) {
+    fun setCode(newCode: String?) {
         _code.value = newCode
     }
 
-    fun setNote(newNote: String) {
+    fun setPayee(newPayee: String?) {
+        _payee.value = newPayee
+    }
+
+    fun setNote(newNote: String?) {
         _note.value = newNote
+    }
+
+    fun toggleStatus() {
+        _status.value = if (status.value == null) " " else null
+    }
+
+    fun toggleCode() {
+        _code.value = if (code.value == null) "" else null
+    }
+
+    fun togglePayee() {
+        _payee.value = if (payee.value == null) "" else null
+    }
+
+    fun toggleNote() {
+        _note.value = if (note.value == null) "" else null
+    }
+
+    fun toggleCurrency() {
+        _currencyEnabled.value = !currencyEnabled.value!!
     }
 
     fun setPostings(newPostings: List<Posting>) {
@@ -257,7 +265,7 @@ abstract class TransactionFormViewModel(
         newAccount: String,
     ) {
         val result = ArrayList(postings.value!!)
-        result[index] = Posting(newAccount, result[index].amount, result[index].note)
+        result[index] = result[index].withAccount(newAccount)
         _postings.value = filterPostings(result)
     }
 
@@ -275,7 +283,7 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(quantity, newCurrency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, result[index].note)
+        result[index] = result[index].withAmount(newAmount)
         _postings.value = filterPostings(result)
     }
 
@@ -292,19 +300,180 @@ abstract class TransactionFormViewModel(
             newAmount = Amount(newAmountString, currency, original)
         }
 
-        result[index] = Posting(result[index].account, newAmount, result[index].note)
+        result[index] = result[index].withAmount(newAmount)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setCostType(
+        index: Int,
+        newCostType: CostType,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val quantity = result[index].cost?.amount?.quantity ?: ""
+        val currency = result[index].cost?.amount?.currency ?: ""
+        val newCost = Cost(Amount(quantity, currency, ""), newCostType)
+        result[index] = result[index].withCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setCostCurrency(
+        index: Int,
+        newCostCurrency: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val costType = result[index].cost?.type ?: CostType.UNIT
+        val quantity = result[index].cost?.amount?.quantity ?: ""
+        val newCost = Cost(Amount(quantity, newCostCurrency, ""), costType)
+        result[index] = result[index].withCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setCostAmount(
+        index: Int,
+        newCostAmount: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val costType = result[index].cost?.type ?: CostType.UNIT
+        val currency = result[index].cost?.amount?.currency ?: ""
+        val newCost = Cost(Amount(newCostAmount, currency, ""), costType)
+        result[index] = result[index].withCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionCurrency(
+        index: Int,
+        newCurrency: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+
+        val quantity = result[index].assertion?.quantity ?: ""
+        val newAssertion = Amount(quantity, newCurrency, "")
+
+        result[index] = result[index].withAssertion(newAssertion)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionAmount(
+        index: Int,
+        newAmountString: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val currency = result[index].assertion?.currency ?: ""
+        val newAmount = Amount(newAmountString, currency, "")
+
+        result[index] = result[index].withAssertion(newAmount)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionCostType(
+        index: Int,
+        newCostType: CostType,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val quantity = result[index].assertionCost?.amount?.quantity ?: ""
+        val currency = result[index].assertionCost?.amount?.currency ?: ""
+        val newCost = Cost(Amount(quantity, currency, ""), newCostType)
+        result[index] = result[index].withAssertionCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionCostCurrency(
+        index: Int,
+        newCostCurrency: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val costType = result[index].assertionCost?.type ?: CostType.UNIT
+        val quantity = result[index].assertionCost?.amount?.quantity ?: ""
+        val newCost = Cost(Amount(quantity, newCostCurrency, ""), costType)
+        result[index] = result[index].withAssertionCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setAssertionCostAmount(
+        index: Int,
+        newCostAmount: String,
+    ) {
+        val result = ArrayList(postings.value!!)
+        val costType = result[index].assertionCost?.type ?: CostType.UNIT
+        val currency = result[index].assertionCost?.amount?.currency ?: ""
+        val newCost = Cost(Amount(newCostAmount, currency, ""), costType)
+        result[index] = result[index].withAssertionCost(newCost)
+        _postings.value = filterPostings(result)
+    }
+
+    fun setComment(index: Int, newComment: String?) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withComment(newComment)
+        _postings.value = filterPostings(result)
+    }
+
+    fun removePosting(index: Int) {
+        val result = ArrayList(postings.value!!)
+        result.removeAt(index)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleAccount(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withAccount(if(on) "" else null)
+        if (!on) {
+            result[index] = result[index].withAmount(null).withCost(null).withAssertion(null).withAssertionCost(null)
+        }
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleAmount(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withAmount(if(on) defaultAmount() else null)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleCost(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withCost(if(on) Cost( defaultAmount(), CostType.UNIT) else null)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleAssertion(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withAssertion(if(on) defaultAmount() else null)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleAssertionCost(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withAssertionCost(if(on) Cost( defaultAmount(), CostType.UNIT) else null)
+        _postings.value = filterPostings(result)
+    }
+
+    fun toggleComment(index: Int, on: Boolean) {
+        val result = ArrayList(postings.value!!)
+        result[index] = result[index].withComment(if(on) "" else null)
         _postings.value = filterPostings(result)
     }
 
     fun filterPostings(postings: List<Posting>): ArrayList<Posting> {
         val filteredResult = ArrayList<Posting>()
         for (posting in postings) {
-            if (!posting.isEmpty()) {
-                filteredResult.add(posting)
-            }
+            filteredResult.add(posting)
         }
 
-        filteredResult.add(Posting(preferencesDataSource.getDefaultCurrency()))
+        if (filteredResult.isNotEmpty() && filteredResult.last() != newPosting())
+            filteredResult.add(newPosting())
         return filteredResult
     }
+
+    fun defaultAmount() = Amount("", preferencesDataSource.getDefaultCurrency(), "")
+
+    fun newPosting(): Posting {
+        return Posting(
+            "",
+            if (preferencesDataSource.getPostingAmountPresentByDefault()) defaultAmount() else null,
+            if (preferencesDataSource.getPostingCostPresentByDefault()) Cost(defaultAmount(), CostType.UNIT) else null,
+            if (preferencesDataSource.getPostingAssertionPresentByDefault()) defaultAmount() else null,
+            if (preferencesDataSource.getPostingAssertionCostPresentByDefault()) Cost(defaultAmount(), CostType.UNIT) else null,
+            if (preferencesDataSource.getPostingCommentPresentByDefault()) "" else null,
+        )
+    }
+
 }

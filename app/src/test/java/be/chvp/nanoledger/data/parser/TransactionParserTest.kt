@@ -1,5 +1,6 @@
 package be.chvp.nanoledger.data.parser
 
+import be.chvp.nanoledger.data.CostType
 import be.chvp.nanoledger.data.Transaction
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,11 +36,11 @@ class TransactionParserTest {
     }
 
     @Test
-    fun canParseSimpleTransactionNoNote() {
+    fun canParseSimpleTransactionNoPayee() {
         val result =
             extractTransactions(
                 """
-                |2023-08-31 * Payee
+                |2023-08-31 * Note
                 |    assets            € -5.00
                 |    expenses    € 5.00
                 """.trimMargin().lines(),
@@ -52,8 +53,8 @@ class TransactionParserTest {
         assertEquals(2, transaction.lastLine)
         assertEquals("2023-08-31", transaction.date)
         assertEquals("*", transaction.status)
-        assertEquals("Payee", transaction.payee)
-        assertEquals(null, transaction.note)
+        assertEquals(null, transaction.payee)
+        assertEquals("Note", transaction.note)
         assertEquals(2, transaction.postings.size)
         assertEquals("assets", transaction.postings[0].account)
         assertEquals("€ -5.00", transaction.postings[0].amount?.original)
@@ -191,11 +192,11 @@ class TransactionParserTest {
                 """.trimMargin().lines(),
             )
 
-        assertEquals("    ; Note for the transaction", transactions[0].postings[0].note)
-        assertEquals("; Payee:Test", transactions[0].postings[1].note)
-        assertEquals(null, transactions[0].postings[2].note)
-        assertEquals("    ; another note", transactions[0].postings[3].note)
-        assertEquals("      ; Payee: Another", transactions[0].postings[4].note)
+        assertEquals("Note for the transaction", transactions[0].postings[0].comment)
+        assertEquals("Payee:Test", transactions[0].postings[1].comment)
+        assertEquals(null, transactions[0].postings[2].comment)
+        assertEquals("another note", transactions[0].postings[3].comment)
+        assertEquals("Payee: Another", transactions[0].postings[4].comment)
     }
 
     @Test
@@ -210,8 +211,8 @@ class TransactionParserTest {
                 """.trimMargin().lines(),
             )
 
-        assertEquals("    ; Note for the transaction", transactions[0].postings[0].note)
-        assertTrue(transactions[0].postings[0].isNote())
+        assertEquals("Note for the transaction", transactions[0].postings[0].comment)
+        assertTrue(transactions[0].postings[0].isComment())
         assertFalse(transactions[0].postings[0].isEmpty())
     }
 
@@ -227,9 +228,27 @@ class TransactionParserTest {
                 """.trimMargin().lines(),
             )
 
-        assertEquals("                                                ; Casual note", transactions[0].postings[2].note)
+        assertEquals("Casual note", transactions[0].postings[2].comment)
         assertEquals(null, transactions[0].postings[2].amount)
         assertEquals("expenses:groceries", transactions[0].postings[2].account)
+    }
+
+
+
+    @Test
+    fun canParsePostingWithNoCurrency() {
+        val postingString = "some account  1,000.00"
+
+        val posting = extractPosting(postingString)
+        val amount = posting.amount
+        assertEquals("1,000.00", amount?.original)
+        assertEquals("1,000.00", amount?.quantity)
+        assertEquals("", amount?.currency)
+        assertEquals("some account", posting.account)
+        assertEquals(null, posting.cost)
+        assertEquals(null, posting.assertion)
+        assertEquals(null, posting.assertionCost)
+        assertEquals(null, posting.comment)
     }
 
     @Test
@@ -373,43 +392,119 @@ class TransactionParserTest {
     }
 
     @Test
-    fun canParseAmountWithComplexCurrencyAfterAndAssertion() {
-        val amountString = "-    100005,0.0 \"*&+\"=abc"
+    fun canParsePostingWithComplexCurrencyAfterAndAssertion() {
+        val postingString = "some account name   -    100005,0.0 \"*&+\"=abc"
 
-        val amount = extractAmount(amountString)
-        assertEquals("-    100005,0.0 \"*&+\"=abc", amount.original)
+        val posting = extractPosting(postingString)
+        assertEquals("some account name", posting.account)
+
+        val amount = posting.amount!!
+        assertEquals("-    100005,0.0 \"*&+\"", amount.original)
         assertEquals("-    100005,0.0", amount.quantity)
         assertEquals("\"*&+\"", amount.currency)
+
+        val assertion = posting.assertion!!
+        assertEquals("abc", assertion.original)
+        assertEquals("", assertion.quantity)
+        assertEquals("", assertion.currency)
+
+        assertEquals(null, posting.cost)
+        assertEquals(null, posting.assertionCost)
+        assertEquals(null, posting.comment)
     }
 
     @Test
-    fun canParseAmountWithComplexCurrencyAfterAndCost() {
-        val amountString = "-    100005,0.0 \"*&+\"@ 15 EUR"
+    fun canParsePostingWithComplexCurrencyAfterAndCost() {
+        val postingString = "another account name  -    100005,0.0 \"*&+\"@ 15 EUR"
 
-        val amount = extractAmount(amountString)
-        assertEquals("-    100005,0.0 \"*&+\"@ 15 EUR", amount.original)
+        val posting = extractPosting(postingString)
+        assertEquals("another account name", posting.account)
+
+        val amount = posting.amount!!
+        assertEquals("-    100005,0.0 \"*&+\"", amount.original)
         assertEquals("-    100005,0.0", amount.quantity)
         assertEquals("\"*&+\"", amount.currency)
+
+        val cost = posting.cost!!
+        assertEquals("15", cost.amount.quantity)
+        assertEquals("EUR", cost.amount.currency)
+        assertEquals(CostType.UNIT, cost.type)
+
+        assertEquals(null, posting.assertion)
+        assertEquals(null, posting.assertionCost)
+        assertEquals(null, posting.comment)
     }
 
     @Test
-    fun canParseAmountWithSimpleCurrencyBeforeAndAssertion() {
-        val amountString = "€ 8.00 = € -2.00"
+    fun canParsePostingWithSimpleCurrencyBeforeAndAssertion() {
+        val postingString = "account  € 8.00 = € -2.00"
 
-        val amount = extractAmount(amountString)
-        assertEquals("€ 8.00 = € -2.00", amount.original)
+        val posting = extractPosting(postingString)
+        assertEquals("account", posting.account)
+
+        val amount = posting.amount!!
+        assertEquals("€ 8.00", amount.original)
         assertEquals("8.00", amount.quantity)
         assertEquals("€", amount.currency)
+
+        val assertion = posting.assertion!!
+        assertEquals("€ -2.00", assertion.original)
+        assertEquals("-2.00", assertion.quantity)
+        assertEquals("€", assertion.currency)
+
+        assertEquals(null, posting.cost)
+        assertEquals(null, posting.assertionCost)
+        assertEquals(null, posting.comment)
     }
 
     @Test
-    fun canParseAmountWithOnlyAssertion() {
-        val amountString = "= 10"
+    fun canParsePostingWithOnlyAssertion() {
+        val postingString = "account  = 10"
 
-        val amount = extractAmount(amountString)
-        assertEquals("= 10", amount.original)
-        assertEquals("", amount.quantity)
-        assertEquals("", amount.currency)
+        val posting = extractPosting(postingString)
+        assertEquals("account", posting.account)
+
+        val assertion = posting.assertion!!
+        assertEquals("10", assertion.original)
+        assertEquals("10", assertion.quantity)
+        assertEquals("", assertion.currency)
+
+        assertEquals(null, posting.amount)
+        assertEquals(null, posting.cost)
+        assertEquals(null, posting.assertionCost)
+        assertEquals(null, posting.comment)
+    }
+
+    @Test
+    fun canParsePostingWithEverything() {
+        val postingString = "pizza    € 10 @ 5 USD = € 20 @@ 10 USD ; and even a comment"
+
+        val posting = extractPosting(postingString)
+        assertEquals("pizza", posting.account)
+
+        val amount = posting.amount!!
+        assertEquals("€ 10", amount.original)
+        assertEquals("10", amount.quantity)
+        assertEquals("€", amount.currency)
+
+        val cost = posting.cost!!
+        assertEquals(CostType.UNIT, cost.type)
+        assertEquals("5 USD", cost.amount.original)
+        assertEquals("5", cost.amount.quantity)
+        assertEquals("USD", cost.amount.currency)
+
+        val assertion = posting.assertion!!
+        assertEquals("€ 20", assertion.original)
+        assertEquals("20", assertion.quantity)
+        assertEquals("€", assertion.currency)
+
+        val assertionCost = posting.assertionCost!!
+        assertEquals(CostType.TOTAL, assertionCost.type)
+        assertEquals("10 USD", assertionCost.amount.original)
+        assertEquals("10", assertionCost.amount.quantity)
+        assertEquals("USD", assertionCost.amount.currency)
+
+        assertEquals("and even a comment", posting.comment)
     }
 
     @Test
