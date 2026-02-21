@@ -110,38 +110,33 @@ abstract class TransactionFormViewModel(
         }
 
     val valid: LiveData<Boolean> =
-        payee.switchMap { payee ->
-            postings.switchMap { postings ->
-                unbalancedAmount.map { unbalancedAmount ->
-                    if (postings.filter { !it.isVirtual() && !it.isComment() }.size < 2) {
-                        return@map false
-                    }
-                    if (payee == "") {
-                        return@map false
-                    }
-                    // If there is an unbalanced amount, and there are no postings with an empty amount, it's invalid
-                    if (unbalancedAmount != "" &&
-                        postings
-                            .dropLast(1)
-                            .filter {
-                                !it.isComment()
-                            }.all {
-                                (it.amount?.quantity ?: "") != ""
-                            }
-                    ) {
-                        return@map false
-                    }
-                    // If there are multiple postings with an empty amount and no assertions, it's invalid
-                    if (postings
-                            .dropLast(1)
-                            .filter { !it.isComment() }
-                            .filter { (it.amount?.quantity ?: "") == "" && (it.assertion?.quantity ?: "") == "" }
-                            .size > 1
-                    ) {
-                        return@map false
-                    }
-                    return@map true
+        postings.switchMap { postings ->
+            unbalancedAmount.map { unbalancedAmount ->
+                if (postings.filter { !it.isVirtual() && !it.isComment() }.size < 2) {
+                    return@map false
                 }
+                // If there is an unbalanced amount, and there are no postings with an empty amount, it's invalid
+                if (unbalancedAmount != "" &&
+                    postings
+                        .dropLast(1)
+                        .filter {
+                            !it.isComment()
+                        }.all {
+                            (it.amount?.quantity ?: "") != ""
+                        }
+                ) {
+                    return@map false
+                }
+                // If there are multiple postings with an empty amount and no assertions, it's invalid
+                if (postings
+                        .dropLast(1)
+                        .filter { !it.isComment() }
+                        .filter { (it.amount?.quantity ?: "") == "" && (it.assertion?.quantity ?: "") == "" }
+                        .size > 1
+                ) {
+                    return@map false
+                }
+                return@map true
             }
         }
 
