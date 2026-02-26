@@ -60,3 +60,7 @@
 2023-09-04 * Friend | Reconciliation
     assets:cash                                                  € 25.00
     assets:receivable:friend                                    € -25.00
+
+2026-02-26 Found
+    assets:cash                                                  € 50.00
+    income:found                                                € -50.00
