@@ -51,4 +51,14 @@ class EditActivityTest {
         composeRule.onNodeWithContentDescription(context.getString(R.string.save)).assertIsDisplayed().performClick()
         composeRule.onNodeWithText("2023-09-02 * (123) Restaurant | Changed description").assertIsDisplayed().performClick()
     }
+
+    @Test
+    fun canDoEditWithOnlyNote() {
+        composeRule.onNodeWithText("2026-02-26 Found").assertIsDisplayed().performClick()
+        composeRule.onNodeWithContentDescription(context.getString(R.string.edit)).assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("Found").assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("Found").assertIsDisplayed().performTextReplacement("Stolen")
+        composeRule.onNodeWithContentDescription(context.getString(R.string.save)).assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("2026-02-26 Stolen").assertIsDisplayed().performClick()
+    }
 }

@@ -68,7 +68,7 @@ abstract class TransactionFormViewModel(
         }
 
     private val _currencyEnabled = MutableLiveData<Boolean>(preferencesDataSource.getTransactionCurrenciesPresentByDefault())
-    val currencyEnabled = _currencyEnabled
+    val currencyEnabled: LiveData<Boolean> = _currencyEnabled
 
     private val _postings = MutableLiveData(listOf(newPosting()))
     val postings: LiveData<List<Posting>> = _postings
@@ -167,7 +167,7 @@ abstract class TransactionFormViewModel(
             dateFormat.format(date.value!!),
             status.value,
             code.value,
-            payee.value!!,
+            payee.value,
             note.value,
             postings.value!!.dropLast(1)
         )
