@@ -1,0 +1,1 @@
+Fix bug where saving a transaction would fail when the payee is disabled
