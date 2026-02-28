@@ -1,0 +1,1 @@
+If only one of payee / note is enabled, the autocomplete now uses the combination of all payees and notes in the journal file.
