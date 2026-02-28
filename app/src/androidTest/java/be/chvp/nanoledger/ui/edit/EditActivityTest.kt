@@ -39,7 +39,7 @@ class EditActivityTest {
         composeRule.onNodeWithText("Reconciliation").assertIsDisplayed().performClick()
         composeRule.onNodeWithText("Reconciliation").assertIsDisplayed().performTextReplacement("Changed description")
         composeRule.onNodeWithContentDescription(context.getString(R.string.save)).assertIsDisplayed().performClick()
-        composeRule.onNodeWithText("2023-09-04 * Friend | Changed description").assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("2023-09-04 * Friend | Changed description").assertIsDisplayed()
     }
 
     @Test
@@ -49,7 +49,7 @@ class EditActivityTest {
         composeRule.onNodeWithText("Dinner with friend").assertIsDisplayed().performClick()
         composeRule.onNodeWithText("Dinner with friend").assertIsDisplayed().performTextReplacement("Changed description")
         composeRule.onNodeWithContentDescription(context.getString(R.string.save)).assertIsDisplayed().performClick()
-        composeRule.onNodeWithText("2023-09-02 * (123) Restaurant | Changed description").assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("2023-09-02 * (123) Restaurant | Changed description").assertIsDisplayed()
     }
 
     @Test
@@ -59,6 +59,6 @@ class EditActivityTest {
         composeRule.onNodeWithText("Found").assertIsDisplayed().performClick()
         composeRule.onNodeWithText("Found").assertIsDisplayed().performTextReplacement("Stolen")
         composeRule.onNodeWithContentDescription(context.getString(R.string.save)).assertIsDisplayed().performClick()
-        composeRule.onNodeWithText("2026-02-26 Stolen").assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("2026-02-26 Stolen").assertIsDisplayed()
     }
 }

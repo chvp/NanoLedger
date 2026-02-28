@@ -196,7 +196,7 @@ fun FieldSelector(
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 Icons.Default.EditNote,
-                contentDescription = stringResource(R.string.change_fields)
+                contentDescription = stringResource(R.string.change_transaction_fields)
             )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -531,7 +531,7 @@ fun PostingFieldSelector(viewModel: TransactionFormViewModel, index: Int, postin
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 Icons.Default.EditNote,
-                contentDescription = stringResource(R.string.change_fields)
+                contentDescription = stringResource(R.string.change_posting_fields)
             )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {

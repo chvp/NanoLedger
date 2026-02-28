@@ -21,7 +21,8 @@
     <string name="back">Back</string>
     <string name="cancel">Cancel</string>
     <string name="change_default_currency">Change default currency</string>
-    <string name="change_fields">Change posting fields</string>
+    <string name="change_posting_fields">Change posting fields</string>
+    <string name="change_transaction_fields">Change transaction fields</string>
     <string name="change_posting_width">Change posting width</string>
     <string name="code">Code</string>
     <string name="comment">Comment</string>
