@@ -51,19 +51,27 @@ abstract class TransactionFormViewModel(
 
     private val _payee = MutableLiveData(if (preferencesDataSource.getTransactionPayeePresentByDefault()) "" else null)
     val payee: LiveData<String?> = _payee
-    val possiblePayees: LiveData<List<String>> =
-        ledgerRepository.payees.switchMap { payees ->
-            payee.map { search ->
-                payees.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted()
-            }
-        }
 
     private val _note = MutableLiveData(if (preferencesDataSource.getTransactionNotePresentByDefault()) "" else null)
     val note: LiveData<String?> = _note
+
+    val possiblePayees: LiveData<List<String>> =
+        ledgerRepository.payees.switchMap { payees ->
+            ledgerRepository.notes.switchMap { notes ->
+                note.switchMap { note ->
+                    val listToSearch: Set<String> = if (note == null) payees + notes else payees
+                    payee.map { search -> listToSearch.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted() }
+                }
+            }
+        }
+
     val possibleNotes: LiveData<List<String>> =
         ledgerRepository.notes.switchMap { notes ->
-            note.map { search ->
-                notes.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted()
+            ledgerRepository.payees.switchMap { payees ->
+                payee.switchMap { payee ->
+                    val listToSearch: Set<String> = if (payee == null) notes + payees else notes
+                    note.map { search -> listToSearch.filter { it.contains((search ?: ""), ignoreCase = true) }.sorted() }
+                }
             }
         }
 
