@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -36,9 +37,9 @@ class AddActivityTest {
         composeRule.onNodeWithText(context.getString(R.string.payee)).assertIsDisplayed().performTextReplacement("Payee")
         composeRule.onNodeWithText(context.getString(R.string.note)).assertIsDisplayed().performTextReplacement("Note")
         composeRule.onNodeWithText(context.getString(R.string.account)).assertIsDisplayed().performTextReplacement("Account 1")
-        composeRule.onAllNodesWithText(context.getString(R.string.amount)).onFirst().assertIsDisplayed().performTextReplacement("10")
-        composeRule.onAllNodesWithText(context.getString(R.string.account)).onLast().assertIsDisplayed().performTextReplacement("Account 2")
-        composeRule.onAllNodesWithText(context.getString(R.string.amount)).onLast().assertIsDisplayed().performTextReplacement("-10")
+        composeRule.onAllNodesWithText(context.getString(R.string.amount)).onFirst().performScrollTo().assertIsDisplayed().performTextReplacement("10")
+        composeRule.onAllNodesWithText(context.getString(R.string.account)).onLast().performScrollTo().assertIsDisplayed().performTextReplacement("Account 2")
+        composeRule.onAllNodesWithText(context.getString(R.string.amount)).onLast().performScrollTo().assertIsDisplayed().performTextReplacement("-10")
         composeRule.onNodeWithContentDescription(context.getString(R.string.save)).assertIsDisplayed().performClick()
         composeRule.onNodeWithText("Payee | Note", substring = true).assertIsDisplayed()
     }
@@ -48,8 +49,8 @@ class AddActivityTest {
         fileManagerRule.configureAppWithFile("only-payees.journal")
         composeRule.onNodeWithContentDescription(context.getString(R.string.add)).assertIsDisplayed().performClick()
         composeRule.onNodeWithContentDescription(context.getString(R.string.change_transaction_fields)).assertIsDisplayed().performClick()
-        composeRule.onNodeWithText(context.getString(R.string.remove_note)).assertIsDisplayed().performClick()
-        composeRule.onNodeWithText(context.getString(R.string.payee)).assertIsDisplayed().performClick()
+        composeRule.onNodeWithText(context.getString(R.string.remove_payee)).assertIsDisplayed().performClick()
+        composeRule.onNodeWithText(context.getString(R.string.note)).assertIsDisplayed().performClick()
         composeRule.onNodeWithText("Employer").assertIsDisplayed()
     }
 }
