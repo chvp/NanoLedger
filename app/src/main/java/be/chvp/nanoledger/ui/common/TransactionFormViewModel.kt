@@ -43,7 +43,10 @@ abstract class TransactionFormViewModel(
     val date: LiveData<Date> = _date
     val formattedDate: LiveData<String> = _date.map { dateFormat.format(it) }
 
-    private val _status = MutableLiveData(if (preferencesDataSource.getTransactionStatusPresentByDefault()) preferencesDataSource.getDefaultStatus() else null)
+    private val _status =
+        MutableLiveData(
+            if (preferencesDataSource.getTransactionStatusPresentByDefault()) preferencesDataSource.getDefaultStatus() else null,
+        )
     val status: LiveData<String?> = _status
 
     private val _code = MutableLiveData(if (preferencesDataSource.getTransactionCodePresentByDefault()) "" else null)
@@ -86,7 +89,14 @@ abstract class TransactionFormViewModel(
             val relevantPostings = ps.filter { p -> !p.isVirtual() && !p.isComment() }
             if (relevantPostings.any { it.assertion != null && it.amount == null }) return@map ""
             if (relevantPostings.any { it.cost != null }) return@map ""
-            if (relevantPostings.mapNotNull { p -> p.amount }.map { it.currency }.distinct().count() > 1) return@map ""
+            if (relevantPostings
+                    .mapNotNull { p -> p.amount }
+                    .map { it.currency }
+                    .distinct()
+                    .count() > 1
+            ) {
+                return@map ""
+            }
 
             relevantPostings
                 .mapNotNull { p -> p.amount }
@@ -169,16 +179,17 @@ abstract class TransactionFormViewModel(
         val currencyBeforeAmount = preferencesDataSource.getCurrencyBeforeAmount()
         val currencyAmountSpacing = preferencesDataSource.getCurrencyAmountSpacing()
 
-        val transaction = Transaction(
-            0,
-            0,
-            dateFormat.format(date.value!!),
-            status.value,
-            code.value,
-            payee.value,
-            note.value,
-            postings.value!!.dropLast(1)
-        )
+        val transaction =
+            Transaction(
+                0,
+                0,
+                dateFormat.format(date.value!!),
+                status.value,
+                code.value,
+                payee.value,
+                note.value,
+                postings.value!!.dropLast(1),
+            )
         return transaction.format(postingWidth, currencyBeforeAmount, currencyAmountSpacing, currencyEnabled.value ?: true)
     }
 
@@ -187,25 +198,36 @@ abstract class TransactionFormViewModel(
     fun setFromTransaction(transaction: Transaction) {
         setDate(transaction.date)
         setStatus(transaction.status)
-        if (transaction.status == null && preferencesDataSource.getTransactionStatusPresentByDefault())
+        if (transaction.status == null && preferencesDataSource.getTransactionStatusPresentByDefault()) {
             setStatus(" ")
+        }
         setCode(transaction.code)
         setPayee(transaction.payee)
         setNote(transaction.note)
         if (
-            (preferencesDataSource.getTransactionPayeePresentByDefault() && !preferencesDataSource.getTransactionNotePresentByDefault() && transaction.payee == null) ||
-            (preferencesDataSource.getTransactionNotePresentByDefault() && !preferencesDataSource.getTransactionPayeePresentByDefault() && transaction.note == null)
+            (
+                preferencesDataSource.getTransactionPayeePresentByDefault() &&
+                    !preferencesDataSource.getTransactionNotePresentByDefault() &&
+                    transaction.payee == null
+            ) ||
+            (
+                preferencesDataSource.getTransactionNotePresentByDefault() &&
+                    !preferencesDataSource.getTransactionPayeePresentByDefault() &&
+                    transaction.note == null
+            )
         ) {
             setPayee(transaction.note)
             setNote(transaction.payee)
         }
         setPostings(transaction.postings)
-        _currencyEnabled.value = transaction.postings.map {
-            (it.amount?.currency ?: "") != ""
-                    || (it.cost?.amount?.currency ?: "") != ""
-                    || (it.assertion?.currency ?: "") != ""
-                    || (it.assertionCost?.amount?.currency ?: "") != ""
-        }.reduce { acc, bool -> acc || bool }
+        _currencyEnabled.value =
+            transaction.postings
+                .map {
+                    (it.amount?.currency ?: "") != "" ||
+                        (it.cost?.amount?.currency ?: "") != "" ||
+                        (it.assertion?.currency ?: "") != "" ||
+                        (it.assertionCost?.amount?.currency ?: "") != ""
+                }.reduce { acc, bool -> acc || bool }
     }
 
     fun setDate(dateMillis: Long) {
@@ -404,7 +426,10 @@ abstract class TransactionFormViewModel(
         _postings.value = filterPostings(result)
     }
 
-    fun setComment(index: Int, newComment: String?) {
+    fun setComment(
+        index: Int,
+        newComment: String?,
+    ) {
         val result = ArrayList(postings.value!!)
         result[index] = result[index].withComment(newComment)
         _postings.value = filterPostings(result)
@@ -416,42 +441,65 @@ abstract class TransactionFormViewModel(
         _postings.value = filterPostings(result)
     }
 
-    fun toggleAccount(index: Int, on: Boolean) {
+    fun toggleAccount(
+        index: Int,
+        on: Boolean,
+    ) {
         val result = ArrayList(postings.value!!)
-        result[index] = result[index].withAccount(if(on) "" else null)
+        result[index] = result[index].withAccount(if (on) "" else null)
         if (!on) {
-            result[index] = result[index].withAmount(null).withCost(null).withAssertion(null).withAssertionCost(null)
+            result[index] =
+                result[index]
+                    .withAmount(null)
+                    .withCost(null)
+                    .withAssertion(null)
+                    .withAssertionCost(null)
         }
         _postings.value = filterPostings(result)
     }
 
-    fun toggleAmount(index: Int, on: Boolean) {
+    fun toggleAmount(
+        index: Int,
+        on: Boolean,
+    ) {
         val result = ArrayList(postings.value!!)
-        result[index] = result[index].withAmount(if(on) defaultAmount() else null)
+        result[index] = result[index].withAmount(if (on) defaultAmount() else null)
         _postings.value = filterPostings(result)
     }
 
-    fun toggleCost(index: Int, on: Boolean) {
+    fun toggleCost(
+        index: Int,
+        on: Boolean,
+    ) {
         val result = ArrayList(postings.value!!)
-        result[index] = result[index].withCost(if(on) Cost( defaultAmount(), CostType.UNIT) else null)
+        result[index] = result[index].withCost(if (on) Cost(defaultAmount(), CostType.UNIT) else null)
         _postings.value = filterPostings(result)
     }
 
-    fun toggleAssertion(index: Int, on: Boolean) {
+    fun toggleAssertion(
+        index: Int,
+        on: Boolean,
+    ) {
         val result = ArrayList(postings.value!!)
-        result[index] = result[index].withAssertion(if(on) defaultAmount() else null)
+        result[index] = result[index].withAssertion(if (on) defaultAmount() else null)
         _postings.value = filterPostings(result)
     }
 
-    fun toggleAssertionCost(index: Int, on: Boolean) {
+    fun toggleAssertionCost(
+        index: Int,
+        on: Boolean,
+    ) {
         val result = ArrayList(postings.value!!)
-        result[index] = result[index].withAssertionCost(if(on) Cost( defaultAmount(), CostType.UNIT) else null)
+        result[index] = result[index].withAssertionCost(if (on) Cost(defaultAmount(), CostType.UNIT) else null)
         _postings.value = filterPostings(result)
     }
 
-    fun toggleComment(index: Int, on: Boolean) {
+    fun toggleComment(
+        index: Int,
+        on: Boolean,
+    ) {
         val result = ArrayList(postings.value!!)
-        result[index] = result[index].withComment(if(on) "" else null)
+        result[index] = result[index].withComment(if (on) "" else null)
         _postings.value = filterPostings(result)
     }
 
@@ -461,15 +509,16 @@ abstract class TransactionFormViewModel(
             filteredResult.add(posting)
         }
 
-        if (filteredResult.isNotEmpty() && filteredResult.last() != newPosting())
+        if (filteredResult.isNotEmpty() && filteredResult.last() != newPosting()) {
             filteredResult.add(newPosting())
+        }
         return filteredResult
     }
 
     fun defaultAmount() = Amount("", preferencesDataSource.getDefaultCurrency(), "")
 
-    fun newPosting(): Posting {
-        return Posting(
+    fun newPosting(): Posting =
+        Posting(
             "",
             if (preferencesDataSource.getPostingAmountPresentByDefault()) defaultAmount() else null,
             if (preferencesDataSource.getPostingCostPresentByDefault()) Cost(defaultAmount(), CostType.UNIT) else null,
@@ -477,6 +526,4 @@ abstract class TransactionFormViewModel(
             if (preferencesDataSource.getPostingAssertionCostPresentByDefault()) Cost(defaultAmount(), CostType.UNIT) else null,
             if (preferencesDataSource.getPostingCommentPresentByDefault()) "" else null,
         )
-    }
-
 }

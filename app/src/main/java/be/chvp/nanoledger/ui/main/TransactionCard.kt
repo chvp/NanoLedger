@@ -57,10 +57,9 @@ fun TransactionCard(
                 for (p in transaction.postings) {
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         if (p.isComment()) {
-
                             Text(
                                 "  ; ${p.comment!!}",
                                 softWrap = false,

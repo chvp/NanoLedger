@@ -9,22 +9,44 @@ data class Posting(
     val comment: String?,
 ) {
     fun contains(query: String): Boolean {
-        if (account?.contains(query, ignoreCase = true) ?: false) { return true }
-        if (comment?.contains(query, ignoreCase = true) ?: false) { return true }
-        if (amount?.contains(query) ?: false) { return true }
-        if (cost?.contains(query) ?: false) { return true }
-        if (assertion?.contains(query) ?: false) { return true }
-        if (assertionCost?.contains(query) ?: false) { return true }
+        if (account?.contains(query, ignoreCase = true) ?: false) {
+            return true
+        }
+        if (comment?.contains(query, ignoreCase = true) ?: false) {
+            return true
+        }
+        if (amount?.contains(query) ?: false) {
+            return true
+        }
+        if (cost?.contains(query) ?: false) {
+            return true
+        }
+        if (assertion?.contains(query) ?: false) {
+            return true
+        }
+        if (assertionCost?.contains(query) ?: false) {
+            return true
+        }
 
         return false
     }
 
     fun isComment(): Boolean {
-        if (account != null) { return false }
-        if (amount != null) { return false }
-        if (cost != null) { return false }
-        if (assertion != null) { return false }
-        if (assertionCost != null) { return false }
+        if (account != null) {
+            return false
+        }
+        if (amount != null) {
+            return false
+        }
+        if (cost != null) {
+            return false
+        }
+        if (assertion != null) {
+            return false
+        }
+        if (assertionCost != null) {
+            return false
+        }
 
         return comment != null
     }
@@ -47,7 +69,12 @@ data class Posting(
         return result.trim()
     }
 
-    fun format(width: Int, currencyBeforeAmount: Boolean, currencyAmountSpacing: Boolean, currencyEnabled: Boolean): String {
+    fun format(
+        width: Int,
+        currencyBeforeAmount: Boolean,
+        currencyAmountSpacing: Boolean,
+        currencyEnabled: Boolean,
+    ): String {
         var fullAmountString = ""
         if ((amount?.quantity ?: "") != "") {
             fullAmountString += amount!!.format(currencyBeforeAmount, currencyAmountSpacing, currencyEnabled)
@@ -72,16 +99,27 @@ data class Posting(
             result += "  ; $comment"
         }
         return result
-
     }
 
     fun isEmpty(): Boolean {
-        if ((account ?: "") != "") { return false }
-        if ((amount?.quantity ?: "") != "") { return false }
-        if ((cost?.amount?.quantity ?: "") != "") { return false }
-        if ((assertion?.quantity ?: "") != "") { return false }
-        if ((assertionCost?.amount?.quantity ?: "") != "") { return false }
-        if ((comment ?: "") != "") { return false }
+        if ((account ?: "") != "") {
+            return false
+        }
+        if ((amount?.quantity ?: "") != "") {
+            return false
+        }
+        if ((cost?.amount?.quantity ?: "") != "") {
+            return false
+        }
+        if ((assertion?.quantity ?: "") != "") {
+            return false
+        }
+        if ((assertionCost?.amount?.quantity ?: "") != "") {
+            return false
+        }
+        if ((comment ?: "") != "") {
+            return false
+        }
 
         return true
     }
@@ -89,9 +127,14 @@ data class Posting(
     fun isVirtual() = account?.let { it.startsWith("(") && it.endsWith(")") } ?: false
 
     fun withAccount(account: String?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+
     fun withAmount(amount: Amount?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+
     fun withCost(cost: Cost?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+
     fun withAssertion(assertion: Amount?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+
     fun withAssertionCost(assertionCost: Cost?) = Posting(account, amount, cost, assertion, assertionCost, comment)
+
     fun withComment(comment: String?) = Posting(account, amount, cost, assertion, assertionCost, comment)
 }
