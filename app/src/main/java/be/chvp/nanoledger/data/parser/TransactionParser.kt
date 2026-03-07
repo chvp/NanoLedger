@@ -52,7 +52,11 @@ fun extractPosting(line: String): Posting {
 
     val commentMatch = COMMENT_REGEX.find(line)
     if (commentMatch != null) {
-        comment = commentMatch.value.trim().trimStart(';').trim()
+        comment =
+            commentMatch.value
+                .trim()
+                .trimStart(';')
+                .trim()
     }
 
     val stripped = line.replace(COMMENT_REGEX, "").trim()
@@ -91,11 +95,12 @@ fun extractAmountAndCost(string: String): Pair<Amount?, Cost?> {
         return Pair(null, null)
     }
     if (string.contains(COST_SPLIT_REGEX)) {
-        val costType = if (string.contains("@@")) {
-            CostType.TOTAL
-        } else {
-            CostType.UNIT
-        }
+        val costType =
+            if (string.contains("@@")) {
+                CostType.TOTAL
+            } else {
+                CostType.UNIT
+            }
 
         val (amountString, costString) = string.split(COST_SPLIT_REGEX, limit = 2)
         return Pair(extractAmount(amountString.trim()), Cost(extractAmount(costString.trim()), costType))

@@ -233,8 +233,6 @@ class TransactionParserTest {
         assertEquals("expenses:groceries", transactions[0].postings[2].account)
     }
 
-
-
     @Test
     fun canParsePostingWithNoCurrency() {
         val postingString = "some account  1,000.00"

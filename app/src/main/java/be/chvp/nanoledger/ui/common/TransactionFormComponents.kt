@@ -120,9 +120,12 @@ fun TransactionForm(
         }
     }
 
-    Box(modifier = Modifier
-        .padding(contentPadding)
-        .fillMaxSize()) {
+    Box(
+        modifier =
+            Modifier
+                .padding(contentPadding)
+                .fillMaxSize(),
+    ) {
         if (openErrorDialog) {
             AlertDialog(
                 onDismissRequest = { openErrorDialog = false },
@@ -141,51 +144,66 @@ fun TransactionForm(
             )
         }
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 2.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 2.dp)
+                    .verticalScroll(rememberScrollState()),
         ) {
             with(LocalDensity.current) {
                 FlowRow(
                     modifier = Modifier.padding(vertical = 2.dp, horizontal = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
-                    itemVerticalAlignment = Alignment.Bottom
+                    itemVerticalAlignment = Alignment.Bottom,
                 ) {
-                    DateSelector(viewModel, Modifier
-                        .weight(0.25f)
-                        .width((8 * 16).sp.toDp()))
+                    DateSelector(
+                        viewModel,
+                        Modifier
+                            .weight(0.25f)
+                            .width((8 * 16).sp.toDp()),
+                    )
                     StatusSelector(viewModel, Modifier.width((3 * 16).sp.toDp()))
-                    CodeField(viewModel, Modifier
-                        .weight(0.5f)
-                        .width((16 * 16).sp.toDp()))
-                    PayeeSelector(viewModel, Modifier
-                        .weight(0.5f)
-                        .width((16 * 16).sp.toDp()))
-                    NoteSelector(viewModel, Modifier
-                        .weight(0.75f)
-                        .width((16 * 16).sp.toDp()))
+                    CodeField(
+                        viewModel,
+                        Modifier
+                            .weight(0.5f)
+                            .width((16 * 16).sp.toDp()),
+                    )
+                    PayeeSelector(
+                        viewModel,
+                        Modifier
+                            .weight(0.5f)
+                            .width((16 * 16).sp.toDp()),
+                    )
+                    NoteSelector(
+                        viewModel,
+                        Modifier
+                            .weight(0.75f)
+                            .width((16 * 16).sp.toDp()),
+                    )
                 }
                 val postings by viewModel.postings.observeAsState()
                 postings?.forEachIndexed { i, posting ->
-                    HorizontalDivider(Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp))
+                    HorizontalDivider(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                    )
                     PostingRow(i, posting, posting.isEmpty(), viewModel)
                 }
             }
-            Box(Modifier
-                .height(bottomOffset)
-                .fillMaxWidth())
+            Box(
+                Modifier
+                    .height(bottomOffset)
+                    .fillMaxWidth(),
+            )
         }
     }
 }
 
 @Composable
-fun FieldSelector(
-    viewModel: TransactionFormViewModel
-) {
+fun FieldSelector(viewModel: TransactionFormViewModel) {
     var expanded by remember { mutableStateOf(false) }
     val status by viewModel.status.observeAsState()
     val code by viewModel.code.observeAsState()
@@ -196,7 +214,7 @@ fun FieldSelector(
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 Icons.Default.EditNote,
-                contentDescription = stringResource(R.string.change_transaction_fields)
+                contentDescription = stringResource(R.string.change_transaction_fields),
             )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -204,66 +222,66 @@ fun FieldSelector(
                 text = {
                     Text(
                         stringResource(
-                            if (status != null) R.string.remove_status else R.string.add_status
-                        )
+                            if (status != null) R.string.remove_status else R.string.add_status,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleStatus()
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (code != null) R.string.remove_code else R.string.add_code
-                        )
+                            if (code != null) R.string.remove_code else R.string.add_code,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleCode()
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (payee != null) R.string.remove_payee else R.string.add_payee
-                        )
+                            if (payee != null) R.string.remove_payee else R.string.add_payee,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.togglePayee()
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (note != null) R.string.remove_note else R.string.add_note
-                        )
+                            if (note != null) R.string.remove_note else R.string.add_note,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleNote()
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (currencyEnabled) R.string.remove_currency else R.string.add_currency
-                        )
+                            if (currencyEnabled) R.string.remove_currency else R.string.add_currency,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleCurrency()
                     expanded = false
-                }
+                },
             )
         }
     }
@@ -372,7 +390,7 @@ fun CodeField(
             (code ?: ""),
             { viewModel.setCode(it) },
             modifier,
-            label = { Text(stringResource(R.string.code), maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            label = { Text(stringResource(R.string.code), maxLines = 1, overflow = TextOverflow.Ellipsis) },
         )
     }
 }
@@ -419,9 +437,10 @@ fun PostingRow(
     viewModel: TransactionFormViewModel,
 ) {
     FlowRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
         itemVerticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -451,9 +470,10 @@ fun PostingRow(
                 if (posting.cost != null) {
                     Row(
                         verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier
-                            .width((20 * 16).sp.toDp())
-                            .weight(1.0f)
+                        modifier =
+                            Modifier
+                                .width((20 * 16).sp.toDp())
+                                .weight(1.0f),
                     ) {
                         CostTypeSelector(posting.cost.type) { viewModel.setCostType(index, it) }
                         CurrencyAndAmountFields(
@@ -473,9 +493,10 @@ fun PostingRow(
             if (posting.assertion != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .width((20 * 16).sp.toDp())
-                        .weight(1.0f)
+                    modifier =
+                        Modifier
+                            .width((20 * 16).sp.toDp())
+                            .weight(1.0f),
                 ) {
                     Text("=", modifier = Modifier.padding(horizontal = 4.dp))
                     CurrencyAndAmountFields(
@@ -493,14 +514,15 @@ fun PostingRow(
                 if (posting.assertionCost != null) {
                     Row(
                         verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier
-                            .width((20 * 16).sp.toDp())
-                            .weight(1.0f)
+                        modifier =
+                            Modifier
+                                .width((20 * 16).sp.toDp())
+                                .weight(1.0f),
                     ) {
                         CostTypeSelector(posting.assertionCost.type) {
                             viewModel.setAssertionCostType(
                                 index,
-                                it
+                                it,
                             )
                         }
                         CurrencyAndAmountFields(
@@ -525,13 +547,17 @@ fun PostingRow(
 }
 
 @Composable
-fun PostingFieldSelector(viewModel: TransactionFormViewModel, index: Int, posting: Posting) {
+fun PostingFieldSelector(
+    viewModel: TransactionFormViewModel,
+    index: Int,
+    posting: Posting,
+) {
     var expanded by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 Icons.Default.EditNote,
-                contentDescription = stringResource(R.string.change_posting_fields)
+                contentDescription = stringResource(R.string.change_posting_fields),
             )
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -539,79 +565,79 @@ fun PostingFieldSelector(viewModel: TransactionFormViewModel, index: Int, postin
                 text = {
                     Text(
                         stringResource(
-                            if (!posting.isComment()) R.string.remove_account else R.string.add_account
-                        )
+                            if (!posting.isComment()) R.string.remove_account else R.string.add_account,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleAccount(index, posting.account == null)
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (posting.amount != null) R.string.remove_amount else R.string.add_amount
-                        )
+                            if (posting.amount != null) R.string.remove_amount else R.string.add_amount,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleAmount(index, posting.amount == null)
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (posting.cost != null) R.string.remove_cost else R.string.add_cost
-                        )
+                            if (posting.cost != null) R.string.remove_cost else R.string.add_cost,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleCost(index, posting.cost == null)
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (posting.assertion != null) R.string.remove_assertion else R.string.add_assertion
-                        )
+                            if (posting.assertion != null) R.string.remove_assertion else R.string.add_assertion,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleAssertion(index, posting.assertion == null)
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (posting.assertionCost != null) R.string.remove_assertion_cost else R.string.add_assertion_cost
-                        )
+                            if (posting.assertionCost != null) R.string.remove_assertion_cost else R.string.add_assertion_cost,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleAssertionCost(index, posting.assertionCost == null)
                     expanded = false
-                }
+                },
             )
             DropdownMenuItem(
                 text = {
                     Text(
                         stringResource(
-                            if (posting.comment != null) R.string.remove_comment else R.string.add_comment
-                        )
+                            if (posting.comment != null) R.string.remove_comment else R.string.add_comment,
+                        ),
                     )
                 },
                 onClick = {
                     viewModel.toggleComment(index, posting.comment == null)
                     expanded = false
-                }
+                },
             )
         }
     }
@@ -629,14 +655,14 @@ fun CommentField(
         onValueChange = { viewModel.setComment(index, it) },
         singleLine = true,
         label = { Text(stringResource(R.string.comment), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
 @Composable
 fun CostTypeSelector(
     costType: CostType,
-    save: (newCostType: CostType) -> Unit
+    save: (newCostType: CostType) -> Unit,
 ) {
     val options = listOf(CostType.UNIT, CostType.TOTAL)
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -644,7 +670,7 @@ fun CostTypeSelector(
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.width((5 * 16).sp.toDp())
+            modifier = Modifier.width((5 * 16).sp.toDp()),
         ) {
             OutlinedTextField(
                 value = costType.repr,
@@ -685,7 +711,8 @@ fun CurrencyAndAmountFields(
     quantity: String,
     showAmountHint: Boolean,
     modifier: Modifier,
-    saveCurrency: (newCurrencyString: String) -> Unit, saveAmount: (newAmountString: String) -> Unit
+    saveCurrency: (newCurrencyString: String) -> Unit,
+    saveAmount: (newAmountString: String) -> Unit,
 ) {
     val currencyEnabled by viewModel.currencyEnabled.observeAsState(true)
     val currencyBeforeAmount by viewModel.currencyBeforeAmount.observeAsState(true)

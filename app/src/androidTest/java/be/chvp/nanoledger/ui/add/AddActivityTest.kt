@@ -37,9 +37,27 @@ class AddActivityTest {
         composeRule.onNodeWithText(context.getString(R.string.payee)).assertIsDisplayed().performTextReplacement("Payee")
         composeRule.onNodeWithText(context.getString(R.string.note)).assertIsDisplayed().performTextReplacement("Note")
         composeRule.onNodeWithText(context.getString(R.string.account)).assertIsDisplayed().performTextReplacement("Account 1")
-        composeRule.onAllNodesWithText(context.getString(R.string.amount)).onFirst().performScrollTo().assertIsDisplayed().performTextReplacement("10")
-        composeRule.onAllNodesWithText(context.getString(R.string.account)).onLast().performScrollTo().assertIsDisplayed().performTextReplacement("Account 2")
-        composeRule.onAllNodesWithText(context.getString(R.string.amount)).onLast().performScrollTo().assertIsDisplayed().performTextReplacement("-10")
+        composeRule
+            .onAllNodesWithText(
+                context.getString(R.string.amount),
+            ).onFirst()
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performTextReplacement("10")
+        composeRule
+            .onAllNodesWithText(
+                context.getString(R.string.account),
+            ).onLast()
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performTextReplacement("Account 2")
+        composeRule
+            .onAllNodesWithText(
+                context.getString(R.string.amount),
+            ).onLast()
+            .performScrollTo()
+            .assertIsDisplayed()
+            .performTextReplacement("-10")
         composeRule.onNodeWithContentDescription(context.getString(R.string.save)).assertIsDisplayed().performClick()
         composeRule.onNodeWithText("Payee | Note", substring = true).assertIsDisplayed()
     }

@@ -116,17 +116,17 @@ class PreferencesActivity : ComponentActivity() {
                         ExposedDropdownMenuBox(
                             expanded = transactionDefaultElementsOpen,
                             onExpandedChange = { transactionDefaultElementsOpen = !transactionDefaultElementsOpen },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             Setting(
                                 stringResource(R.string.default_transaction_fields),
                                 transactionDefaultElements.map { stringResource(it) }.joinToString(", "),
-                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
+                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
                             ) { transactionDefaultElementsOpen = true }
                             ExposedDropdownMenu(
                                 expanded = transactionDefaultElementsOpen,
                                 onDismissRequest = { transactionDefaultElementsOpen = false },
-                                modifier = Modifier.exposedDropdownSize(true)
+                                modifier = Modifier.exposedDropdownSize(true),
                             ) {
                                 DropdownMenuItem(
                                     text = { Text(stringResource(if (status) R.string.remove_status else R.string.add_status)) },
@@ -134,7 +134,7 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storeTransactionStatusPresentByDefault(!status)
                                         transactionDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(if (code) R.string.remove_code else R.string.add_code)) },
@@ -142,7 +142,7 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storeTransactionCodePresentByDefault(!code)
                                         transactionDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(if (payee) R.string.remove_payee else R.string.add_payee)) },
@@ -150,7 +150,7 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storeTransactionPayeePresentByDefault(!payee)
                                         transactionDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(if (note) R.string.remove_note else R.string.add_note)) },
@@ -158,7 +158,7 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storeTransactionNotePresentByDefault(!note)
                                         transactionDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(if (currencies) R.string.remove_currency else R.string.add_currency)) },
@@ -166,7 +166,7 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storeTransactionCurrenciesPresentByDefault(!currencies)
                                         transactionDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                             }
                         }
@@ -176,16 +176,16 @@ class PreferencesActivity : ComponentActivity() {
                         ExposedDropdownMenuBox(
                             expanded = postingDefaultElementsOpen,
                             onExpandedChange = { postingDefaultElementsOpen = !postingDefaultElementsOpen },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             Setting(
                                 stringResource(R.string.default_posting_fields),
-                                postingDefaultElements.map { stringResource(it) }.joinToString(", ")
+                                postingDefaultElements.map { stringResource(it) }.joinToString(", "),
                             ) { postingDefaultElementsOpen = true }
                             ExposedDropdownMenu(
                                 expanded = postingDefaultElementsOpen,
                                 onDismissRequest = { postingDefaultElementsOpen = false },
-                                modifier = Modifier.exposedDropdownSize(true)
+                                modifier = Modifier.exposedDropdownSize(true),
                             ) {
                                 val amount by preferencesViewModel.postingAmountPresentByDefault.observeAsState(true)
                                 DropdownMenuItem(
@@ -194,7 +194,7 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storePostingAmountPresentByDefault(!amount)
                                         postingDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                                 val cost by preferencesViewModel.postingCostPresentByDefault.observeAsState(true)
                                 DropdownMenuItem(
@@ -203,7 +203,7 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storePostingCostPresentByDefault(!cost)
                                         postingDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                                 val assertion by preferencesViewModel.postingAssertionPresentByDefault.observeAsState(true)
                                 DropdownMenuItem(
@@ -212,16 +212,22 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storePostingAssertionPresentByDefault(!assertion)
                                         postingDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                                 val assertionCost by preferencesViewModel.postingAssertionCostPresentByDefault.observeAsState(true)
                                 DropdownMenuItem(
-                                    text = { Text(stringResource(if (assertionCost) R.string.remove_assertion_cost else R.string.add_assertion_cost)) },
+                                    text = {
+                                        Text(
+                                            stringResource(
+                                                if (assertionCost) R.string.remove_assertion_cost else R.string.add_assertion_cost,
+                                            ),
+                                        )
+                                    },
                                     onClick = {
                                         preferencesViewModel.storePostingAssertionCostPresentByDefault(!assertionCost)
                                         postingDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                                 val comment by preferencesViewModel.postingCommentPresentByDefault.observeAsState(true)
                                 DropdownMenuItem(
@@ -230,7 +236,7 @@ class PreferencesActivity : ComponentActivity() {
                                         preferencesViewModel.storePostingCommentPresentByDefault(!comment)
                                         postingDefaultElementsOpen = false
                                     },
-                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                                 )
                             }
                         }

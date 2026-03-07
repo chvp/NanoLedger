@@ -32,7 +32,7 @@ class LedgerRepository
         val payees: LiveData<Set<String>> =
             transactions.map { txs ->
                 HashSet(
-                    txs.map { tx -> tx.payee }.filter { payee -> payee != null }.map { payee -> payee!! }
+                    txs.map { tx -> tx.payee }.filter { payee -> payee != null }.map { payee -> payee!! },
                 )
             }
         val notes: LiveData<Set<String>> =
