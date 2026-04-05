@@ -98,7 +98,7 @@ data class Posting(
         if ((comment ?: "") != "") {
             result += "  ; $comment"
         }
-        return result
+        return result.trimEnd()
     }
 
     fun isEmpty(): Boolean {
