@@ -1,0 +1,1 @@
+This release fixes a bug where a posting was formatted with trailing whitespace if it had no amount
