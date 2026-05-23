@@ -50,8 +50,8 @@ class MainViewModel
         private val _selectedIndex = MutableLiveData<Int?>(null)
         val selectedIndex: LiveData<Int?> = _selectedIndex
 
-        private val _latestReadError = MutableLiveData<Event<IOException>?>(null)
-        val latestReadError: LiveData<Event<IOException>?> = _latestReadError
+        private val _latestReadError = MutableLiveData<Event<Exception>?>(null)
+        val latestReadError: LiveData<Event<Exception>?> = _latestReadError
 
         private val _latestWriteError = MutableLiveData<Event<IOException>?>(null)
         val latestWriteError: LiveData<Event<IOException>?> = _latestWriteError
