@@ -63,7 +63,7 @@ class LedgerRepository
             onFinish: suspend () -> Unit,
             onMismatch: suspend () -> Unit,
             onWriteError: suspend (IOException) -> Unit,
-            onReadError: suspend (IOException) -> Unit,
+            onReadError: suspend (Exception) -> Unit,
         ) {
             try {
                 if (!matches(fileUri)) {
@@ -99,7 +99,7 @@ class LedgerRepository
             onFinish: suspend () -> Unit,
             onMismatch: suspend () -> Unit,
             onWriteError: suspend (IOException) -> Unit,
-            onReadError: suspend (IOException) -> Unit,
+            onReadError: suspend (Exception) -> Unit,
         ) {
             try {
                 if (!matches(fileUri)) {
@@ -142,7 +142,7 @@ class LedgerRepository
             onFinish: suspend () -> Unit,
             onMismatch: suspend () -> Unit,
             onWriteError: suspend (IOException) -> Unit,
-            onReadError: suspend (IOException) -> Unit,
+            onReadError: suspend (Exception) -> Unit,
         ) {
             try {
                 if (!matches(fileUri)) {
@@ -170,7 +170,7 @@ class LedgerRepository
         suspend fun readFrom(
             fileUri: Uri,
             onFinish: suspend () -> Unit,
-            onReadError: suspend (IOException) -> Unit,
+            onReadError: suspend (Exception) -> Unit,
         ) {
             try {
                 val result = ArrayList<String>()
@@ -189,6 +189,8 @@ class LedgerRepository
                 _transactions.postValue(extracted)
                 onFinish()
             } catch (e: IOException) {
+                onReadError(e)
+            } catch (e: SecurityException) {
                 onReadError(e)
             }
         }
