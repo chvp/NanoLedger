@@ -13,7 +13,7 @@ hilt = "2.59.2"
 kotlin = "2.4.0"
 ksp = "2.3.9"
 ktlint = "14.2.0"
-lifecycle = "2.10.0"
+lifecycle = "2.11.0"
 
 [libraries]
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
