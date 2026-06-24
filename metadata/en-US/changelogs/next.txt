@@ -1,0 +1,1 @@
+NanoLedger now explicitly asks for a signed decimal keyboard when entering amounts
