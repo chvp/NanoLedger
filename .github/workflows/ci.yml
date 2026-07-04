@@ -22,7 +22,12 @@ jobs:
       with:
         cache-provider: basic
     - name: Test
-      run: ./gradlew test
+      run: ./gradlew :app:createDebugUnitTestCoverageReport
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        files: "app/build/reports/coverage/test/debug/report.xml"
+        token: ${{ secrets.CODECOV_TOKEN }}
   instrumented-test:
     runs-on: ubuntu-latest
     steps:
@@ -45,7 +50,12 @@ jobs:
       with:
         api-level: 35
         arch: x86_64
-        script: ./gradlew connectedCheck
+        script: ./gradlew :app:createDebugAndroidTestCoverageReport
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        files: "app/build/reports/coverage/test/debug/report.xml"
+        token: ${{ secrets.CODECOV_TOKEN }}
   lint:
     runs-on: ubuntu-latest
     steps:
