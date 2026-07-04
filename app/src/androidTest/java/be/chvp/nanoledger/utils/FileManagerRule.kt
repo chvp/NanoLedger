@@ -44,6 +44,7 @@ class FileManagerRule(
 
         composeRule.onNodeWithContentDescription(context.getString(R.string.settings)).assertIsDisplayed().performClick()
         composeRule.onNodeWithText("Select file…").assertIsDisplayed().performClick()
+        composeRule.onNodeWithText("OK").assertIsDisplayed().performClick()
 
         waitForPicker()
 

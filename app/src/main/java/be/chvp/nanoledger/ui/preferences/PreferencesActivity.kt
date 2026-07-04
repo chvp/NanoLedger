@@ -111,11 +111,30 @@ class PreferencesActivity : ComponentActivity() {
                                 .verticalScroll(rememberScrollState()),
                     ) {
                         val fileUri by preferencesViewModel.fileUri.observeAsState()
+                        var fileConfirmDialogOpen by remember { mutableStateOf(false) }
+                        if (fileConfirmDialogOpen) {
+                            AlertDialog(
+                                onDismissRequest = { fileConfirmDialogOpen = false },
+                                title = {},
+                                text = {
+                                    Text(stringResource(R.string.file_picker_explanation))
+                                },
+                                dismissButton = {},
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        openFileTree.launch(null)
+                                        fileConfirmDialogOpen = false
+                                    }) {
+                                        Text(stringResource(R.string.ok))
+                                    }
+                                },
+                            )
+                        }
                         Setting(
                             stringResource(R.string.file),
                             fileUri?.toString() ?: stringResource(R.string.select_file),
                         ) {
-                            openFileTree.launch(null)
+                            fileConfirmDialogOpen = true
                         }
                         HorizontalDivider()
                         val transactionDefaultElements by preferencesViewModel.transactionDefaultElements.observeAsState(emptyList())
