@@ -7,7 +7,7 @@ updates:
     day: saturday
     time: "08:00"
     timezone: Europe/Brussels
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 99
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
@@ -15,4 +15,12 @@ updates:
     day: saturday
     time: "08:00"
     timezone: Europe/Brussels
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 99
+- package-ecosystem: nix
+  directory: "/"
+  schedule:
+    interval: weekly
+    day: saturday
+    time: "08:00"
+    timezone: Europe/Brussels
+  open-pull-requests-limit: 99
