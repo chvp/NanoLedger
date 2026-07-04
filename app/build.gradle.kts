@@ -58,17 +58,14 @@ android {
     }
 
     lint {
+        baseline = file("lint-baseline.xml")
         quiet = true
         disable.addAll(
             arrayOf(
                 "AndroidGradlePluginVersion",
                 "GradleDependency",
-                "HighAppVersionCode",
-                "MemberExtensionConflict",
                 "NewerVersionAvailable",
-                "ObsoleteLintCustomCheck",
                 "OldTargetApi",
-                "SimpleDateFormat",
             ),
         )
         checkAllWarnings = true

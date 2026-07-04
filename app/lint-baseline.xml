@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.2.1" type="baseline" client="gradle" dependencies="false" name="AGP (9.2.1)" variant="all" version="9.2.1">
+
+    <issue
+        id="HighAppVersionCode"
+        message="The &apos;versionCode&apos; is very high and close to the max allowed value"
+        errorLine1="        versionCode = 2026052301"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="19"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="InvalidPackage"
+        message="Invalid package reference in library; not included in Android: `java.lang.management`. Referenced from `org.jacoco.agent.rt.internal_29a6edd.JmxRegistration`.">
+        <location
+            file="$GRADLE_USER_HOME/caches/modules-2/files-2.1/org.jacoco/org.jacoco.agent/0.8.14/4bb9b49d4e6c5b042fc7e6b4f1e3e808f7441dde/org.jacoco.agent-0.8.14-runtime.jar"/>
+    </issue>
+
+    <issue
+        id="InvalidPackage"
+        message="Invalid package reference in library; not included in Android: `javax.management`. Referenced from `org.jacoco.agent.rt.internal_29a6edd.JmxRegistration`.">
+        <location
+            file="$GRADLE_USER_HOME/caches/modules-2/files-2.1/org.jacoco/org.jacoco.agent/0.8.14/4bb9b49d4e6c5b042fc7e6b4f1e3e808f7441dde/org.jacoco.agent-0.8.14-runtime.jar"/>
+    </issue>
+
+    <issue
+        id="SimpleDateFormat"
+        message="To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates."
+        errorLine1="val dateFormat = SimpleDateFormat(&quot;yyyy-MM-dd&quot;)"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/be/chvp/nanoledger/ui/common/TransactionFormViewModel.kt"
+            line="24"
+            column="18"/>
+    </issue>
+
+</issues>
