@@ -42,7 +42,7 @@ jobs:
     - name: Test
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 35
+        api-level: 36
         arch: x86_64
         script: ./gradlew :app:createDebugAndroidTestCoverageReport
     - name: Upload coverage reports to Codecov
