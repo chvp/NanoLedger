@@ -1,2 +1,0 @@
-Add work-around for Nextcloud bug when trying to access a file in a logged-out account
-Add work-around for recent android security fix where access to a file is lost when it is overwritten
