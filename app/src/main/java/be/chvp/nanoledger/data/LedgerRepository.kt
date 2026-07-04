@@ -8,6 +8,7 @@ import androidx.lifecycle.map
 import be.chvp.nanoledger.data.parser.extractTransactions
 import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import javax.inject.Inject
@@ -174,8 +175,17 @@ class LedgerRepository
         ) {
             try {
                 val result = ArrayList<String>()
-                fileUri
-                    .let { context.contentResolver.openInputStream(it) }
+                val contentResolver = context.contentResolver!!
+                var inputStream: InputStream?
+                try {
+                    inputStream = contentResolver.openInputStream(fileUri)
+                } catch (e: NullPointerException) {
+                    // Work-around for Nextcloud throwing a NullPointerException
+                    // when accessing a file from a removed account.
+                    onReadError(e)
+                    return
+                }
+                inputStream
                     ?.let { BufferedReader(InputStreamReader(it)) }
                     ?.use { reader ->
                         var line = reader.readLine()
