@@ -47,9 +47,14 @@ class FileManagerRule(
 
         waitForPicker()
 
-        device.findObject(By.descContains("Show roots")).click()
-        device.wait(Until.hasObject(By.text("Downloads")), 3_000)
-        device.findObject(By.text("Downloads")).click()
+        device.wait(Until.hasObject(By.text("Download")), 3_000)
+        device.findObject(By.text("Download")).click()
+        device.wait(Until.hasObject(By.text("some folder")), 3_000)
+        device.findObject(By.text("some folder")).click()
+        device.wait(Until.hasObject(By.text("USE THIS FOLDER")), 3_000)
+        device.findObject(By.text("USE THIS FOLDER")).click()
+        device.wait(Until.hasObject(By.text("ALLOW")), 3_000)
+        device.findObject(By.text("ALLOW")).click()
         device.wait(Until.hasObject(By.text(filename)), 5_000)
         device.findObject(By.text(filename)).click()
 
@@ -76,6 +81,7 @@ class FileManagerRule(
 
         val values =
             ContentValues().apply {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/some folder")
                 put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
                 put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
             }
