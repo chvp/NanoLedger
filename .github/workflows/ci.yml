@@ -17,10 +17,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6
-      with:
-        cache-provider: basic
+        cache: 'gradle'
     - name: Test
       run: ./gradlew :app:createDebugUnitTestCoverageReport
     - name: Upload coverage reports to Codecov
@@ -41,10 +38,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6
-      with:
-        cache-provider: basic
+        cache: 'gradle'
     - name: Test
       uses: reactivecircus/android-emulator-runner@v2
       with:
@@ -64,10 +58,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6
-      with:
-        cache-provider: basic
+        cache: 'gradle'
     - name: Lint
       run: ./gradlew lint -PisCI=true
   build:
@@ -78,10 +69,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6
-      with:
-        cache-provider: basic
+        cache: 'gradle'
     - name: Build
       run: |
         ./gradlew assemble
