@@ -17,6 +17,4 @@ jobs:
         with:
           name: nanoledger
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-          skipPush: true
       - run: nix build -L --no-link .#devShells.$(nix eval --impure --expr "builtins.currentSystem").nanoledger
-      - run: nix eval --json ".#devShells.$(nix eval --impure --expr 'builtins.currentSystem').nanoledger.outPath" | sed 's/"\(.*\)"/\1/' | cachix push nanoledger
