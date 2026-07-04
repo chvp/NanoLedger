@@ -51,6 +51,7 @@
     <string name="error_reading_file">Error while reading file</string>
     <string name="error_writing_file">Error while writing file</string>
     <string name="file">File</string>
+    <string name="file_picker_explanation">First, pick the folder containing the file you want to use. Then pick the actual file. NanoLedger needs access to the directory due to Android security restrictions. Only the file you pick will ever be read from or written to.</string>
     <string name="go_to_settings">Go to the settings to configure one.</string>
     <string name="mismatch_no_delete">File contents outdated, aborting delete</string>
     <string name="mismatch_no_write">File contents outdated, aborting write</string>

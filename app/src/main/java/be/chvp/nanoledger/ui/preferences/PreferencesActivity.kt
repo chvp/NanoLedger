@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts.OpenDocument
+import androidx.activity.result.contract.ActivityResultContracts.OpenDocumentTree
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -58,14 +60,24 @@ class PreferencesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        var treeUri: Uri? = null
         val openFile =
             registerForActivityResult(OpenDocument()) { uri: Uri? ->
-                if (uri != null) {
+                if (uri != null && treeUri != null) {
+                    val documentId = DocumentsContract.getDocumentId(uri)
+                    val documentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId)
+                    preferencesViewModel.storeFileUri(documentUri)
+                }
+            }
+        val openFileTree =
+            registerForActivityResult(OpenDocumentTree()) { openedTreeUri: Uri? ->
+                treeUri = openedTreeUri
+                if (treeUri != null) {
                     contentResolver.takePersistableUriPermission(
-                        uri,
+                        treeUri!!,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
                     )
-                    preferencesViewModel.storeFileUri(uri)
+                    openFile.launch(arrayOf("*/*"))
                 }
             }
         setContent {
@@ -99,11 +111,30 @@ class PreferencesActivity : ComponentActivity() {
                                 .verticalScroll(rememberScrollState()),
                     ) {
                         val fileUri by preferencesViewModel.fileUri.observeAsState()
+                        var fileConfirmDialogOpen by remember { mutableStateOf(false) }
+                        if (fileConfirmDialogOpen) {
+                            AlertDialog(
+                                onDismissRequest = { fileConfirmDialogOpen = false },
+                                title = {},
+                                text = {
+                                    Text(stringResource(R.string.file_picker_explanation))
+                                },
+                                dismissButton = {},
+                                confirmButton = {
+                                    TextButton(onClick = {
+                                        openFileTree.launch(null)
+                                        fileConfirmDialogOpen = false
+                                    }) {
+                                        Text(stringResource(R.string.ok))
+                                    }
+                                },
+                            )
+                        }
                         Setting(
                             stringResource(R.string.file),
                             fileUri?.toString() ?: stringResource(R.string.select_file),
                         ) {
-                            openFile.launch(arrayOf("*/*"))
+                            fileConfirmDialogOpen = true
                         }
                         HorizontalDivider()
                         val transactionDefaultElements by preferencesViewModel.transactionDefaultElements.observeAsState(emptyList())
