@@ -13,7 +13,7 @@ jobs:
     - name: Parse tag
       id: parse_tag
       run: "echo ${{ github.ref }} | sed 's#^refs/tags/#version=#' >> $GITHUB_OUTPUT"
-    - uses: actions/setup-java@v5.6.0
+    - uses: actions/setup-java@v5.7.0
       with:
         distribution: 'temurin'
         java-version: '21'
