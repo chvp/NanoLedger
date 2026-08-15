@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7
-    - name: Parse tag
-      id: parse_tag
-      run: "echo ${{ github.ref }} | sed 's#^refs/tags/#version=#' >> $GITHUB_OUTPUT"
     - uses: actions/setup-java@v5.7.0
       with:
         distribution: 'temurin'
@@ -28,17 +25,15 @@ jobs:
         ./gradlew assembleRelease
         $ANDROID_SDK_ROOT/build-tools/34.0.0/zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
         echo "${{ secrets.KEYSTORE_FILE }}" | base64 -d > keystore.jks
-        echo "${{ secrets.KEYSTORE_PASSWORD }}" | $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign --ks keystore.jks --out nanoledger-${{ steps.parse_tag.outputs.version }}.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
-        $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner verify nanoledger-${{ steps.parse_tag.outputs.version }}.apk
+        echo "${{ secrets.KEYSTORE_PASSWORD }}" | $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner sign --ks keystore.jks --out "nanoledger-$GITHUB_REF_NAME.apk" app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+        $ANDROID_SDK_ROOT/build-tools/34.0.0/apksigner verify "nanoledger-$GITHUB_REF_NAME.apk"
     - name: Create release
-      uses: ncipollo/release-action@v1
-      with:
-        artifacts: "nanoledger-${{ steps.parse_tag.outputs.version }}.apk"
-        artifactErrorsFailBuild: true
-        artifactContentType: application/vnd.android.package-archive
-        generateReleaseNotes: true
-        immutableCreate: true
-        prerelease: ${{ contains(steps.parse_tag.outputs.version, 'beta') }}
-        makeLatest: ${{ !contains(steps.parse_tag.outputs.version, 'beta') }}
-        name: ${{ steps.parse_tag.outputs.version }}
-        tag: ${{ steps.parse_tag.outputs.version }}
+      run: |
+        if [[ "$GITHUB_REF_NAME" == *beta* ]]
+        then
+          gh release create "$GITHUB_REF_NAME" "nanoledger-$GITHUB_REF_NAME.apk" --generate-notes --verify-tag --prerelease --latest=false
+        else
+          gh release create "$GITHUB_REF_NAME" "nanoledger-$GITHUB_REF_NAME.apk" --generate-notes --verify-tag
+        fi
+      env:
+        GH_TOKEN: ${{ github.token }}
