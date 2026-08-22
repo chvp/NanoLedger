@@ -789,7 +789,7 @@ fun AmountField(
                 Text(stringResource(R.string.amount), maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         },
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.DecimalSigned),
         modifier = modifier,
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
     )
