@@ -802,8 +802,10 @@ fun AccountSelector(
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val options by viewModel.accounts.observeAsState()
-    val filteredOptions = options?.filter { it.contains(value, ignoreCase = true) } ?: emptyList()
+    val options = viewModel.accounts.observeAsState().value ?: emptyList()
+    val lastAccounts = viewModel.lastAccounts.observeAsState().value ?: emptyList()
+    val allOptions: List<String> = lastAccounts + options
+    val filteredOptions = allOptions.filter { it.contains(value, ignoreCase = true) }.distinct()
     OutlinedLooseDropdown(filteredOptions, value, { viewModel.setAccount(index, it) }, modifier) {
         Text(stringResource(R.string.account), maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
