@@ -84,6 +84,8 @@ abstract class TransactionFormViewModel(
     private val _postings = MutableLiveData(listOf(newPosting()))
     val postings: LiveData<List<Posting>> = _postings
     val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
+    private val _lastAccounts = MutableLiveData<List<String>>(null)
+    var lastAccounts: LiveData<List<String>?> = _lastAccounts
     val unbalancedAmount: LiveData<String> =
         postings.map { ps ->
             val relevantPostings = ps.filter { p -> !p.isVirtual() && !p.isComment() }
@@ -255,6 +257,12 @@ abstract class TransactionFormViewModel(
 
     fun setPayee(newPayee: String?) {
         _payee.value = newPayee
+        _lastAccounts.value =
+            ledgerRepository.transactions.value
+                ?.findLast {
+                    newPayee.equals(it.payee)
+                }?.postings
+                ?.mapNotNull { it.account }
     }
 
     fun setNote(newNote: String?) {
