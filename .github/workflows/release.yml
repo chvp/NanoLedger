@@ -19,7 +19,7 @@ jobs:
       with:
         cache-provider: basic
     - name: Setup Android SDK Tools
-      uses: android-actions/setup-android@v4.0.1
+      uses: android-actions/setup-android@v4.0.4
     - name: Build release APK
       run: |
         ./gradlew assembleRelease
