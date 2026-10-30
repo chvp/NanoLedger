@@ -7,35 +7,58 @@
       url = "github:numtide/devshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    flake-utils.url = "github:numtide/flake-utils";
   };
-  outputs = { self, nixpkgs, devshell, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs { inherit system; config = { android_sdk.accept_license = true; allowUnfree = true; }; overlays = [ devshell.overlays.default ]; };
-        buildToolsVersion = "37.0.0";
-        composed = pkgs.androidenv.composeAndroidPackages {
-          buildToolsVersions = [ "36.0.0" buildToolsVersion ];
-          platformVersions = [ "37" ];
-        };
-        fhsEnv = pkgs.buildFHSEnv {
-          name = "android-sdk-env";
-          targetPkgs = pkgs: (with pkgs; [ glibc ]);
-          profile = ''
-            export ANDROID_SDK_ROOT="${composed.androidsdk}/libexec/android-sdk/"
-          '';
-        };
-      in
-      {
-        devShells = rec {
-          default = nanoledger;
+  outputs =
+    { self, ... }@inputs:
+    {
+      devShells = builtins.mapAttrs (
+        system: _:
+        let
+          pkgs = import inputs.nixpkgs {
+            inherit system;
+            config = {
+              android_sdk.accept_license = true;
+              allowUnfree = true;
+            };
+            overlays = [ inputs.devshell.overlays.default ];
+          };
+          buildToolsVersion = "37.0.0";
+          composed = pkgs.androidenv.composeAndroidPackages {
+            buildToolsVersions = [
+              "36.0.0"
+              buildToolsVersion
+            ];
+            platformVersions = [ "37" ];
+          };
+          fhsEnv = pkgs.buildFHSEnv {
+            name = "android-sdk-env";
+            targetPkgs = pkgs: (with pkgs; [ glibc ]);
+            profile = ''
+              export ANDROID_SDK_ROOT="${composed.androidsdk}/libexec/android-sdk/"
+            '';
+          };
+        in
+        {
+          default = self.devShells.${system}.nanoledger;
           nanoledger = pkgs.devshell.mkShell {
             name = "Nanoledger";
-            packages = [ pkgs.jdk21 pkgs.nixpkgs-fmt ];
+            packages = [
+              pkgs.jdk21
+              pkgs.nixfmt
+            ];
             env = [
-              { name = "ANDROID_SDK_ROOT"; eval = "${composed.androidsdk}/libexec/android-sdk/"; }
-              { name = "BUILD_TOOLS_PATH"; eval = "$ANDROID_SDK_ROOT/build-tools/${buildToolsVersion}"; }
-              { name = "APK_DIR"; eval = "$PRJ_ROOT/app/build/outputs/apk/release"; }
+              {
+                name = "ANDROID_SDK_ROOT";
+                eval = "${composed.androidsdk}/libexec/android-sdk/";
+              }
+              {
+                name = "BUILD_TOOLS_PATH";
+                eval = "$ANDROID_SDK_ROOT/build-tools/${buildToolsVersion}";
+              }
+              {
+                name = "APK_DIR";
+                eval = "$PRJ_ROOT/app/build/outputs/apk/release";
+              }
             ];
             devshell = {
               motd = "";
@@ -82,7 +105,7 @@
               }
             ];
           };
-        };
-      }
-    );
+        }
+      ) inputs.nixpkgs.legacyPackages;
+    };
 }
