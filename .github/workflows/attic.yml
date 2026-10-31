@@ -1,0 +1,25 @@
+name: Attic
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install nix
+        uses: NixOS/nix-installer-action@main
+        with:
+          extra-conf: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            experimental-features = nix-command flakes
+      - name: Attic
+        uses: ryanccn/attic-action@v0
+        with:
+          endpoint: https://attic.chvp.be
+          cache: chvp
+          token: '${{ secrets.ATTIC_AUTH_TOKEN }}'
+      - run: nix build -L --no-link .#devShells.$(nix eval --impure --expr "builtins.currentSystem").nanoledger
