@@ -879,6 +879,8 @@ fun OutlinedLooseDropdown(
                 Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
                     if (!it.hasFocus) {
                         expanded = false
+                    } else if (value == "") {
+                        expanded = true
                     }
                 },
             colors =
