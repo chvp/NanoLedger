@@ -83,7 +83,24 @@ abstract class TransactionFormViewModel(
 
     private val _postings = MutableLiveData(listOf(newPosting()))
     val postings: LiveData<List<Posting>> = _postings
-    val accounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
+    private val allAccounts: LiveData<List<String>> = ledgerRepository.accounts.map { it.sorted() }
+    private val payeeMatchingAccounts: LiveData<List<String>> =
+        payee.switchMap { payee ->
+            ledgerRepository.transactions.map { transactions ->
+                transactions.filter { it.payee == payee }.reversed().flatMap { it.postings.mapNotNull { it.account } }
+            }
+        }
+    val accounts: LiveData<List<String>> =
+        if (preferencesDataSource.getFilterRecentAccounts()) {
+            allAccounts.switchMap { allAccounts ->
+                payeeMatchingAccounts.map { payeeMatchingAccounts ->
+                    (payeeMatchingAccounts + allAccounts).distinct()
+                }
+            }
+        } else {
+            allAccounts
+        }
+
     val unbalancedAmount: LiveData<String> =
         postings.map { ps ->
             val relevantPostings = ps.filter { p -> !p.isVirtual() && !p.isComment() }

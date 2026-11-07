@@ -97,6 +97,11 @@ class PreferencesActivity : ComponentActivity() {
                     true to stringResource(R.string.currency_amount_spacing_on),
                     false to stringResource(R.string.currency_amount_spacing_off),
                 )
+            val filterRecentAccountsMap =
+                mapOf(
+                    true to stringResource(R.string.filter_recent_accounts_on),
+                    false to stringResource(R.string.filter_recent_accounts_off),
+                )
             val separatorMap =
                 mapOf(
                     "." to stringResource(R.string.separator_point),
@@ -436,6 +441,39 @@ class PreferencesActivity : ComponentActivity() {
                                         onClick = {
                                             preferencesViewModel.storeCurrencyAmountSpacing(it.key)
                                             expandedCurrencySpacing = false
+                                        },
+                                        contentPadding =
+                                            ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    )
+                                }
+                            }
+                        }
+                        HorizontalDivider()
+                        val filterRecentAccounts by preferencesViewModel.filterRecentAccounts.observeAsState()
+                        var expandedFilterRecentAccounts by rememberSaveable { mutableStateOf(false) }
+                        ExposedDropdownMenuBox(
+                            expanded = expandedFilterRecentAccounts,
+                            onExpandedChange = { expandedFilterRecentAccounts = !expandedFilterRecentAccounts },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Setting(
+                                stringResource(R.string.filter_recent_accounts),
+                                filterRecentAccountsMap[filterRecentAccounts ?: true] ?: stringResource(
+                                    R.string.filter_recent_accounts_on,
+                                ),
+                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                            ) { expandedFilterRecentAccounts = true }
+                            ExposedDropdownMenu(
+                                expanded = expandedFilterRecentAccounts,
+                                onDismissRequest = { expandedFilterRecentAccounts = false },
+                                modifier = Modifier.exposedDropdownSize(true),
+                            ) {
+                                filterRecentAccountsMap.forEach {
+                                    DropdownMenuItem(
+                                        text = { Text(it.value) },
+                                        onClick = {
+                                            preferencesViewModel.storeFilterRecentAccounts(it.key)
+                                            expandedFilterRecentAccounts = false
                                         },
                                         contentPadding =
                                             ExposedDropdownMenuDefaults.ItemContentPadding,

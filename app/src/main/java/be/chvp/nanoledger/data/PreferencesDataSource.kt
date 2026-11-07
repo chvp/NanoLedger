@@ -26,6 +26,7 @@ const val POSTING_COST_PRESENT_BY_DEFAULT_KEY = "posting_cost_present_by_default
 const val POSTING_ASSERTION_PRESENT_BY_DEFAULT_KEY = "posting_assertion_present_by_default"
 const val POSTING_ASSERTION_COST_PRESENT_BY_DEFAULT_KEY = "posting_assertion_cost_present_by_default"
 const val POSTING_COMMENT_PRESENT_BY_DEFAULT_KEY = "posting_comment_present_by_default"
+const val FILTER_RECENT_ACCOUNTS_KEY = "filter_recent_accounts"
 
 class PreferencesDataSource
     @Inject
@@ -205,4 +206,11 @@ class PreferencesDataSource
 
         fun setPostingCommentPresentByDefault(comment: Boolean) =
             sharedPreferences.edit { putBoolean(POSTING_COMMENT_PRESENT_BY_DEFAULT_KEY, comment) }
+
+        val filterRecentAccounts: LiveData<Boolean> =
+            sharedPreferences.booleanLiveData(FILTER_RECENT_ACCOUNTS_KEY, true)
+
+        fun getFilterRecentAccounts(): Boolean = sharedPreferences.getBoolean(FILTER_RECENT_ACCOUNTS_KEY, true)
+
+        fun setFilterRecentAccounts(filter: Boolean) = sharedPreferences.edit { putBoolean(FILTER_RECENT_ACCOUNTS_KEY, filter) }
     }
