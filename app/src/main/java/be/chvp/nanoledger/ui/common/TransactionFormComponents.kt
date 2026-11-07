@@ -5,6 +5,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -53,11 +56,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -307,12 +313,18 @@ fun DateSelector(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
             ),
-        modifier =
-            modifier.onFocusChanged {
-                if (it.isFocused) {
-                    dateDialogOpen = true
-                }
-            },
+        interactionSource =
+            remember { MutableInteractionSource() }
+                .also { interactionSource ->
+                    LaunchedEffect(interactionSource) {
+                        interactionSource.interactions.collect {
+                            if (it is PressInteraction.Release) {
+                                dateDialogOpen = true
+                            }
+                        }
+                    }
+                },
+        modifier = modifier.focusProperties { canFocus = false },
     )
     if (dateDialogOpen) {
         val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date?.time)
@@ -322,7 +334,6 @@ fun DateSelector(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { viewModel.setDate(it) }
                     dateDialogOpen = false
-                    focusManager.clearFocus()
                 }) {
                     Text(stringResource(R.string.ok))
                 }
@@ -338,6 +349,7 @@ fun StatusSelector(
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
 ) {
+    val focusManager = LocalFocusManager.current
     val status by viewModel.status.observeAsState()
     val options = listOf(" ", "!", "*")
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -351,7 +363,7 @@ fun StatusSelector(
                 value = (status ?: ""),
                 onValueChange = {},
                 readOnly = true,
-                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable).focusProperties { canFocus = false },
                 colors =
                     ExposedDropdownMenuDefaults.textFieldColors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -384,12 +396,18 @@ fun CodeField(
     viewModel: TransactionFormViewModel,
     modifier: Modifier = Modifier,
 ) {
+    val focusManager = LocalFocusManager.current
     val code by viewModel.code.observeAsState()
     if (code != null) {
         OutlinedTextField(
             (code ?: ""),
             { viewModel.setCode(it) },
             modifier,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions =
+                KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Next) },
+                ),
             label = { Text(stringResource(R.string.code), maxLines = 1, overflow = TextOverflow.Ellipsis) },
         )
     }
@@ -650,10 +668,16 @@ fun CommentField(
     viewModel: TransactionFormViewModel,
     modifier: Modifier,
 ) {
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         comment,
         onValueChange = { viewModel.setComment(index, it) },
         singleLine = true,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions =
+            KeyboardActions(
+                onDone = { focusManager.moveFocus(FocusDirection.Next) },
+            ),
         label = { Text(stringResource(R.string.comment), maxLines = 1, overflow = TextOverflow.Ellipsis) },
         modifier = modifier,
     )
@@ -664,6 +688,7 @@ fun CostTypeSelector(
     costType: CostType,
     save: (newCostType: CostType) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
     val options = listOf(CostType.UNIT, CostType.TOTAL)
     var expanded by rememberSaveable { mutableStateOf(false) }
     with(LocalDensity.current) {
@@ -676,7 +701,7 @@ fun CostTypeSelector(
                 value = costType.repr,
                 onValueChange = {},
                 readOnly = true,
-                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable).focusProperties { canFocus = false },
                 colors =
                     ExposedDropdownMenuDefaults.textFieldColors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -742,6 +767,7 @@ fun CurrencyField(
     modifier: Modifier = Modifier,
     save: (newCurrencyString: String) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
     with(LocalDensity.current) {
         OutlinedTextField(
             value = currency,
@@ -754,6 +780,11 @@ fun CurrencyField(
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 ),
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions =
+                KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Next) },
+                ),
         )
     }
 }
@@ -766,6 +797,7 @@ fun AmountField(
     modifier: Modifier = Modifier,
     save: (newAmountString: String) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
     val unbalancedAmount by viewModel.unbalancedAmount.observeAsState()
     OutlinedTextField(
         value = quantity,
@@ -789,7 +821,11 @@ fun AmountField(
                 Text(stringResource(R.string.amount), maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         },
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.DecimalSigned),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.DecimalSigned, imeAction = ImeAction.Done),
+        keyboardActions =
+            KeyboardActions(
+                onDone = { focusManager.moveFocus(FocusDirection.Next) },
+            ),
         modifier = modifier,
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
     )
@@ -834,6 +870,11 @@ fun OutlinedLooseDropdown(
             },
             singleLine = true,
             label = content,
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions =
+                KeyboardActions(
+                    onDone = { focusManager.moveFocus(FocusDirection.Next) },
+                ),
             modifier =
                 Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable).fillMaxWidth().onFocusChanged {
                     if (!it.hasFocus) {
@@ -857,8 +898,8 @@ fun OutlinedLooseDropdown(
                         text = { Text(it) },
                         onClick = {
                             onValueChange(it)
-                            focusManager.clearFocus()
                             expanded = false
+                            focusManager.moveFocus(FocusDirection.Next)
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     )
