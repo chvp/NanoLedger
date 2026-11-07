@@ -1,0 +1,3 @@
+* NanoLedger now explicitly asks for a signed decimal keyboard when entering amounts
+* When selecting an option from the autocomplete drop-down or when pressing the enter key, the next field is now focused
+* NanoLedger can now show recent accounts matching the payee at the top of the dropdown instead of always sorting alphabetically (thanks to @chuckwagoncomputing on GitHub for the idea and initial implementation)
