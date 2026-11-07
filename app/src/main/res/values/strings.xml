@@ -22,8 +22,8 @@
     <string name="cancel">Cancel</string>
     <string name="change_default_currency">Change default currency</string>
     <string name="change_posting_fields">Change posting fields</string>
-    <string name="change_transaction_fields">Change transaction fields</string>
     <string name="change_posting_width">Change posting width</string>
+    <string name="change_transaction_fields">Change transaction fields</string>
     <string name="code">Code</string>
     <string name="comment">Comment</string>
     <string name="copy">Copy</string>
@@ -52,6 +52,9 @@
     <string name="error_writing_file">Error while writing file</string>
     <string name="file">File</string>
     <string name="file_picker_explanation">First, pick the folder containing the file you want to use. Then pick the actual file. NanoLedger needs access to the directory due to Android security restrictions. Only the file you pick will ever be read from or written to.</string>
+    <string name="filter_recent_accounts">Ordering of accounts in completion drop-down</string>
+    <string name="filter_recent_accounts_off">Accounts sorted alphabetically</string>
+    <string name="filter_recent_accounts_on">Recent accounts shown first</string>
     <string name="go_to_settings">Go to the settings to configure one.</string>
     <string name="mismatch_no_delete">File contents outdated, aborting delete</string>
     <string name="mismatch_no_write">File contents outdated, aborting write</string>

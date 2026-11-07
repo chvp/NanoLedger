@@ -91,10 +91,14 @@ abstract class TransactionFormViewModel(
             }
         }
     val accounts: LiveData<List<String>> =
-        allAccounts.switchMap { allAccounts ->
-            payeeMatchingAccounts.map { payeeMatchingAccounts ->
-                (payeeMatchingAccounts + allAccounts).distinct()
+        if (preferencesDataSource.getFilterRecentAccounts()) {
+            allAccounts.switchMap { allAccounts ->
+                payeeMatchingAccounts.map { payeeMatchingAccounts ->
+                    (payeeMatchingAccounts + allAccounts).distinct()
+                }
             }
+        } else {
+            allAccounts
         }
 
     val unbalancedAmount: LiveData<String> =

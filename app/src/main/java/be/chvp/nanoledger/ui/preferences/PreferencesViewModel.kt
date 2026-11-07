@@ -71,6 +71,7 @@ class PreferencesViewModel
                     }
                 }
             }
+        val filterRecentAccounts: LiveData<Boolean> = preferencesDataSource.filterRecentAccounts
 
         fun storeFileUri(uri: Uri) = preferencesDataSource.setFileUri(uri)
 
@@ -110,4 +111,6 @@ class PreferencesViewModel
             preferencesDataSource.setPostingAssertionCostPresentByDefault(assertionCost)
 
         fun storePostingCommentPresentByDefault(comment: Boolean) = preferencesDataSource.setPostingCommentPresentByDefault(comment)
+
+        fun storeFilterRecentAccounts(filter: Boolean) = preferencesDataSource.setFilterRecentAccounts(filter)
     }
