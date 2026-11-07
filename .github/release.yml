@@ -1,0 +1,23 @@
+changelog:
+  exclude:
+    labels:
+      - "dependencies"
+  categories:
+    - title: '🚀 Features'
+      labels:
+        - 'enhancement'
+    - title: '🐛 Bug Fixes'
+      labels:
+        - 'bug'
+    - title: '🧰 Maintenance'
+      labels:
+        - 'chore'
+    - title: '🔧 Internal changes'
+      label:
+        - 'refactor'
+    - title: '📖 Documentation'
+      labels:
+        - 'documentation'
+    - title: 'Other changes'
+      labels:
+        - '*'
