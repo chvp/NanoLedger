@@ -28,7 +28,7 @@
               "36.0.0"
               buildToolsVersion
             ];
-            platformVersions = [ "37" ];
+            platformVersions = [ "37.1" ];
           };
           fhsEnv = pkgs.buildFHSEnv {
             name = "android-sdk-env";
